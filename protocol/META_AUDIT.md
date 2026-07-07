@@ -62,5 +62,10 @@ The methodology is **sound and worth keeping** — its core insight (a builder's
 arithmetic/protocol bugs, so an independent adversarial re-check is non-optional) held up. But "as written"
 it over-trusted the reviewer and oversold a clean Stage 1, and its own template contained bugs it warns
 about. All fixed above. **Read a passing audit as "no flattering arithmetic bug found by a primed
-reviewer," not "validated."** The fact that auditing the auditor found this much is the strongest evidence
-the discipline is worth running.
+reviewer," not "validated."** Auditing the auditor surfaced several real fixes — consistent with the
+protocol's own thesis (self-review has blind spots) rather than a proof of it; take it as one data point,
+logged, not as a clinching argument.
+
+---
+
+*A passing audit is not a validation. Personal research methodology — not investment advice.*

@@ -1,0 +1,27 @@
+{
+  "case_id": "content-pipeline-2026-07",
+  "target": "AI-generated language-learning material: 17 stories + verb tables + quizzes + audio + print PDFs, deployed web app, deterministic anti-fabrication gate",
+  "domain_packs": ["content", "systems", "fitness"],
+  "context": "Expert (strong-model) review produced 6 findings on a project that had passed all T1 claim checks. Used to validate the generalized protocol: v1 structural ceiling ~2.5/6, v2 cold reviewer 5/6 + 3 bonus.",
+  "expected_findings": [
+    {"id": "P1", "tier": "T1", "checklist": "C1", "severity": "high",
+     "finding": "Claimed 'covers all 110 items'; machine count showed 107. The 3 missing were skipped by writer instructions (hardest multi-form items) and forgotten.",
+     "reproduce": "count distinct items in output vs. ground-truth table"},
+    {"id": "P6", "tier": "T1", "checklist": "C4", "severity": "high",
+     "finding": "meta flag human_verified=true written by the model itself; process had machine gate + model review, no human sign-off.",
+     "reproduce": "grep verified flags; trace provenance"},
+    {"id": "P5", "tier": "T1/T2", "checklist": "C5/S2", "severity": "medium",
+     "finding": "All automated QA ends by typing correct answers; no wrong-input/empty/gibberish path tested; QA scripts not in repo.",
+     "reproduce": "inspect test scripts"},
+    {"id": "P4", "tier": "T2", "checklist": "S5/C6", "severity": "low",
+     "finding": "Single-file app (500+ lines), eager audio loading (mobile data), no PWA manifest.",
+     "reproduce": "wc -l; grep 'new Audio'"},
+    {"id": "P2", "tier": "T3", "checklist": "F2/F1", "severity": "advisory",
+     "finding": "No progress/error memory across sessions; review quiz samples uniformly instead of targeting the user's misses.",
+     "reproduce": "grep localStorage usage; read sampling logic"},
+    {"id": "P3", "tier": "T3", "checklist": "F3", "severity": "advisory",
+     "finding": "Exposure distribution: ~half of all items appear in exactly one story (single-context exposure), weak for retention.",
+     "reproduce": "histogram of item occurrences across stories"}
+  ],
+  "grading_notes": "Bonus findings from the v2 cold run, merged: anti-fabrication gate passed empty strings (subset-of-anything) and cross-item markings — both reproduced with dirty-data injection and fixed; stale engine name in README; subtle science simplification (visible mist described as water vapor)."
+}

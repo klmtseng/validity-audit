@@ -1,8 +1,26 @@
-# Validity Audit — a two-stage self-falsification protocol for quant research
+# Validity Audit — a self-falsification protocol for any artifact that makes claims
 
-A reusable process to catch logical, leakage, and **arithmetic/protocol** bugs in backtests / factor /
-ML quant research **before** you claim an edge. Companion to this repo's `engine_v2/dsr_pbo.py`
-(Deflated Sharpe / PBO) and `engine_v2/csw_monitor.py`.
+A reusable process to catch false claims, hidden landmines, and **arithmetic/protocol** bugs **before**
+you ship a result. Born in quant research (backtests / factor / ML) — the checklist is deepest there, and
+this repo pairs it with `engine_v2/dsr_pbo.py` (Deflated Sharpe / PBO) and `engine_v2/csw_monitor.py`. But
+the failure modes it targets — *a metric that passes by construction, a coverage claim nobody re-counted,
+a `verified` flag nobody verified* — are properties of empirical claims in general.
+
+## v2 — Generalized (2026-07)
+
+The pipeline (pin claims → historical challenges → mechanical audit → independent reviewer →
+reproduction gate → miss-ledger closure) is domain-independent; only the Stage-1 checklist swaps.
+
+- **[Three-tier threat model](domains/README.md)**: **T1** claims are false · **T2** nobody claimed it
+  but it bites · **T3** true but unfit for purpose (advisory only, never blocks).
+- **Domain packs**: [quant](domains/quant.md) · [generated content / educational material](domains/content.md)
+  · [deployed systems / handoff](domains/systems.md) · [documentation / rule sets](domains/docs.md).
+- **[Golden-case recall benchmarking](golden_cases/README.md)**: the audit audits itself — keep an
+  answer key of verified expert findings per target; after each protocol revision, re-run a *cold*
+  reviewer and measure recall. Measured v1→v2 on a real content pipeline: **~2.5/6 → 5/6, plus 3 bonus
+  findings** including two confirmed bugs in the project's own anti-fabrication gate.
+
+Everything below is the v1 quant-native protocol — still the Stage-1 pack for financial claims.
 
 ## The core lesson
 A single builder has blind spots. An **internal leakage audit catches "leakage" but routinely misses
@@ -10,11 +28,10 @@ A single builder has blind spots. An **internal leakage audit catches "leakage" 
 peak, in-sample blended into the headline). So **Stage 2 — an independent reviewer that did not build the
 code — is mandatory, not optional.**
 
-> Case study: an internal audit of a representation-learning study passed clean (label-shuffle null,
-> point-in-time features). An *independent* reviewer then found three flattering bugs (log-return
-> compounding, ~64% in-sample blending, MDD denominator) — and the corrected, OOS-only re-run showed the
-> portfolio edge over equal-weight was **not robust**. The headline was retracted. That is the protocol
-> working as intended. → full write-up: **[CASE_STUDY.md](CASE_STUDY.md)**.
+> **Case study — Stage 1 catches a tautology, Stage 2 catches a confound.** On a generative-narrative
+> engine's diversity metrics, self-audit flagged a metric that passed *by construction*; the independent
+> reviewer then caught a *correlation mistaken for an independent signal* that self-audit had blessed.
+> Headline retracted. → **[CASE_STUDY_GENERATIVE.md](CASE_STUDY_GENERATIVE.md)**.
 
 ## Stage 1 — internal mechanical audit (write to `audit/leak_audit.md`)
 Use `leak_audit_template.py` as a starting point. Check, with a red flag for each:
@@ -64,6 +81,11 @@ For **true independence**, prefer a *different model family* (or a human) for th
 reviewer shares the builder's blind spots. Demand: ranked issues (`file:line` + mechanism + severity),
 which headline numbers to trust vs distrust, and the single most important fix.
 
+> **Honest note on the case study below:** its "independent reviewer" was a separate LLM instance in a
+> fresh context (not the builder), but *same model family* — so it shares some blind spots with the
+> builder. That is weaker independence than a human or cross-family reviewer, and a stated limitation of
+> how much the anecdote proves. Even at that strength, the second pass caught bugs the self-audit missed.
+
 ## Stage 3 — honest correction
 - **Reproduction gate (hard rule):** a reviewer finding counts **only** once you reproduce it with a
   runnable read-only check / numeric demonstration. A finding without a reproduction is a *hypothesis*,
@@ -83,8 +105,18 @@ look-ahead in the *label definition* itself, or non-stationarity invalidating th
 > several template bugs (incl. the protocol's own tiny-n sin) and the gaps now fixed above. See
 > [META_AUDIT.md](META_AUDIT.md). Evidence base is small; log every run (hits / misses / false alarms),
 > don't argue from the one memorable catch.
+>
+> **A checklist is itself a static evaluator — and static evaluators get Goodharted** (the same problem as
+> LLM-as-judge, auto-research referees, reward models). The other half of the loop — an accreting
+> miss-ledger, tautology detection, and adversary rotation, so the audit learns from its own misses — is in
+> **[COEVOLUTION.md](COEVOLUTION.md)**.
 
 ## Judging principle
 If every bias points the **same (flattering) direction**, be very suspicious. A headline hit by several at
 once is untrustworthy — prefer to retract. Cross-sectional/classification results are usually more robust;
 **return/portfolio metrics are the easiest to inflate** via arithmetic + survivorship.
+
+---
+
+*Disclaimer: personal research methodology. Not investment advice; no solicitation or recommendation
+of any security. Past results — retracted or otherwise — do not indicate future performance.*
