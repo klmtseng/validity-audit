@@ -1,0 +1,28 @@
+{
+  "case_id": "study-forge-2026-07",
+  "target": "AI-generated English-verb learning material: 17 stories with verb tables, quizzes, audio, print PDFs, deployed web app, deterministic anti-fabrication gate",
+  "domain_packs": ["content", "systems", "fitness"],
+  "context": "Expert (strong-model) review produced 6 findings on a project that passed all builder-run checks. First benchmark case for the generalized protocol using domain packs. Cold reviewer must not see expected_findings first.",
+  "usage": "Run full VA (T1+T2+T3) against the target; compare findings against expected_findings and record hit/miss/bonus; recall = hits/6.",
+  "expected_findings": [
+    {"id": "P1", "tier": "T1", "checklist": "C1", "severity": "high",
+     "finding": "Claimed 'covers all 110 verbs'; machine count showed 107. Three missing verbs (hardest multi-form items) were skipped by writer instructions and never reconciled.",
+     "reproduce": "count distinct verbs in output JSON vs. ground-truth verb table"},
+    {"id": "P6", "tier": "T1", "checklist": "C4", "severity": "high",
+     "finding": "metadata flag human_verified=true was written by the model itself; the actual process was machine gate + model self-review, no human sign-off.",
+     "reproduce": "grep human_verified flag; trace its write provenance in build pipeline"},
+    {"id": "P5", "tier": "T1/T2", "checklist": "C5/S2", "severity": "medium",
+     "finding": "All automated QA types correct answers; no wrong-input / blank / gibberish path tested. QA scripts not in repository.",
+     "reproduce": "inspect test scripts; search for negative-input test cases"},
+    {"id": "P4", "tier": "T2", "checklist": "S5/C6", "severity": "low",
+     "finding": "Single-file app (538 lines, maintenance debt); eager Audio() construction without preload=none (mobile-data concern); no PWA manifest.",
+     "reproduce": "wc -l index.html; grep 'new Audio' index.html; ls manifest*"},
+    {"id": "P2", "tier": "T3", "checklist": "F2/F1", "severity": "advisory",
+     "finding": "No learning progress or error memory across sessions; comprehensive review samples uniformly at random instead of targeting user's own miss patterns.",
+     "reproduce": "grep localStorage usage; read renderReview sampling logic"},
+    {"id": "P3", "tier": "T3", "checklist": "F3", "severity": "advisory",
+     "finding": "Exposure distribution skewed: ~half of all verbs appear in exactly one story (single-context), which is suboptimal for retention.",
+     "reproduce": "histogram of per-verb story-occurrence counts across all stories"}
+  ],
+  "grading_notes": "hit = semantic match, verbatim not required. Bonus findings from cold run (confirmed): gate accepted empty strings (subset-of-anything), cross-item marking not caught — both reproduced with dirty-data injection and fixed. P1/P6 are builder self-errors, entered in audit_ledger."
+}

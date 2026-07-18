@@ -1,0 +1,25 @@
+{
+  "case_id": "rules-docs-2026-07",
+  "target": "Multi-file AI agent ruleset: session routing index + 6 operational rules files (model dispatch, judgment rubrics, task briefs, maintenance, diagnostics, handoff letter)",
+  "domain_packs": ["docs"],
+  "context": "Second benchmark case for the generalized protocol; first use of the docs domain pack (D1-D6). Findings produced by a cold independent reviewer; key items verified by deterministic grep/line-comparison. Baseline snapshot: rules git clean.",
+  "usage": "Run docs-domain VA against the target ruleset; compare against expected_findings; recall = hits/5. Row numbering is illustrative — use semantic match as language may evolve.",
+  "expected_findings": [
+    {"id": "R1", "tier": "T2/D4", "severity": "P1",
+     "finding": "Upgrade-threshold conflict: the always-loaded index says 'subagent consecutive errors → escalate once', while the dispatch file says 'haiku/sonnet escalate after ONE error; only opus requires consecutive'. Weak models reading only the index will under-escalate and waste a round.",
+     "reproduce": "compare upgrade-trigger language between the session index (core discipline §1) and the dispatch protocol (escalation principle)"},
+    {"id": "R2", "tier": "T2/D5", "severity": "P2",
+     "finding": "Maintenance length-limit table omits two files that the automated health-check script does enforce; maintainer looking up the table gets incomplete guidance.",
+     "reproduce": "diff file list in maintenance length-limit table vs. files checked in health_check.sh"},
+    {"id": "R3", "tier": "T3/D6", "severity": "P2",
+     "finding": "Rubric rule 'verifier must not be the producer' lacks a solo-session clause; a weak model will interpret 'I already confirmed it' as compliant.",
+     "reproduce": "read the verification rubric: no solo-session / fresh-context sub-agent clause present"},
+    {"id": "R4", "tier": "T3/D6", "severity": "P2",
+     "finding": "Session index file-read trigger is written without 'cumulative': models read 3 files then run multi-grep without triggering the delegation rule.",
+     "reproduce": "read session index core discipline §1: 'cumulative' qualifier absent from the file-count threshold"},
+    {"id": "R5", "tier": "T1/D2", "severity": "P3",
+     "finding": "Permission count cited in documentation (71) does not match actual allow-list count at time of audit; minor data-staleness, below alert threshold.",
+     "reproduce": "count allow entries in active settings file vs. documented figure"}
+  ],
+  "grading_notes": "R1 is the only P1 (always-loaded layer, highest blast radius). Path validity: 24/25 checked paths exist; one log path absent (health check not yet first-run, expected). Length limits: all files within bounds at baseline. R2-R4 are fixable without user consultation for R4 (wording); R1/R2/R3 are policy-tier (require user sign-off). R5 is informational drift."
+}
