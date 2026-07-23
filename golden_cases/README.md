@@ -33,7 +33,9 @@ protocol revision, re-run a *cold* independent reviewer against the target and m
 The v1→v2 gap was closed by (a) adding the T3 tier, (b) swapping the quant-only Stage-1
 checklist for domain packs — not by making reviewers "try harder".
 
-**`study-forge-2026-07` detail:** v2 cold reviewer hit 5/6 expected findings. The 3 bonus
+**`study-forge-2026-07` detail:** v2 cold reviewer hit 5/6 expected findings. The single miss was P4, the low-severity maintainability item (single-file app, eager audio
+loading, no PWA manifest). Both high-severity fabrication-class findings (P1, P6) were caught.
+Named here deliberately: a recall number without naming the miss hides the residual risk class. The 3 bonus
 findings (gate accepted empty strings; gate missed cross-item marks; stale engine name in README)
 were reproduced with dirty-data injection and subsequently fixed. P1 (missing-item count) and P6
 (model-written human_verified flag) were builder self-errors — both entered in the audit ledger.
