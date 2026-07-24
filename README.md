@@ -36,6 +36,44 @@ additionally surfaced **two confirmed bugs in the target's own anti-fabrication 
 The most instructive catch: the builder's verbal claim "covers all 110 items" was false
 (107) — *builders forget to verify their own claims; that is why independent review exists.*
 
+## How to use this
+
+This is a protocol, not an end-to-end tool. There are three ways in, by increasing effort:
+
+**1. Claude Code users: install it as a skill.**
+
+```
+/plugin marketplace add https://github.com/klmtseng/claude-skills-marketplace
+```
+
+The validity-audit skill ships in that marketplace. Invoke it before shipping anything
+that makes claims; it walks the agent through the six-step workflow (pin the claims →
+replay ledger challenges → mechanical audit → fresh-context adversarial review →
+reproduction gate → correction and ledger append).
+
+**2. Any team or LLM workflow: adopt the process.**
+
+No code required. The core is four rules:
+
+1. The builder self-audits against the relevant checklist in `domains/`.
+2. Someone who did not build the thing (a person, or a fresh model session) attacks the claims.
+3. No finding counts until it reproduces: a runnable read-only check, or a file:line quote.
+4. Every miss goes into a ledger; the next audit opens by replaying all historical misses.
+
+Copy `protocol/` into your process docs and start with rule 3. The reproduction gate is
+the piece that kills builder blind spots and reviewer hallucinations at the same time.
+
+**3. Engineers: port the primitives.**
+
+Three mechanisms transplant independently into an existing harness: two-stage adversarial
+review with a reproduction gate (fits code review or CI), the miss-ledger
+(`protocol/ledger.py`, a small script with no dependencies), and golden-case recall
+scoring for your own evaluator (`golden_cases/` shows the format). This repo is the
+reference implementation, not the product.
+
+If you try any of these and it breaks, an issue describing the failure is worth more
+to me than a star.
+
 ## Structure
 
 | Path | What it is |
