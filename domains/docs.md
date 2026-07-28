@@ -30,3 +30,18 @@ Per doc, find ≤3 sentences a mid-tier model would misread, state the misreadin
 one-line fix. Classic: "verifier must not be the producer" misread as "saying 'verified'
 is enough" in solo sessions; "read 4+ files → delegate" misread as per-action instead of
 cumulative.
+
+## D7 Claimed vs. delivered (existence ≠ delivery)
+For every feature the doc under audit claims (READMEs, progress notes, claim tables),
+verify delivery status — not merely that a matching file, directory, or class exists.
+Best evidence is a live run. Shipping signals — `isImplemented` flags, `TODO`/stub
+markers, `NotImplementedError`/`preconditionFailure` bodies, feature-flag defaults —
+are asymmetric: a negative signal is decisive, a positive one is itself just another
+claim. If no signal is legible, a live run is mandatory. Claim tables must separate
+"delivered" from "planned"; a claim verified only by existence is not verified.
+(Scope note: running *your own* deliverable end-to-end is systems-pack S2; D7 audits
+delivery claims made by the document in front of you.)
+> Real case: a mobile agent app's README listed LAN sync as a feature; the code was a
+> skeleton with `isImplemented = false` and hard-trap stubs on 5 of its 7 methods
+> (the remaining 2 no-op). A first-pass audit marked it verified because the source
+> directory existed; reading the flag caught it. (external repo study, 2026-07)
