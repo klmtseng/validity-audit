@@ -130,7 +130,7 @@ def check_ci(values, baseline=None):
                           else "RED_FLAG: CI overlaps baseline -> not a robust edge -> default to retract")
     return out
 
-# Multiple testing: from engine_v2.dsr_pbo import deflated_sharpe_ratio, pbo_cscv
+# Multiple testing: the historical engine_v2.dsr_pbo helper is planned but not included here.
 
 
 if __name__ == "__main__":
