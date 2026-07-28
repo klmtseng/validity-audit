@@ -21,24 +21,29 @@ Every failure the audit *didn't* catch is appended to a ledger as a category + d
 The next audit opens by replaying all historical misses as mandatory challenges. The
 checklist compounds; it is never finished. → [`protocol/COEVOLUTION.md`](protocol/COEVOLUTION.md)
 
-**3. Golden-case recall benchmarking — the audit's own scorecard.**
+**3. Golden-case regression benchmarking — the audit's own scorecard.**
 For each audited target, verified expert findings become an answer key. After every
-protocol revision, a *cold* reviewer (who never sees the key) re-audits the target, and
-recall is measured. Protocol changes get a number, not a feeling.
+protocol revision, a reviewer re-audits the target and the result is compared with the
+frozen key. Once a key is public, this measures regression against known failures — not
+fresh cold-review performance. Protocol changes get a number, not a feeling.
 → [`golden_cases/`](golden_cases/)
 
-## Measured result
+## Historical result and provenance
 
 Generalizing the protocol (v1 → v2) was validated on a real content-pipeline case with
-a 6-finding expert key: **recall went from ~2.5/6 to 5/6**, and the cold reviewer
-additionally surfaced **two confirmed bugs in the target's own anti-fabrication gate**
+a 6-finding expert key. The reported **~2.5/6** v1 figure was a retrospective
+structural-ceiling estimate, not a measured cold run. The **5/6** v2 figure was measured
+by a reviewer that was cold before the key was published; because the key is now public,
+future runs on this case are regression checks. That review additionally surfaced
+**two confirmed bugs in the target's own anti-fabrication gate**
 (empty-string subset pass, cross-item marking pass) that the builder had never noticed.
 The most instructive catch: the builder's verbal claim "covers all 110 items" was false
 (107) — *builders forget to verify their own claims; that is why independent review exists.*
 
 ## How to use this
 
-This is a protocol, not an end-to-end tool. There are three ways in, by increasing effort:
+This release is a protocol plus reference primitives, not yet an end-to-end tool. There
+are three ways in, by increasing effort:
 
 **1. Claude Code users: install it as a skill.**
 
@@ -68,8 +73,16 @@ the piece that kills builder blind spots and reviewer hallucinations at the same
 Three mechanisms transplant independently into an existing harness: two-stage adversarial
 review with a reproduction gate (fits code review or CI), the miss-ledger
 (`protocol/ledger.py`, a small script with no dependencies), and golden-case recall
-scoring for your own evaluator (`golden_cases/` shows the format). This repo is the
-reference implementation, not the product.
+scoring for your own evaluator (`golden_cases/` shows the historical format). The
+packaged ledger entry point rejects non-canonical severities instead of silently
+mis-ranking them:
+
+```bash
+python -m pip install -e .
+validity-audit-ledger challenges
+```
+
+This repo is the canonical protocol upstream and reference implementation.
 
 If you try any of these and it breaks, an issue describing the failure is worth more
 to me than a star.
@@ -79,7 +92,7 @@ to me than a star.
 | Path | What it is |
 |---|---|
 | [`domains/`](domains/) | Three-tier threat model (T1 claims false / T2 unclaimed risks / T3 unfit-for-purpose) + Stage-1 checklist packs: quant, generated content, deployed systems, documentation |
-| [`golden_cases/`](golden_cases/) | Recall-benchmarking mechanism + anonymized answer keys |
+| [`golden_cases/`](golden_cases/) | Public regression mechanism + anonymized historical answer keys |
 | [`protocol/`](protocol/) | The core two-stage protocol, runnable leakage-audit template, meta-audit of the framework itself, coevolution design, worked case study |
 
 ## Origin

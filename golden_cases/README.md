@@ -1,48 +1,89 @@
-# Golden cases — recall benchmarking for the audit itself
+# Golden cases — public regression keys for the audit itself
 
-An audit protocol is a static evaluator; it decays (Goodhart, blind spots). The fix:
-keep an answer key of **verified expert findings** per audited target, and after every
-protocol revision, re-run a *cold* independent reviewer against the target and measure
-**recall against the key**.
+An audit protocol is an evaluator, and a fixed evaluator can decay or be optimized against. Golden
+cases freeze verified findings so a protocol change can be checked for regressions.
+
+## What public keys can and cannot show
+
+A public answer key supports:
+
+- deterministic reproduction;
+- regression monitoring;
+- scorer and schema testing;
+- worked examples.
+
+Once a key is public, it does **not** support a new claim of cold-review recall. A cold-performance
+claim requires never-published material, a defined corpus and scorer, false-positive reporting, and
+documented contamination controls.
+
+The historical reviews below were originally conducted before their keys were published. All future
+runs against these checked-in keys are regression runs.
 
 ## Rules
-- The cold reviewer must never see the expected findings (or the miss-ledger) first.
-- A hit = semantic match, not verbatim. New reproducible findings beyond the key are
-  bonus, never penalized — and get merged into the key.
-- Every expected finding carries its threat tier (T1/T2/T3), the checklist item that
-  should catch it, and a one-line reproduction recipe.
 
-## Schema (`*.json`)
+- A genuinely cold reviewer must never see expected findings or the miss-ledger first.
+- A hit is a semantic match, not necessarily verbatim.
+- New reproducible findings beyond a frozen key are recorded separately; changing the key creates a
+  new key version.
+- Every expected finding states its threat tier, severity, and a reproduction recipe.
+- Canonical severity values are `high`, `med`, and `low`.
+- P1/P2/P3 and `advisory` are retained only as legacy metadata where historical context requires it.
+- Alias records are excluded from all aggregate metrics.
+
+## Canonical historical-case shape
+
 ```json
 {
-  "case_id": "...", "target": "...", "domain_packs": ["content", "systems"],
+  "case_id": "example-2026-07",
+  "record_type": "canonical",
+  "domain_packs": ["content", "systems"],
   "expected_findings": [
-    {"id": "P1", "tier": "T1", "checklist": "C1", "severity": "high",
-     "finding": "...", "reproduce": "..."}
-  ],
-  "grading_notes": "..."
+    {
+      "id": "P1",
+      "tier": "T1",
+      "checklist": "C1",
+      "severity": "high",
+      "finding": "...",
+      "reproduce": "..."
+    }
+  ]
 }
 ```
 
-## Measured results (anonymized, 2026-07)
-| Case | Domain | Key size | v1 recall (structural ceiling) | v2 cold recall |
-|---|---|---|---|---|
-| educational content pipeline (`study-forge-2026-07`) | content+systems+fitness | 6 | ~2.5/6 | **5/6** + 3 bonus findings (2 confirmed gate bugs) |
-| internal rules/docs suite (`rules-docs-2026-07`) | docs | 5 | n/a (pack didn't exist) | seeded from cold review; sole P1 = upgrade-threshold conflict in always-loaded layer |
+Alias records contain `canonical_case_id` and `excluded_from_metrics: true`; they do not duplicate
+the answer key.
 
-The v1→v2 gap was closed by (a) adding the T3 tier, (b) swapping the quant-only Stage-1
-checklist for domain packs — not by making reviewers "try harder".
+## Historical results and provenance
 
-**`study-forge-2026-07` detail:** v2 cold reviewer hit 5/6 expected findings. The single miss was P4, the low-severity maintainability item (single-file app, eager audio
-loading, no PWA manifest). Both high-severity fabrication-class findings (P1, P6) were caught.
-Named here deliberately: a recall number without naming the miss hides the residual risk class. The 3 bonus
-findings (gate accepted empty strings; gate missed cross-item marks; stale engine name in README)
-were reproduced with dirty-data injection and subsequently fixed. P1 (missing-item count) and P6
-(model-written human_verified flag) were builder self-errors — both entered in the audit ledger.
+| Canonical case | Public domain packs | Key size | Original evidence | Current use |
+|---|---|---:|---|---|
+| `study-forge-2026-07` | content + systems | 6 | v1 `~2.5/6` was a retrospective structural-ceiling estimate; v2 measured `5/6` plus three bonus findings before publication | public-key regression |
+| `rules-docs-2026-07` | docs | 5 | key seeded from an originally cold review; no v1 baseline | public-key regression |
 
-**`rules-docs-2026-07` detail:** Cold reviewer hit all 5 expected findings. R1 (P1 severity) is
-the upgrade-threshold conflict between the always-loaded index (weak-model's only guaranteed read)
-and the dispatch protocol — blast radius is highest because it affects every single agent
-delegation. R2–R4 are P2 wording gaps; R5 is informational drift (below alert threshold).
-Path validity: 24/25 paths verified; one log path absent (health check not yet first-run, expected).
-All files within length limits at baseline.
+`content-pipeline-2026-07` is a deprecated alias for `study-forge-2026-07`. The two files previously
+duplicated one audit event and must not be counted as independent cases.
+
+### `study-forge-2026-07`
+
+The v2 reviewer matched five of six expected findings. The miss was P4, a low-severity
+maintainability finding. Both high-severity fabrication-class findings were caught. Three additional
+issues were reported, including two reproduced anti-fabrication-gate defects.
+
+Project notes said P1 and P6 entered a ledger, but no corresponding ledger data file is tracked in
+this repository. Treat that statement as untracked historical process context, not independently
+reproducible repository evidence.
+
+P2 and P3 were originally mapped to a private fitness pack. v0.3 retains them as historical T3
+expert findings but removes the unavailable pack from public routing and marks the checklist mapping
+as historical/unmapped.
+
+### `rules-docs-2026-07`
+
+The original reviewer matched all five expected findings. Its P1/P2/P3 labels are retained as
+`legacy_priority`; canonical severity is stored separately. Future runs are regression checks.
+
+## Current limitation
+
+These historical targets are not included in the public repository, so their findings cannot be
+reproduced end to end from this directory alone. v0.3 will add a separate self-contained public case;
+until then, do not present these files as an independently runnable benchmark suite.

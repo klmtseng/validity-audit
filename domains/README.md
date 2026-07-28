@@ -18,10 +18,12 @@ checklist changes. Route by target type; load multiple packs if the target spans
   *Verbal claims made to stakeholders count as claims.*
 - **T2 — nobody claimed it, but it bites** (run for deployed systems & deliverables):
   unbacked irreproducible data, deliverables never executed end-to-end, unbounded growth.
-- **T3 — true, but unfit for purpose** (opt-in; advisory only, never blocks):
+- **T3 — true, but unfit for purpose** (opt-in; advisory by default):
   the artifact is honest and safe, yet fails its reason to exist — e.g. a learning tool
   with no progress memory, review sampling that ignores the user's weaknesses.
-  **T3 findings are capped at "suggestion" severity and never share a scale with T1/T2.**
+  T3 findings still use canonical `high` / `med` / `low` **impact severity**, but severity
+  is separate from the policy result. Under the default policy, T3 is non-blocking and
+  reported as advisory.
 
 Why the ladder exists: a real case passed T1+T2 cleanly while an expert review still
 produced six material findings — two of them structural T3 issues the audit could not

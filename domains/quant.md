@@ -2,7 +2,8 @@
 
 This is the original pack — the full checklist (leakage / universe bias / arithmetic &
 protocol bugs / statistical power / backtest realism) lives in the main
-[`../README.md`](../README.md) Stage 1, with `../leak_audit_template.py` as a runnable
+[`../README.md`](../README.md) Stage 1, with
+[`../protocol/leak_audit_template.py`](../protocol/leak_audit_template.py) as a runnable
 starting point.
 
 Defaults unless specified otherwise:

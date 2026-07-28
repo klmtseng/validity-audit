@@ -2,7 +2,9 @@
 
 A reusable process to catch false claims, hidden landmines, and **arithmetic/protocol** bugs **before**
 you ship a result. Born in quant research (backtests / factor / ML) — the checklist is deepest there, and
-this repo pairs it with `engine_v2/dsr_pbo.py` (Deflated Sharpe / PBO) and `engine_v2/csw_monitor.py`. But
+the original private workspace paired it with `engine_v2/dsr_pbo.py` (Deflated Sharpe / PBO) and
+`engine_v2/csw_monitor.py`. Those helpers are **planned references and are not included in this
+repository**. But
 the failure modes it targets — *a metric that passes by construction, a coverage claim nobody re-counted,
 a `verified` flag nobody verified* — are properties of empirical claims in general.
 
@@ -11,14 +13,18 @@ a `verified` flag nobody verified* — are properties of empirical claims in gen
 The pipeline (pin claims → historical challenges → mechanical audit → independent reviewer →
 reproduction gate → miss-ledger closure) is domain-independent; only the Stage-1 checklist swaps.
 
-- **[Three-tier threat model](domains/README.md)**: **T1** claims are false · **T2** nobody claimed it
+- **[Three-tier threat model](../domains/README.md)**: **T1** claims are false · **T2** nobody claimed it
   but it bites · **T3** true but unfit for purpose (advisory only, never blocks).
-- **Domain packs**: [quant](domains/quant.md) · [generated content / educational material](domains/content.md)
-  · [deployed systems / handoff](domains/systems.md) · [documentation / rule sets](domains/docs.md).
-- **[Golden-case recall benchmarking](golden_cases/README.md)**: the audit audits itself — keep an
-  answer key of verified expert findings per target; after each protocol revision, re-run a *cold*
-  reviewer and measure recall. Measured v1→v2 on a real content pipeline: **~2.5/6 → 5/6, plus 3 bonus
-  findings** including two confirmed bugs in the project's own anti-fabrication gate.
+- **Domain packs**: [quant](../domains/quant.md) ·
+  [generated content / educational material](../domains/content.md) ·
+  [deployed systems / handoff](../domains/systems.md) ·
+  [documentation / rule sets](../domains/docs.md).
+- **[Golden-case regression benchmarking](../golden_cases/README.md)**: the audit audits itself — keep
+  an answer key of verified expert findings per target and replay it after protocol changes. The
+  historical content-pipeline result was a retrospective v1 structural-ceiling estimate of
+  **~2.5/6** followed by a measured **5/6** v2 review plus three bonus findings. The reviewer was cold
+  before publication; now that the key is public, future runs are regression checks, not fresh cold
+  recall.
 
 Everything below is the v1 quant-native protocol — still the Stage-1 pack for financial claims.
 
@@ -62,8 +68,9 @@ Use `leak_audit_template.py` as a starting point. Check, with a red flag for eac
 10. **CI correctness** — small `n`: use `t` not `z`, `ddof=1`. Don't pass off **seed sensitivity** as
     sampling uncertainty (**pseudo-replication**: many seeds sharing one return path) — block-bootstrap the
     *return series* instead.
-11. **Multiple testing** — run **DSR + PBO** (`engine_v2/dsr_pbo.py`) on the final winner; `n_trials` =
-    number of strategies/configs tried.
+11. **Multiple testing** — run **DSR + PBO** on the final winner; `n_trials` = number of
+    strategies/configs tried. The historical helper path `engine_v2/dsr_pbo.py` is not included in
+    this repository.
 
 **E. Backtest realism**
 12. **Costs / turnover** — gross doesn't count; report net at realistic bps, especially for high turnover.
