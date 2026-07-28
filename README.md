@@ -87,6 +87,23 @@ This repo is the canonical protocol upstream and reference implementation.
 If you try any of these and it breaks, an issue describing the failure is worth more
 to me than a star.
 
+## Architecture and maturity
+
+The five layers below are documentation vocabulary, not five Python packages. v0.3 is
+deliberately proving one integration path before adding provider-specific surfaces.
+
+| Layer | v0.3 surface | Status |
+|---|---|---|
+| 1. Contract | [`schemas/task_contract.schema.json`](schemas/task_contract.schema.json) | available |
+| 2. Evidence collection | deterministic probes and domain packs | partial |
+| 3. Independent review | provider-neutral operator-in-the-loop import | proposed |
+| 4. Reproduction and policy | canonical finding axes in the attestation schema | schema available; runtime proposed |
+| 5. Audit record | [`schemas/attestation.schema.json`](schemas/attestation.schema.json) | unsigned schema available |
+
+The current attestation is explicitly unsigned. Signing, verification, provider adapters,
+and API-key-managed model installation are future work. The existing Claude Code skill is
+a downstream integration of this public protocol, not a separate upstream.
+
 ## Structure
 
 | Path | What it is |
@@ -94,6 +111,7 @@ to me than a star.
 | [`domains/`](domains/) | Three-tier threat model (T1 claims false / T2 unclaimed risks / T3 unfit-for-purpose) + Stage-1 checklist packs: quant, generated content, deployed systems, documentation |
 | [`golden_cases/`](golden_cases/) | Public regression mechanism + anonymized historical answer keys |
 | [`protocol/`](protocol/) | The core two-stage protocol, runnable leakage-audit template, meta-audit of the framework itself, coevolution design, worked case study |
+| [`schemas/`](schemas/) | Versioned task-contract and unsigned-attestation schemas, examples, and digest rules |
 
 ## Origin
 

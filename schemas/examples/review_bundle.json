@@ -1,0 +1,16 @@
+{
+  "task_id": "docs-link-integrity",
+  "claims": [
+    {
+      "claim_id": "relative-links-resolve",
+      "statement": "All relative Markdown links in the audited artifact set resolve from the file that contains them."
+    }
+  ],
+  "artifact_paths": [
+    "protocol/COEVOLUTION.md"
+  ],
+  "excluded_context": [
+    "answer keys",
+    "miss ledger"
+  ]
+}
