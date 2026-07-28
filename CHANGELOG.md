@@ -13,6 +13,9 @@ All notable changes to this project will be documented in this file.
   `pass_with_waiver`, and `needs_review`.
 - Preserve the original policy result and issue time inside every waiver.
 - Fail loudly when the optional JSON Schema `date-time` format checker is unavailable.
+- New docs-pack check D7 "Claimed vs. delivered": feature claims must be verified by
+  a live run or shipping signals (negative signals decisive, positive ones just
+  another claim), not by file existence.
 
 ### Changed
 
