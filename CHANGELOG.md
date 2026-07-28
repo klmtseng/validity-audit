@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Added
+
+- Add Draft 2020-12 schemas for the minimal task contract and unsigned validity attestation.
+- Add digest-bound schema examples and regression tests for taxonomy, waivers, review context,
+  signatures, and cross-document integrity.
+- Standardize fixed schema vocabulary on `snake_case`, including `not_attempted`,
+  `pass_with_waiver`, and `needs_review`.
+- Preserve the original policy result and issue time inside every waiver.
+- Fail loudly when the optional JSON Schema `date-time` format checker is unavailable.
+
 ### Changed
 
 - Begin the v0.3 packaging and test foundation.

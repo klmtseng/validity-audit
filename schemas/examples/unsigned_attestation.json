@@ -1,0 +1,63 @@
+{
+  "$schema": "../attestation.schema.json",
+  "schema_version": "0.3.0",
+  "attestation_type": "unsigned_validity_attestation",
+  "attestation_id": "attestation-docs-link-integrity-001",
+  "issued_at": "2026-07-28T06:05:00Z",
+  "run": {
+    "run_id": "run-docs-link-integrity-001",
+    "task_id": "docs-link-integrity",
+    "started_at": "2026-07-28T06:00:00Z",
+    "completed_at": "2026-07-28T06:04:00Z"
+  },
+  "contract": {
+    "path": "schemas/examples/task_contract.json",
+    "sha256": "213fd54b4410b21a776e8be5ff8df955fa60f023e0b46382346f445495cc4ca8"
+  },
+  "artifact_manifest": {
+    "manifest_sha256": "c64894b4303c3a78c5cd7ee7b6d009cc0cced7a93e2c273ca8cb98be1d930719",
+    "void_if_changed": true,
+    "artifacts": [
+      {
+        "path": "protocol/COEVOLUTION.md",
+        "sha256": "cd79a7df1bb97f7594e64740db1f05de0a4fb52745dddf736afc9fc0a379c690",
+        "size_bytes": 4099,
+        "media_type": "text/markdown"
+      }
+    ]
+  },
+  "review": {
+    "context": "cold",
+    "method": "operator_in_the_loop",
+    "bundle_sha256": "c36e62cd7f2d1ae23bbc3a317282bfb872355bd3555da2dfe5f1dc37bb33328e",
+    "transcript_sha256": "a5e92c6758c36b755da9d3fb546192aafbb9b32a04f0c742a2464cf3bb028cba",
+    "reviewer": {
+      "kind": "model",
+      "label": "example-independent-reviewer"
+    },
+    "operator_id": "example-operator"
+  },
+  "claim_results": [
+    {
+      "claim_id": "relative-links-resolve",
+      "statement": "All relative Markdown links in the audited artifact set resolve from the file that contains them.",
+      "outcome": "supported",
+      "evidence": [
+        {
+          "evidence_id": "markdown-link-test",
+          "kind": "command",
+          "description": "The repository-relative Markdown link regression test completed successfully.",
+          "locator": "python -m pytest tests/test_markdown_links.py"
+        }
+      ],
+      "finding_ids": []
+    }
+  ],
+  "findings": [],
+  "overall_result": {
+    "status": "pass",
+    "policy_id": "example-policy-v0.3",
+    "summary": "The bounded documentation-link claim is supported by the recorded evidence."
+  },
+  "signature": null
+}
