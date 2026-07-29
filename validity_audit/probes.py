@@ -67,7 +67,7 @@ def run_probes(workspace: Path, artifact_paths: list[str]) -> dict[str, Any]:
                         f"{artifact_path} references {target!r}, which does not resolve "
                         "from the linking file."
                     ),
-                    "error_class": "broken-reference",
+                    "error_class": "material_requirement_miss",
                     "source": "deterministic_probe",
                     "severity": "high",
                     "confidence": "high",

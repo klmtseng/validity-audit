@@ -130,7 +130,11 @@ certified.
 review evidence. Any mismatch stops finalization and leaves no attestation. It retains
 the structured reviewer output and the raw transcript as separate files, binds the
 transcript and original review bundle into the attestation, applies policy, and changes
-the run state from `prepared` to `finalized`.
+the durable run state from `awaiting_review` to `completed`, `failed`, or
+`needs_review`. `preparing` and `review_imported` are recorded in `state_history` as
+transient stages. Here `failed` means a valid audit reached a blocking policy disposition;
+an operational validation error leaves the durable state at `awaiting_review` so the
+operator can correct the input and retry.
 
 Cold output must match a cold bundle and cannot add priming sources. Primed output must
 match the exact sources declared during preparation.
@@ -139,10 +143,26 @@ The default policy is error-class based:
 
 | Error class | Default result when reproduced |
 |---|---|
-| `fabrication`, `leakage`, `data-leakage`, `artifact-mismatch`, `broken-reference` | `fail` |
-| any other open slug | `advisory` |
+| `correctness`, `evidence_tampering`, `fabrication`, `leakage`, `material_requirement_miss`, `unauthorized_action` | `fail` |
+| `maintainability` | `advisory` |
+| `other` or any unclassified open slug | `none`; overall `needs_review` |
 
 Reason-bearing task-contract overrides can replace an error class with `fail`,
-`advisory`, or `none`. A non-reproduced fail-class finding routes the overall result to
-`needs_review`; an active owner waiver records the original `fail` result and produces
-`pass_with_waiver` only when no unwaived fail remains.
+`advisory`, or `none`, which is how an open slug becomes explicitly classified. A
+non-reproduced fail-class finding routes the overall result to `needs_review`; an active
+owner waiver records the original `fail` result and produces `pass_with_waiver` only when
+no unwaived fail remains. Unclassified findings cannot be waived.
+
+`prepare` requires a fresh or empty run directory and never overwrites existing evidence.
+With fixed ids and timestamps, equal inputs produce equal digests across separate fresh
+directories. This content determinism is the v0.3 idempotence guarantee.
+
+## CLI exit codes
+
+| Code | Contract |
+|---|---|
+| `0` | prepare success, `pass`, or `pass_with_waiver` |
+| `1` | argument, input-validation, or operational error |
+| `2` | blocking `fail` attestation emitted |
+| `3` | `needs_review` attestation emitted |
+| `4` | digest/provenance mismatch; no attestation emitted |

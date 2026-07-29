@@ -16,7 +16,7 @@
   ],
   "policy_overrides": [
     {
-      "error_class": "broken-reference",
+      "error_class": "material_requirement_miss",
       "gate_effect": "fail",
       "reason": "A broken reference makes the audited documentation incomplete."
     }

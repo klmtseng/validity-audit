@@ -107,6 +107,24 @@ the transcript, imports findings without trusting finder-supplied policy results
 the versioned error-class policy, emits human- and machine-readable unsigned attestations,
 and appends a canonical receipt to `.validity-audit/attestations.jsonl`.
 
+Each `prepare` invocation requires a new or empty `--run-dir`; evidence in an existing run
+directory is never overwritten. Idempotence means that fixed inputs, ids, and timestamps
+produce identical digests in separate fresh run directories—not that `prepare` mutates or
+reuses an existing directory.
+
+The CLI has a stable automation contract:
+
+| Exit code | Meaning |
+|---|---|
+| `0` | prepared successfully, or finalized as `pass` / `pass_with_waiver` |
+| `1` | invalid arguments, invalid input, or another operational error |
+| `2` | finalized with a blocking `fail` disposition |
+| `3` | finalized as `needs_review` |
+| `4` | prepared evidence failed a digest or provenance check |
+
+Codes `2` and `3` still emit the attestation before returning; code `4` emits no
+attestation and leaves the run awaiting review.
+
 Run the frozen end-to-end demonstration with:
 
 ```bash

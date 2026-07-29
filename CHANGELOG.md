@@ -19,8 +19,8 @@ All notable changes to this project will be documented in this file.
 - Add the two-stage `validity-audit prepare` / `finalize` CLI.
 - Bind contracts, artifacts, canonical manifests, probe reports, review bundles, and raw
   reviewer transcripts into one digest-checked run.
-- Add deterministic artifact and Markdown-link probes, prepared/finalized run states,
-  provider-neutral reviewer-output import, and transcript retention.
+- Add deterministic artifact and Markdown-link probes, approved run-state vocabulary and
+  history, provider-neutral reviewer-output import, and transcript retention.
 - Add the versioned `validity-audit-default-v0.3.0` error-class policy as the sole writer
   of finding gate effects.
 - Add human- and machine-readable unsigned attestations, an append-only attestation
@@ -29,6 +29,11 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Begin the v0.3 packaging and test foundation.
+- Complete the default fail-class policy with the approved `snake_case` taxonomy; route
+  unclassified and `other` findings to `needs_review` instead of advisory pass-through.
+- Implement and document the stable CLI exit-code contract (`0` through `4`).
+- Define idempotent preparation as deterministic output across fresh run directories;
+  existing evidence directories remain immutable.
 - Validate canonical ledger severities instead of silently ranking unknown values as zero.
 - Preserve the historical `protocol/ledger.py` command through a compatibility shim.
 - Correct public benchmark provenance and distinguish public-key regression from cold evaluation.

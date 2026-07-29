@@ -73,10 +73,21 @@ def test_policy_id_is_versioned() -> None:
     assert POLICY_ID == "validity-audit-default-v0.3.0"
 
 
-def test_reproduced_blocking_class_fails() -> None:
+@pytest.mark.parametrize(
+    "error_class",
+    [
+        "correctness",
+        "evidence_tampering",
+        "fabrication",
+        "leakage",
+        "material_requirement_miss",
+        "unauthorized_action",
+    ],
+)
+def test_reproduced_approved_blocking_classes_fail(error_class: str) -> None:
     result = evaluate_policy(
         contract=contract(),
-        findings=[finding()],
+        findings=[finding(error_class=error_class)],
         claim_results=claims(),
         waiver_requests=[],
         issued_at="2026-07-29T00:00:00Z",
@@ -98,7 +109,20 @@ def test_unresolved_blocking_class_needs_review(reproduction: str) -> None:
     assert result.findings[0]["gate_effect"] == "none"
 
 
-def test_unknown_error_class_is_advisory() -> None:
+@pytest.mark.parametrize("error_class", ["other", "novel_error_class", "broken-reference"])
+def test_unclassified_error_class_needs_review(error_class: str) -> None:
+    result = evaluate_policy(
+        contract=contract(),
+        findings=[finding(error_class=error_class)],
+        claim_results=claims(),
+        waiver_requests=[],
+        issued_at="2026-07-29T00:00:00Z",
+    )
+    assert result.status == "needs_review"
+    assert result.findings[0]["gate_effect"] == "none"
+
+
+def test_explicit_advisory_error_class_passes() -> None:
     result = evaluate_policy(
         contract=contract(),
         findings=[finding(error_class="maintainability")],
@@ -144,6 +168,26 @@ def test_contract_override_changes_error_class_gate() -> None:
     assert result.findings[0]["gate_effect"] == "fail"
 
 
+def test_contract_override_can_explicitly_classify_unknown_as_advisory() -> None:
+    result = evaluate_policy(
+        contract=contract(
+            [
+                {
+                    "error_class": "novel_error_class",
+                    "gate_effect": "advisory",
+                    "reason": "The owner explicitly classified this bounded class.",
+                }
+            ]
+        ),
+        findings=[finding(error_class="novel_error_class")],
+        claim_results=claims(),
+        waiver_requests=[],
+        issued_at="2026-07-29T00:00:00Z",
+    )
+    assert result.status == "pass"
+    assert result.findings[0]["gate_effect"] == "advisory"
+
+
 def test_active_waiver_preserves_original_policy_result() -> None:
     result = evaluate_policy(
         contract=contract(),
@@ -178,6 +222,25 @@ def test_expired_waiver_is_rejected() -> None:
                     "reason": "Expired.",
                     "issued_at": "2026-07-27T00:00:00Z",
                     "expires_at": "2026-07-28T00:00:00Z",
+                }
+            ],
+            issued_at="2026-07-29T00:00:00Z",
+        )
+
+
+def test_unclassified_error_class_cannot_be_waived() -> None:
+    with pytest.raises(PolicyError, match="unclassified error class"):
+        evaluate_policy(
+            contract=contract(),
+            findings=[finding(error_class="other")],
+            claim_results=claims(),
+            waiver_requests=[
+                {
+                    "finding_id": "finding-1",
+                    "issuer": "owner",
+                    "reason": "Classification must come first.",
+                    "issued_at": "2026-07-28T00:00:00Z",
+                    "expires_at": "2026-07-30T00:00:00Z",
                 }
             ],
             issued_at="2026-07-29T00:00:00Z",
