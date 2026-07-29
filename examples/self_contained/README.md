@@ -1,21 +1,17 @@
-# Self-contained v0.3 demonstration
+# Self-contained v0.3 demonstration — compatibility path
 
-This fixture exercises the complete provider-neutral path:
+The fixture was promoted to the scored golden case at
+[`golden_cases/self_contained/doc-bundle-01`](../../golden_cases/self_contained/doc-bundle-01/).
+The historical launcher remains available through the v0.3 release line:
 
-1. validate one task contract;
-2. snapshot and digest two artifacts;
-3. run deterministic probes;
-4. emit a cold-review bundle;
-5. import structured reviewer output and retain the raw transcript;
-6. apply the versioned policy;
-7. emit an unsigned attestation and compare it with a frozen expected record.
-
-From the repository root, after installing the development dependencies:
-
-```bash
+```console
 python examples/self_contained/run_demo.py
 ```
 
-The script uses fixed run timestamps and ids, writes only below the ignored
-`.validity-audit/` directory, compares the complete attestation, and removes its temporary
-run directory before exiting.
+New callers should use:
+
+```console
+python golden_cases/self_contained/doc-bundle-01/run_case.py
+```
+
+The compatibility launcher is deprecated and scheduled for removal in v0.4.

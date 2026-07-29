@@ -27,7 +27,7 @@ jobs:
         run: python -m pip install -e ".[dev,quant]"
 
       - name: Lint
-        run: python -m ruff check validity_audit tests protocol/ledger.py
+        run: python -m ruff check validity_audit benchmarks tests protocol/ledger.py protocol/injected_bug_recall.py examples/self_contained/run_demo.py
 
       - name: Compile
         run: python -m compileall -q validity_audit protocol
@@ -42,7 +42,33 @@ jobs:
         run: python protocol/ledger.py challenges
 
       - name: Deterministic floor demonstration
-        run: python protocol/injected_bug_recall.py
+        run: python benchmarks/injected/run.py
 
-      - name: Self-contained two-stage demonstration
-        run: python examples/self_contained/run_demo.py
+      - name: Self-contained scored golden case
+        run: python golden_cases/self_contained/doc-bundle-01/run_case.py
+
+  reproducibility:
+    name: offline golden regression
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install from clean checkout
+        run: python -m pip install -e .
+
+      - name: Run end to end with process network blocked and no API keys
+        env:
+          OPENAI_API_KEY: ""
+          ANTHROPIC_API_KEY: ""
+          GOOGLE_API_KEY: ""
+          VALIDITY_AUDIT_REQUIRE_OFFLINE: "1"
+          PYTHONPATH: benchmarks/offline_guard
+        run: |
+          python benchmarks/offline_guard/assert_blocked.py
+          python golden_cases/self_contained/doc-bundle-01/run_case.py

@@ -29,6 +29,10 @@ runs against these checked-in keys are regression runs.
 - Canonical severity values are `high`, `med`, and `low`.
 - P1/P2/P3 and `advisory` are retained only as legacy metadata where historical context requires it.
 - Alias records are excluded from all aggregate metrics.
+- A new canonical record stores its key once, pins the key version and digest, and declares
+  `excluded_from_metrics: false`.
+- An alias stores no expected findings or key copy, points to one canonical `case_id`, and declares
+  `excluded_from_metrics: true`.
 
 ## Canonical historical-case shape
 
@@ -59,6 +63,7 @@ the answer key.
 |---|---|---:|---|---|
 | `study-forge-2026-07` | content + systems | 6 | v1 `~2.5/6` was a retrospective structural-ceiling estimate; v2 measured `5/6` plus three bonus findings before publication | public-key regression |
 | `rules-docs-2026-07` | docs | 5 | key seeded from an originally cold review; no v1 baseline | public-key regression |
+| `doc-bundle-01` | docs | 1 | intentionally planted, fully checked-in self-contained target | public-key regression |
 
 `content-pipeline-2026-07` is a deprecated alias for `study-forge-2026-07`. The two files previously
 duplicated one audit event and must not be counted as independent cases.
@@ -82,8 +87,15 @@ as historical/unmapped.
 The original reviewer matched all five expected findings. Its P1/P2/P3 labels are retained as
 `legacy_priority`; canonical severity is stored separately. Future runs are regression checks.
 
-## Current limitation
+## Runnable public case
 
-These historical targets are not included in the public repository, so their findings cannot be
-reproduced end to end from this directory alone. v0.3 will add a separate self-contained public case;
-until then, do not present these files as an independently runnable benchmark suite.
+The two historical targets are not included in the public repository, so their findings cannot be
+reproduced end to end here. `doc-bundle-01` is different: its target, contract, reviewer fixture,
+versioned key, scoring rules, expected attestation, and runner are all checked in.
+
+```console
+python golden_cases/self_contained/doc-bundle-01/run_case.py
+```
+
+The checked-in reviewer fixture is primed and supports regression only. It does not convert this
+public case into a cold-recall benchmark.

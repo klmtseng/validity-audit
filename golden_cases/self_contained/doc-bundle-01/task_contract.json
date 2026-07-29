@@ -1,16 +1,20 @@
 {
-  "$schema": "../../schemas/task_contract.schema.json",
+  "$schema": "../../../schemas/task_contract.schema.json",
   "schema_version": "0.3.0",
-  "task_id": "self-contained-doc-bundle",
+  "task_id": "golden-doc-bundle-01",
   "claims": [
     {
       "claim_id": "relative-link-resolves",
       "statement": "The README's relative Details link resolves within the audited artifact set."
+    },
+    {
+      "claim_id": "artifact-count-accurate",
+      "statement": "Every factual statement in details.md accurately describes the audited artifact set."
     }
   ],
   "artifact_paths": [
-    "examples/self_contained/artifacts/README.md",
-    "examples/self_contained/artifacts/details.md"
+    "golden_cases/self_contained/doc-bundle-01/artifacts/README.md",
+    "golden_cases/self_contained/doc-bundle-01/artifacts/details.md"
   ],
   "packs": [
     "docs"

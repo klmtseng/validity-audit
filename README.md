@@ -81,7 +81,7 @@ python -m pip install -e ".[dev]"
 
 validity-audit prepare \
   --workspace . \
-  --contract examples/self_contained/task_contract.json \
+  --contract golden_cases/self_contained/doc-bundle-01/task_contract.json \
   --run-dir .validity-audit/runs/my-run \
   --review-context cold \
   --reviewer-kind human \
@@ -125,10 +125,10 @@ The CLI has a stable automation contract:
 Codes `2` and `3` still emit the attestation before returning; code `4` emits no
 attestation and leaves the run awaiting review.
 
-Run the frozen end-to-end demonstration with:
+Run the frozen and scored end-to-end regression case with:
 
 ```bash
-python examples/self_contained/run_demo.py
+python golden_cases/self_contained/doc-bundle-01/run_case.py
 ```
 
 The separate `validity-audit-ledger` command remains available for replaying historical

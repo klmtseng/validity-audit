@@ -25,6 +25,8 @@ All notable changes to this project will be documented in this file.
   of finding gate effects.
 - Add human- and machine-readable unsigned attestations, an append-only attestation
   receipt ledger, packaged schema resources, and a frozen self-contained demonstration.
+- Add a public benchmark harness with a scored, self-contained golden regression case,
+  frozen versioned key, explicit adjudication rules, and an offline CI execution path.
 
 ### Changed
 
@@ -38,6 +40,10 @@ All notable changes to this project will be documented in this file.
 - Preserve the historical `protocol/ledger.py` command through a compatibility shim.
 - Correct public benchmark provenance and distinguish public-key regression from cold evaluation.
 - Mark the duplicated content-pipeline golden case as a metric-excluded alias.
+- Relocate the injected-bug floor demonstration to `benchmarks/injected/run.py` while
+  retaining the historical protocol path as a v0.3 compatibility shim.
+- Promote the self-contained example to `golden_cases/self_contained/doc-bundle-01`;
+  retain its historical runner path as a v0.3 compatibility launcher.
 
 ### Fixed
 

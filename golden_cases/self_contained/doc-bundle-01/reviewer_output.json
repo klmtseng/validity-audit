@@ -1,0 +1,63 @@
+{
+  "$schema": "../../../schemas/reviewer_output.schema.json",
+  "schema_version": "0.3.0",
+  "review_context": "primed",
+  "reviewer": {
+    "kind": "human",
+    "label": "checked-in-regression-fixture"
+  },
+  "operator_id": "golden-case-runner",
+  "priming_sources": [
+    "golden_cases/self_contained/doc-bundle-01/key-v1.json"
+  ],
+  "claim_results": [
+    {
+      "claim_id": "relative-link-resolves",
+      "outcome": "supported",
+      "evidence": [
+        {
+          "evidence_id": "reviewed-readme-link",
+          "kind": "file_line",
+          "description": "The reviewer followed the README's relative Details link in the supplied snapshot.",
+          "locator": "golden_cases/self_contained/doc-bundle-01/artifacts/README.md -> details.md"
+        }
+      ],
+      "finding_ids": []
+    },
+    {
+      "claim_id": "artifact-count-accurate",
+      "outcome": "refuted",
+      "evidence": [
+        {
+          "evidence_id": "artifact-count-comparison",
+          "kind": "file_line",
+          "description": "details.md claims three Markdown artifacts, while the supplied contract and manifest contain two.",
+          "locator": "golden_cases/self_contained/doc-bundle-01/artifacts/details.md:5"
+        }
+      ],
+      "finding_ids": [
+        "incorrect-artifact-count"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "incorrect-artifact-count",
+      "title": "Details file overstates the audited artifact count",
+      "description": "The target says the audited bundle contains three Markdown artifacts, but the task contract and prepared artifact manifest enumerate exactly two.",
+      "error_class": "correctness",
+      "severity": "med",
+      "confidence": "high",
+      "reproduction": "reproduced",
+      "evidence": [
+        {
+          "evidence_id": "artifact-count-comparison",
+          "kind": "file_line",
+          "description": "details.md claims three Markdown artifacts, while the supplied contract and manifest contain two.",
+          "locator": "golden_cases/self_contained/doc-bundle-01/artifacts/details.md:5"
+        }
+      ]
+    }
+  ],
+  "summary": "The relative link resolves, but the artifact-count statement is false."
+}
