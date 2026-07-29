@@ -4,5 +4,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .venv/
+.validity-audit/
 build/
 dist/

@@ -16,6 +16,15 @@ All notable changes to this project will be documented in this file.
 - New docs-pack check D7 "Claimed vs. delivered": feature claims must be verified by
   a live run or shipping signals (negative signals decisive, positive ones just
   another claim), not by file existence.
+- Add the two-stage `validity-audit prepare` / `finalize` CLI.
+- Bind contracts, artifacts, canonical manifests, probe reports, review bundles, and raw
+  reviewer transcripts into one digest-checked run.
+- Add deterministic artifact and Markdown-link probes, prepared/finalized run states,
+  provider-neutral reviewer-output import, and transcript retention.
+- Add the versioned `validity-audit-default-v0.3.0` error-class policy as the sole writer
+  of finding gate effects.
+- Add human- and machine-readable unsigned attestations, an append-only attestation
+  receipt ledger, packaged schema resources, and a frozen self-contained demonstration.
 
 ### Changed
 

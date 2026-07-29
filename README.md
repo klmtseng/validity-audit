@@ -42,8 +42,8 @@ The most instructive catch: the builder's verbal claim "covers all 110 items" wa
 
 ## How to use this
 
-This release is a protocol plus reference primitives, not yet an end-to-end tool. There
-are three ways in, by increasing effort:
+This release includes the protocol, reference primitives, and one deliberately narrow
+end-to-end v0.3 CLI path. There are three ways in, by increasing effort:
 
 **1. Claude Code users: install it as a skill.**
 
@@ -68,19 +68,53 @@ No code required. The core is four rules:
 Copy `protocol/` into your process docs and start with rule 3. The reproduction gate is
 the piece that kills builder blind spots and reviewer hallucinations at the same time.
 
-**3. Engineers: port the primitives.**
+**3. Engineers: run or port the reference implementation.**
 
 Three mechanisms transplant independently into an existing harness: two-stage adversarial
 review with a reproduction gate (fits code review or CI), the miss-ledger
 (`protocol/ledger.py`, a small script with no dependencies), and golden-case recall
 scoring for your own evaluator (`golden_cases/` shows the historical format). The
-packaged ledger entry point rejects non-canonical severities instead of silently
-mis-ranking them:
+packaged runtime now proves one provider-neutral integration path:
 
 ```bash
-python -m pip install -e .
-validity-audit-ledger challenges
+python -m pip install -e ".[dev]"
+
+validity-audit prepare \
+  --workspace . \
+  --contract examples/self_contained/task_contract.json \
+  --run-dir .validity-audit/runs/my-run \
+  --review-context cold \
+  --reviewer-kind human \
+  --reviewer-label independent-reviewer \
+  --operator-id local-operator
 ```
+
+Give the emitted `review_bundle.json` to any independent reviewer. Retain their raw
+transcript and collect structured output matching
+[`schemas/reviewer_output.schema.json`](schemas/reviewer_output.schema.json), then run:
+
+```bash
+validity-audit finalize \
+  --workspace . \
+  --run-dir .validity-audit/runs/my-run \
+  --reviewer-output path/to/reviewer_output.json \
+  --transcript path/to/raw_transcript.txt
+```
+
+`prepare` validates the task contract, snapshots the exact artifact bytes, computes the
+digest chain, and runs deterministic probes. `finalize` refuses changed artifacts, retains
+the transcript, imports findings without trusting finder-supplied policy results, applies
+the versioned error-class policy, emits human- and machine-readable unsigned attestations,
+and appends a canonical receipt to `.validity-audit/attestations.jsonl`.
+
+Run the frozen end-to-end demonstration with:
+
+```bash
+python examples/self_contained/run_demo.py
+```
+
+The separate `validity-audit-ledger` command remains available for replaying historical
+misses.
 
 This repo is the canonical protocol upstream and reference implementation.
 
@@ -95,10 +129,10 @@ deliberately proving one integration path before adding provider-specific surfac
 | Layer | v0.3 surface | Status |
 |---|---|---|
 | 1. Contract | [`schemas/task_contract.schema.json`](schemas/task_contract.schema.json) | available |
-| 2. Evidence collection | deterministic probes and domain packs | partial |
-| 3. Independent review | provider-neutral operator-in-the-loop import | proposed |
-| 4. Reproduction and policy | canonical finding axes in the attestation schema | schema available; runtime proposed |
-| 5. Audit record | [`schemas/attestation.schema.json`](schemas/attestation.schema.json) | unsigned schema available |
+| 2. Evidence collection | artifact snapshots, digest manifest, deterministic probes, domain packs | available; probe set intentionally small |
+| 3. Independent review | provider-neutral bundle + structured import + raw transcript retention | available, operator-in-the-loop |
+| 4. Reproduction and policy | canonical finding axes + `validity-audit-default-v0.3.0` | available |
+| 5. Audit record | JSON + Markdown attestation + append-only receipt ledger | available, explicitly unsigned |
 
 The current attestation is explicitly unsigned. Signing, verification, provider adapters,
 and API-key-managed model installation are future work. The existing Claude Code skill is
@@ -112,6 +146,7 @@ a downstream integration of this public protocol, not a separate upstream.
 | [`golden_cases/`](golden_cases/) | Public regression mechanism + anonymized historical answer keys |
 | [`protocol/`](protocol/) | The core two-stage protocol, runnable leakage-audit template, meta-audit of the framework itself, coevolution design, worked case study |
 | [`schemas/`](schemas/) | Versioned task-contract and unsigned-attestation schemas, examples, and digest rules |
+| [`examples/self_contained/`](examples/self_contained/) | Frozen prepare/finalize demonstration with expected unsigned attestation |
 
 ## Origin
 

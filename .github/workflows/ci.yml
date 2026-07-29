@@ -43,3 +43,6 @@ jobs:
 
       - name: Deterministic floor demonstration
         run: python protocol/injected_bug_recall.py
+
+      - name: Self-contained two-stage demonstration
+        run: python examples/self_contained/run_demo.py

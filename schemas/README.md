@@ -1,15 +1,20 @@
 # Schemas
 
 These [Draft 2020-12](https://json-schema.org/draft/2020-12) JSON Schemas define the two
-machine-readable boundaries planned for Validity Audit v0.3:
+assurance boundaries and one provider-neutral import format used by Validity Audit v0.3:
 
 - [`task_contract.schema.json`](task_contract.schema.json) — the bounded input for one
   audit run over one artifact set;
 - [`attestation.schema.json`](attestation.schema.json) — the resulting **unsigned validity
-  attestation**.
+  attestation**;
+- [`reviewer_output.schema.json`](reviewer_output.schema.json) — structured reviewer
+  findings imported between `prepare` and `finalize`.
 
-The schemas accept JSON instances directly. YAML may be used by a future runner after it
-is parsed into the same JSON data model.
+The v0.3 CLI accepts JSON directly. YAML remains future work rather than an implicit,
+dependency-specific parser choice.
+
+The schemas are included as package resources in the wheel. Runtime validation uses
+`importlib.resources`; tests require those packaged bytes to match the public files here.
 
 ## Unit of assurance
 
@@ -57,8 +62,9 @@ The finding taxonomy stores four separate axes:
 | `gate_effect` | `fail`, `waiver`, `advisory`, `none` |
 
 All fixed machine-readable enum values use `snake_case`. `gate_effect` represents policy
-output. Until PR 3 exists, an operator records it; PR 3 must make the policy engine its
-sole writer and bind `policy_id` to a real versioned rule set.
+output. The reviewer-output schema deliberately cannot express it. `finalize` is its sole
+writer and binds `overall_result.policy_id` to
+`validity-audit-default-v0.3.0`.
 
 Overall dispositions are `pass`, `fail`, `pass_with_waiver`, and `needs_review`.
 `not_attempted` is distinct from an attempted reproduction that failed, and—like every
@@ -104,8 +110,39 @@ JSON Schema cannot express every cross-document invariant. The tests additionall
 - run timestamps are chronologically sensible.
 
 JSON Schema can require a waiver expiry to be a date-time, but it cannot compare that
-value with the waiver or attestation issue time. The PR 3 runner must enforce:
+value with the waiver or attestation issue time. The runtime enforces:
 `waiver.issued_at <= attestation.issued_at < waiver.expires_at`.
 
 The example is a schema fixture, not a claim that the repository as a whole has been
 certified.
+
+## Two-stage runtime and digest chain
+
+`validity-audit prepare` creates an immutable run state with:
+
+1. the exact task-contract byte digest;
+2. each artifact's digest, size, and media type;
+3. the canonical manifest digest;
+4. a deterministic probe report and digest;
+5. a review bundle containing the artifact snapshots and review-context boundary.
+
+`validity-audit finalize` recomputes the contract, manifest, and probes before accepting
+review evidence. Any mismatch stops finalization and leaves no attestation. It retains
+the structured reviewer output and the raw transcript as separate files, binds the
+transcript and original review bundle into the attestation, applies policy, and changes
+the run state from `prepared` to `finalized`.
+
+Cold output must match a cold bundle and cannot add priming sources. Primed output must
+match the exact sources declared during preparation.
+
+The default policy is error-class based:
+
+| Error class | Default result when reproduced |
+|---|---|
+| `fabrication`, `leakage`, `data-leakage`, `artifact-mismatch`, `broken-reference` | `fail` |
+| any other open slug | `advisory` |
+
+Reason-bearing task-contract overrides can replace an error class with `fail`,
+`advisory`, or `none`. A non-reproduced fail-class finding routes the overall result to
+`needs_review`; an active owner waiver records the original `fail` result and produces
+`pass_with_waiver` only when no unwaived fail remains.

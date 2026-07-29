@@ -1,0 +1,25 @@
+{
+  "$schema": "../../schemas/task_contract.schema.json",
+  "schema_version": "0.3.0",
+  "task_id": "self-contained-doc-bundle",
+  "claims": [
+    {
+      "claim_id": "relative-link-resolves",
+      "statement": "The README's relative Details link resolves within the audited artifact set."
+    }
+  ],
+  "artifact_paths": [
+    "examples/self_contained/artifacts/README.md",
+    "examples/self_contained/artifacts/details.md"
+  ],
+  "packs": [
+    "docs"
+  ],
+  "policy_overrides": [
+    {
+      "error_class": "broken-reference",
+      "gate_effect": "fail",
+      "reason": "A broken link directly refutes the bounded documentation claim."
+    }
+  ]
+}
