@@ -4,14 +4,34 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from validity_audit.runtime import AuditRuntimeError, finalize_run, prepare_run
+from validity_audit.runtime import (
+    AuditRuntimeError,
+    EvidenceMismatchError,
+    finalize_run,
+    prepare_run,
+)
+
+EXIT_PASS = 0
+EXIT_OPERATIONAL_ERROR = 1
+EXIT_BLOCKING_FAIL = 2
+EXIT_NEEDS_REVIEW = 3
+EXIT_EVIDENCE_MISMATCH = 4
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
+class ContractArgumentParser(argparse.ArgumentParser):
+    """Keep parser errors inside the public exit-code contract."""
+
+    def error(self, message: str) -> None:
+        self.print_usage(sys.stderr)
+        self.exit(EXIT_OPERATIONAL_ERROR, f"{self.prog}: error: {message}\n")
+
+
+def build_parser() -> ContractArgumentParser:
+    parser = ContractArgumentParser(
         prog="validity-audit",
         description="Prepare and finalize one bounded, unsigned validity attestation.",
     )
@@ -87,10 +107,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ledger_path=args.ledger,
                 append_ledger=not args.no_ledger,
             )
+    except EvidenceMismatchError as exc:
+        parser.exit(
+            EXIT_EVIDENCE_MISMATCH,
+            f"Validity Audit evidence mismatch: {exc}\n",
+        )
     except (AuditRuntimeError, OSError) as exc:
-        parser.exit(1, f"Validity Audit error: {exc}\n")
+        parser.exit(EXIT_OPERATIONAL_ERROR, f"Validity Audit error: {exc}\n")
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
-    return 0
+    if args.command == "prepare":
+        return EXIT_PASS
+    return {
+        "pass": EXIT_PASS,
+        "pass_with_waiver": EXIT_PASS,
+        "fail": EXIT_BLOCKING_FAIL,
+        "needs_review": EXIT_NEEDS_REVIEW,
+    }[result["status"]]
 
 
 if __name__ == "__main__":

@@ -35,10 +35,20 @@ ATTESTATION_FILENAME = "attestation.json"
 REPORT_FILENAME = "attestation.md"
 REVIEWER_OUTPUT_FILENAME = "evidence/reviewer_output.json"
 TRANSCRIPT_FILENAME = "evidence/reviewer_transcript.txt"
+STATE_PREPARING = "preparing"
+STATE_AWAITING_REVIEW = "awaiting_review"
+STATE_REVIEW_IMPORTED = "review_imported"
+STATE_COMPLETED = "completed"
+STATE_FAILED = "failed"
+STATE_NEEDS_REVIEW = "needs_review"
 
 
 class AuditRuntimeError(ValueError):
     """Raised when a run violates a runtime or cross-document invariant."""
+
+
+class EvidenceMismatchError(AuditRuntimeError):
+    """Raised when prepared evidence no longer matches its digest or provenance."""
 
 
 def utc_now() -> str:
@@ -303,7 +313,11 @@ def prepare_run(
 
     state: dict[str, Any] = {
         "state_version": "0.3.0",
-        "state": "prepared",
+        "state": STATE_AWAITING_REVIEW,
+        "state_history": [
+            {"state": STATE_PREPARING, "at": actual_started_at},
+            {"state": STATE_AWAITING_REVIEW, "at": actual_started_at},
+        ],
         "run_id": actual_run_id,
         "task_id": contract["task_id"],
         "started_at": actual_started_at,
@@ -325,7 +339,7 @@ def prepare_run(
     }
     write_json_atomic(output_dir / STATE_FILENAME, state)
     return {
-        "state": "prepared",
+        "state": STATE_AWAITING_REVIEW,
         "run_id": actual_run_id,
         "run_dir": output_dir.relative_to(root).as_posix(),
         "review_bundle": (output_dir / BUNDLE_FILENAME).relative_to(root).as_posix(),
@@ -335,13 +349,14 @@ def prepare_run(
     }
 
 
-def _load_prepared_state(run_dir: Path) -> dict[str, Any]:
+def _load_awaiting_review_state(run_dir: Path) -> dict[str, Any]:
     state = _load_json_object(run_dir / STATE_FILENAME, "run state")
     if state.get("state_version") != "0.3.0":
         raise AuditRuntimeError("unsupported run-state version")
-    if state.get("state") != "prepared":
+    if state.get("state") != STATE_AWAITING_REVIEW:
         raise AuditRuntimeError(
-            f"run must be prepared before finalize; current state is {state.get('state')!r}"
+            "run must be awaiting_review before finalize; "
+            f"current state is {state.get('state')!r}"
         )
     return state
 
@@ -352,29 +367,65 @@ def _verify_prepared_evidence(
     state: dict[str, Any],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     contract_path = workspace / state["contract"]["path"]
-    if sha256_file(contract_path) != state["contract"]["sha256"]:
-        raise AuditRuntimeError("task contract changed after prepare")
+    try:
+        contract_sha256 = sha256_file(contract_path)
+    except OSError as exc:
+        raise EvidenceMismatchError(
+            "task contract is unavailable after prepare"
+        ) from exc
+    if contract_sha256 != state["contract"]["sha256"]:
+        raise EvidenceMismatchError("task contract changed after prepare")
     contract = _load_json_object(contract_path, "task contract")
     try:
         validate_document(contract, "task_contract")
     except SchemaValidationError as exc:
         raise AuditRuntimeError(str(exc)) from exc
 
-    current_manifest = _artifact_manifest(workspace, contract["artifact_paths"])
+    try:
+        current_manifest = _artifact_manifest(workspace, contract["artifact_paths"])
+    except (AuditRuntimeError, OSError) as exc:
+        raise EvidenceMismatchError(
+            "artifact set changed after prepare; the prepared record is void"
+        ) from exc
     if current_manifest != state["artifact_manifest"]:
-        raise AuditRuntimeError("artifact set changed after prepare; the prepared record is void")
+        raise EvidenceMismatchError(
+            "artifact set changed after prepare; the prepared record is void"
+        )
 
     probe_path = run_dir / state["probe_report"]["path"]
-    if sha256_file(probe_path) != state["probe_report"]["sha256"]:
-        raise AuditRuntimeError("probe report digest does not match the prepared state")
+    try:
+        probe_sha256 = sha256_file(probe_path)
+    except OSError as exc:
+        raise EvidenceMismatchError(
+            "probe report is unavailable after prepare"
+        ) from exc
+    if probe_sha256 != state["probe_report"]["sha256"]:
+        raise EvidenceMismatchError(
+            "probe report digest does not match the prepared state"
+        )
     stored_probes = _load_json_object(probe_path, "probe report")
-    current_probes = run_probes(workspace, contract["artifact_paths"])
+    try:
+        current_probes = run_probes(workspace, contract["artifact_paths"])
+    except (OSError, UnicodeError) as exc:
+        raise EvidenceMismatchError(
+            "deterministic probes cannot reproduce the prepared evidence"
+        ) from exc
     if current_probes != stored_probes:
-        raise AuditRuntimeError("deterministic probe results changed after prepare")
+        raise EvidenceMismatchError(
+            "deterministic probe results changed after prepare"
+        )
 
     bundle_path = run_dir / state["review_bundle"]["path"]
-    if sha256_file(bundle_path) != state["review_bundle"]["sha256"]:
-        raise AuditRuntimeError("review bundle digest does not match the prepared state")
+    try:
+        bundle_sha256 = sha256_file(bundle_path)
+    except OSError as exc:
+        raise EvidenceMismatchError(
+            "review bundle is unavailable after prepare"
+        ) from exc
+    if bundle_sha256 != state["review_bundle"]["sha256"]:
+        raise EvidenceMismatchError(
+            "review bundle digest does not match the prepared state"
+        )
     bundle = _load_json_object(bundle_path, "review bundle")
     expected_bundle_fields = {
         "run_id": state["run_id"],
@@ -390,14 +441,18 @@ def _verify_prepared_evidence(
     }
     for key, expected in expected_bundle_fields.items():
         if bundle.get(key) != expected:
-            raise AuditRuntimeError(f"review bundle field {key!r} is inconsistent")
+            raise EvidenceMismatchError(
+                f"review bundle field {key!r} is inconsistent"
+            )
     if bundle.get("priming_sources") != state["review"].get("priming_sources"):
         if not (
             state["review"]["context"] == "cold"
             and "priming_sources" not in bundle
             and "priming_sources" not in state["review"]
         ):
-            raise AuditRuntimeError("review bundle priming sources are inconsistent")
+            raise EvidenceMismatchError(
+                "review bundle priming sources are inconsistent"
+            )
     return contract, stored_probes
 
 
@@ -571,7 +626,7 @@ def finalize_run(
     """Import independent review evidence and emit an unsigned attestation."""
     root = _workspace_path(workspace)
     output_dir = _run_directory(root, run_dir, create=False)
-    state = _load_prepared_state(output_dir)
+    state = _load_awaiting_review_state(output_dir)
     contract, probe_report = _verify_prepared_evidence(root, output_dir, state)
 
     reviewer_file, _ = _relative_file(root, reviewer_output_path, "reviewer output")
@@ -711,10 +766,16 @@ def finalize_run(
             },
         )
 
+    final_state = {
+        "pass": STATE_COMPLETED,
+        "pass_with_waiver": STATE_COMPLETED,
+        "fail": STATE_FAILED,
+        "needs_review": STATE_NEEDS_REVIEW,
+    }[policy.status]
     finalized_state = copy.deepcopy(state)
     finalized_state.update(
         {
-            "state": "finalized",
+            "state": final_state,
             "completed_at": actual_completed_at,
             "issued_at": actual_issued_at,
             "reviewer_output": {
@@ -732,12 +793,17 @@ def finalize_run(
             },
         }
     )
+    finalized_state["state_history"] = [
+        *state["state_history"],
+        {"state": STATE_REVIEW_IMPORTED, "at": actual_completed_at},
+        {"state": final_state, "at": actual_issued_at},
+    ]
     if actual_ledger_path is not None:
         finalized_state["attestation_ledger"] = actual_ledger_path.relative_to(root).as_posix()
     write_json_atomic(output_dir / STATE_FILENAME, finalized_state)
 
     return {
-        "state": "finalized",
+        "state": final_state,
         "run_id": state["run_id"],
         "attestation": (output_dir / ATTESTATION_FILENAME).relative_to(root).as_posix(),
         "attestation_sha256": attestation_sha256,

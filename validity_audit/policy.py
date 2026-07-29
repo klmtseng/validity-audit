@@ -8,13 +8,14 @@ from datetime import datetime
 from typing import Any
 
 POLICY_ID = "validity-audit-default-v0.3.0"
-DEFAULT_EFFECT = "advisory"
 ERROR_CLASS_EFFECTS = {
-    "artifact-mismatch": "fail",
-    "broken-reference": "fail",
-    "data-leakage": "fail",
+    "correctness": "fail",
+    "evidence_tampering": "fail",
     "fabrication": "fail",
     "leakage": "fail",
+    "material_requirement_miss": "fail",
+    "unauthorized_action": "fail",
+    "maintainability": "advisory",
 }
 NON_REPRODUCED = {"unreproduced", "not_reproducible", "not_attempted"}
 
@@ -66,16 +67,28 @@ def evaluate_policy(
 
     evaluated: list[dict[str, Any]] = []
     pending_blocking = False
+    pending_classification = False
     for raw_finding in findings:
         finding = copy.deepcopy(raw_finding)
         if "gate_effect" in finding or "waiver" in finding:
             raise PolicyError("gate_effect and waiver are policy outputs, not finder inputs")
 
-        configured_effect = effects.get(finding["error_class"], DEFAULT_EFFECT)
+        configured_effect = effects.get(finding["error_class"])
         if finding["finding_id"] in refuted_finding_ids:
             configured_effect = "fail"
         reproduction = finding["reproduction"]
         waiver_request = waiver_by_finding.pop(finding["finding_id"], None)
+        if configured_effect is None:
+            if waiver_request is not None:
+                raise PolicyError(
+                    f"{finding['finding_id']!r} has an unclassified error class "
+                    "and cannot be waived"
+                )
+            finding["gate_effect"] = "none"
+            pending_classification = True
+            evaluated.append(finding)
+            continue
+
         original_effect = (
             "none"
             if configured_effect == "fail" and reproduction in NON_REPRODUCED
@@ -121,11 +134,17 @@ def evaluate_policy(
     if "fail" in gate_effects:
         status = "fail"
         summary = "One or more reproduced findings triggered a fail-class policy gate."
-    elif pending_blocking or unresolved_claim:
+    elif pending_blocking or pending_classification or unresolved_claim:
         status = "needs_review"
-        summary = (
-            "A blocking-class finding lacks completed reproduction or a claim remains unresolved."
-        )
+        if pending_classification:
+            summary = (
+                "One or more findings have unclassified error classes and require review."
+            )
+        else:
+            summary = (
+                "A blocking-class finding lacks completed reproduction or a claim "
+                "remains unresolved."
+            )
     elif "waiver" in gate_effects:
         status = "pass_with_waiver"
         summary = "No unwaived fail gate remains; one or more active waivers are recorded."

@@ -6,7 +6,12 @@ from pathlib import Path
 import pytest
 
 from validity_audit.digests import sha256_file
-from validity_audit.runtime import AuditRuntimeError, finalize_run, prepare_run
+from validity_audit.runtime import (
+    AuditRuntimeError,
+    EvidenceMismatchError,
+    finalize_run,
+    prepare_run,
+)
 from validity_audit.schemas import validate_document
 
 STARTED = "2026-07-29T00:00:00Z"
@@ -155,7 +160,12 @@ def test_prepare_emits_digest_bound_bundle_and_state(tmp_path: Path) -> None:
     state = json.loads((run_dir / "run_state.json").read_text())
     bundle = json.loads((run_dir / "review_bundle.json").read_text())
 
-    assert result["state"] == "prepared"
+    assert result["state"] == "awaiting_review"
+    assert state["state"] == "awaiting_review"
+    assert [event["state"] for event in state["state_history"]] == [
+        "preparing",
+        "awaiting_review",
+    ]
     assert state["review_bundle"]["sha256"] == sha256_file(run_dir / "review_bundle.json")
     assert state["artifact_manifest"]["manifest_sha256"] == result["manifest_sha256"]
     assert bundle["contract_sha256"] == sha256_file(workspace / "task.json")
@@ -232,7 +242,7 @@ def test_finalize_retains_transcript_and_validates_attestation(tmp_path: Path) -
     attestation = json.loads((run_dir / "attestation.json").read_text())
     state = json.loads((run_dir / "run_state.json").read_text())
 
-    assert result["state"] == "finalized"
+    assert result["state"] == "completed"
     assert result["status"] == "pass"
     assert (run_dir / "evidence/reviewer_transcript.txt").read_bytes() == (
         workspace / "transcript.txt"
@@ -242,7 +252,13 @@ def test_finalize_retains_transcript_and_validates_attestation(tmp_path: Path) -
     )
     assert attestation["signature"] is None
     assert attestation["overall_result"]["policy_id"] == "validity-audit-default-v0.3.0"
-    assert state["state"] == "finalized"
+    assert state["state"] == "completed"
+    assert [event["state"] for event in state["state_history"]] == [
+        "preparing",
+        "awaiting_review",
+        "review_imported",
+        "completed",
+    ]
     validate_document(attestation, "attestation")
 
     ledger = workspace / ".validity-audit/attestations.jsonl"
@@ -281,6 +297,7 @@ def test_blocking_reviewer_finding_fails(tmp_path: Path) -> None:
         (workspace / result["attestation"]).read_text(encoding="utf-8")
     )
     assert result["status"] == "fail"
+    assert result["state"] == "failed"
     assert attestation["findings"][0]["gate_effect"] == "fail"
     assert attestation["findings"][0]["source"] == "cold_review"
 
@@ -297,6 +314,26 @@ def test_not_attempted_blocking_finding_needs_review(tmp_path: Path) -> None:
         append_ledger=False,
     )
     assert result["status"] == "needs_review"
+    assert result["state"] == "needs_review"
+
+
+def test_unclassified_reviewer_finding_needs_review(tmp_path: Path) -> None:
+    workspace = make_workspace(tmp_path)
+    prepare(workspace)
+    result = finalize(
+        workspace,
+        reviewer_output(
+            outcome="supported",
+            findings=[review_finding(error_class="other")],
+        ),
+        append_ledger=False,
+    )
+    attestation = json.loads(
+        (workspace / result["attestation"]).read_text(encoding="utf-8")
+    )
+    assert result["status"] == "needs_review"
+    assert result["state"] == "needs_review"
+    assert attestation["findings"][0]["gate_effect"] == "none"
 
 
 def test_broken_link_probe_is_policy_gated(tmp_path: Path) -> None:
@@ -337,7 +374,7 @@ def test_artifact_change_voids_prepared_run(tmp_path: Path) -> None:
     (workspace / "docs/README.md").write_text("# Changed\n", encoding="utf-8")
     write_json(workspace / "reviewer-output.json", reviewer_output())
     (workspace / "transcript.txt").write_text("Transcript.\n")
-    with pytest.raises(AuditRuntimeError, match="artifact set changed"):
+    with pytest.raises(EvidenceMismatchError, match="artifact set changed"):
         finalize_run(
             workspace=workspace,
             run_dir=".validity-audit/runs/test-run",
@@ -373,7 +410,7 @@ def test_finalize_cannot_run_twice(tmp_path: Path) -> None:
     workspace = make_workspace(tmp_path)
     prepare(workspace)
     finalize(workspace, reviewer_output(), append_ledger=False)
-    with pytest.raises(AuditRuntimeError, match="must be prepared"):
+    with pytest.raises(AuditRuntimeError, match="must be awaiting_review"):
         finalize(workspace, reviewer_output(), append_ledger=False)
 
 

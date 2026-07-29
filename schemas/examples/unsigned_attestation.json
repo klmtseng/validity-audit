@@ -12,7 +12,7 @@
   },
   "contract": {
     "path": "schemas/examples/task_contract.json",
-    "sha256": "213fd54b4410b21a776e8be5ff8df955fa60f023e0b46382346f445495cc4ca8"
+    "sha256": "f17a68992959363ffe8a8a09d43fa91118ea46d2ceb7bc2cd599f0ffd79402e3"
   },
   "artifact_manifest": {
     "manifest_sha256": "c64894b4303c3a78c5cd7ee7b6d009cc0cced7a93e2c273ca8cb98be1d930719",
