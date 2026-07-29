@@ -122,10 +122,11 @@ def test_unclassified_error_class_needs_review(error_class: str) -> None:
     assert result.findings[0]["gate_effect"] == "none"
 
 
-def test_explicit_advisory_error_class_passes() -> None:
+@pytest.mark.parametrize("error_class", ["fitness", "maintainability"])
+def test_explicit_advisory_error_class_passes(error_class: str) -> None:
     result = evaluate_policy(
         contract=contract(),
-        findings=[finding(error_class="maintainability")],
+        findings=[finding(error_class=error_class)],
         claim_results=claims(),
         waiver_requests=[],
         issued_at="2026-07-29T00:00:00Z",

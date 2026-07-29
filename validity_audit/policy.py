@@ -12,6 +12,7 @@ ERROR_CLASS_EFFECTS = {
     "correctness": "fail",
     "evidence_tampering": "fail",
     "fabrication": "fail",
+    "fitness": "advisory",
     "leakage": "fail",
     "material_requirement_miss": "fail",
     "unauthorized_action": "fail",
