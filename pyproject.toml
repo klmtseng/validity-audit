@@ -17,7 +17,9 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
-dependencies = []
+dependencies = [
+  "jsonschema[format]>=4.23,<5",
+]
 
 [project.optional-dependencies]
 quant = [
@@ -26,16 +28,19 @@ quant = [
   "scipy>=1.11,<2",
 ]
 dev = [
-  "jsonschema[format]>=4.23,<5",
   "pytest>=8,<9",
   "ruff>=0.6,<1",
 ]
 
 [project.scripts]
+validity-audit = "validity_audit.cli:main"
 validity-audit-ledger = "validity_audit.ledger:main"
 
 [tool.setuptools.packages.find]
 include = ["validity_audit*"]
+
+[tool.setuptools.package-data]
+"validity_audit.schema_files" = ["*.json"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"

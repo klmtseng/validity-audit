@@ -1,0 +1,373 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/klmtseng/validity-audit/schemas/reviewer_output.schema.json",
+  "title": "Validity Audit reviewer output",
+  "description": "Provider-neutral findings imported by the v0.3 finalize stage. Policy outputs are deliberately absent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_context",
+    "reviewer",
+    "operator_id",
+    "claim_results",
+    "findings",
+    "summary"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "schema_version": {
+      "const": "0.3.0"
+    },
+    "review_context": {
+      "enum": [
+        "cold",
+        "primed"
+      ]
+    },
+    "reviewer": {
+      "$ref": "#/$defs/reviewer"
+    },
+    "operator_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "priming_sources": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      }
+    },
+    "claim_results": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/claimResult"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "waivers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/waiverRequest"
+      }
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "review_context": {
+            "const": "primed"
+          }
+        },
+        "required": [
+          "review_context"
+        ]
+      },
+      "then": {
+        "required": [
+          "priming_sources"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "priming_sources"
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9._-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "label"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "human",
+            "model",
+            "hybrid"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "kind",
+        "description"
+      ],
+      "properties": {
+        "evidence_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "kind": {
+          "enum": [
+            "command",
+            "file_line",
+            "digest",
+            "note"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "claimResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "outcome",
+        "evidence",
+        "finding_ids"
+      ],
+      "properties": {
+        "claim_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "outcome": {
+          "enum": [
+            "supported",
+            "refuted",
+            "inconclusive",
+            "not_evaluated"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "finding_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "enum": [
+                  "supported",
+                  "refuted"
+                ]
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "required": [
+              "rationale"
+            ]
+          }
+        }
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "title",
+        "description",
+        "error_class",
+        "severity",
+        "confidence",
+        "reproduction",
+        "evidence"
+      ],
+      "properties": {
+        "finding_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        },
+        "error_class": {
+          "$ref": "#/$defs/slug"
+        },
+        "severity": {
+          "enum": [
+            "high",
+            "med",
+            "low"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "med",
+            "low"
+          ]
+        },
+        "reproduction": {
+          "enum": [
+            "reproduced",
+            "unreproduced",
+            "not_reproducible",
+            "not_attempted"
+          ]
+        },
+        "reproduction_notes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reproduction": {
+                "enum": [
+                  "unreproduced",
+                  "not_reproducible",
+                  "not_attempted"
+                ]
+              }
+            },
+            "required": [
+              "reproduction"
+            ]
+          },
+          "then": {
+            "required": [
+              "reproduction_notes"
+            ]
+          }
+        }
+      ]
+    },
+    "waiverRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "issuer",
+        "reason",
+        "issued_at",
+        "expires_at"
+      ],
+      "properties": {
+        "finding_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "issuer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

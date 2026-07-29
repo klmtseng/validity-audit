@@ -1,0 +1,27 @@
+{
+  "$schema": "../../schemas/reviewer_output.schema.json",
+  "schema_version": "0.3.0",
+  "review_context": "cold",
+  "reviewer": {
+    "kind": "human",
+    "label": "self-contained-example-reviewer"
+  },
+  "operator_id": "self-contained-example-operator",
+  "claim_results": [
+    {
+      "claim_id": "relative-link-resolves",
+      "outcome": "supported",
+      "evidence": [
+        {
+          "evidence_id": "reviewed-readme-link",
+          "kind": "file_line",
+          "description": "The reviewer followed the README's relative Details link in the supplied snapshot.",
+          "locator": "examples/self_contained/artifacts/README.md -> details.md"
+        }
+      ],
+      "finding_ids": []
+    }
+  ],
+  "findings": [],
+  "summary": "The bounded relative-link claim is supported by the supplied artifact snapshots."
+}

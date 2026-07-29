@@ -1,0 +1,754 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/klmtseng/validity-audit/schemas/attestation.schema.json",
+  "title": "Validity Audit unsigned attestation",
+  "description": "An unsigned audit record for one task run and one digest-bound artifact set.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "attestation_type",
+    "attestation_id",
+    "issued_at",
+    "run",
+    "contract",
+    "artifact_manifest",
+    "review",
+    "claim_results",
+    "findings",
+    "overall_result",
+    "signature"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "schema_version": {
+      "const": "0.3.0"
+    },
+    "attestation_type": {
+      "const": "unsigned_validity_attestation"
+    },
+    "attestation_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "run": {
+      "$ref": "#/$defs/run"
+    },
+    "contract": {
+      "$ref": "#/$defs/contractBinding"
+    },
+    "artifact_manifest": {
+      "$ref": "#/$defs/artifactManifest"
+    },
+    "review": {
+      "$ref": "#/$defs/review"
+    },
+    "claim_results": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/claimResult"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "overall_result": {
+      "$ref": "#/$defs/overallResult"
+    },
+    "signature": {
+      "description": "Reserved for a future signed-attestation schema; v0.3 records are unsigned.",
+      "type": "null"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "overall_result": {
+            "properties": {
+              "status": {
+                "const": "fail"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "overall_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "contains": {
+              "properties": {
+                "gate_effect": {
+                  "const": "fail"
+                }
+              },
+              "required": [
+                "gate_effect"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "overall_result": {
+            "properties": {
+              "status": {
+                "const": "pass_with_waiver"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "overall_result"
+        ]
+      },
+      "then": {
+        "allOf": [
+          {
+            "properties": {
+              "findings": {
+                "contains": {
+                  "properties": {
+                    "gate_effect": {
+                      "const": "waiver"
+                    }
+                  },
+                  "required": [
+                    "gate_effect"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "findings": {
+                "not": {
+                  "contains": {
+                    "properties": {
+                      "gate_effect": {
+                        "const": "fail"
+                      }
+                    },
+                    "required": [
+                      "gate_effect"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "overall_result": {
+            "properties": {
+              "status": {
+                "const": "pass"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "overall_result"
+        ]
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "not": {
+              "contains": {
+                "properties": {
+                  "gate_effect": {
+                    "enum": [
+                      "fail",
+                      "waiver"
+                    ]
+                  }
+                },
+                "required": [
+                  "gate_effect"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9._-]*$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "allOf": [
+        {
+          "not": {
+            "pattern": "^(?:/|[A-Za-z]:[\\\\/])"
+          }
+        },
+        {
+          "not": {
+            "pattern": "(^|/)\\.\\.(/|$)"
+          }
+        }
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "task_id",
+        "started_at",
+        "completed_at"
+      ],
+      "properties": {
+        "run_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "task_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "previous_run_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        }
+      }
+    },
+    "contractBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      }
+    },
+    "artifactManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_sha256",
+        "void_if_changed",
+        "artifacts"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "void_if_changed": {
+          "const": true
+        },
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "label"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "human",
+            "model",
+            "hybrid"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "method",
+        "bundle_sha256",
+        "transcript_sha256",
+        "reviewer",
+        "operator_id"
+      ],
+      "properties": {
+        "context": {
+          "enum": [
+            "cold",
+            "primed"
+          ]
+        },
+        "method": {
+          "const": "operator_in_the_loop"
+        },
+        "bundle_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "transcript_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "reviewer": {
+          "$ref": "#/$defs/reviewer"
+        },
+        "operator_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "priming_sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "context": {
+                "const": "primed"
+              }
+            },
+            "required": [
+              "context"
+            ]
+          },
+          "then": {
+            "required": [
+              "priming_sources"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "priming_sources"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "kind",
+        "description"
+      ],
+      "properties": {
+        "evidence_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "kind": {
+          "enum": [
+            "command",
+            "file_line",
+            "digest",
+            "note"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "claimResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "statement",
+        "outcome",
+        "evidence",
+        "finding_ids"
+      ],
+      "properties": {
+        "claim_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "outcome": {
+          "enum": [
+            "supported",
+            "refuted",
+            "inconclusive",
+            "not_evaluated"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "finding_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "enum": [
+                  "supported",
+                  "refuted"
+                ]
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "required": [
+              "rationale"
+            ]
+          }
+        }
+      ]
+    },
+    "waiver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer",
+        "reason",
+        "original_policy_result",
+        "issued_at",
+        "expires_at"
+      ],
+      "properties": {
+        "issuer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "original_policy_result": {
+          "description": "The policy result before this waiver was applied.",
+          "enum": [
+            "fail",
+            "advisory",
+            "none"
+          ]
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "title",
+        "description",
+        "error_class",
+        "source",
+        "severity",
+        "confidence",
+        "reproduction",
+        "gate_effect",
+        "evidence"
+      ],
+      "properties": {
+        "finding_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        },
+        "error_class": {
+          "$ref": "#/$defs/slug"
+        },
+        "source": {
+          "enum": [
+            "deterministic_probe",
+            "cold_review",
+            "primed_review",
+            "operator"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "high",
+            "med",
+            "low"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "med",
+            "low"
+          ]
+        },
+        "reproduction": {
+          "enum": [
+            "reproduced",
+            "unreproduced",
+            "not_reproducible",
+            "not_attempted"
+          ]
+        },
+        "reproduction_notes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "gate_effect": {
+          "description": "Recorded policy output. PR 3 makes the policy engine its sole writer.",
+          "enum": [
+            "fail",
+            "waiver",
+            "advisory",
+            "none"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "waiver": {
+          "$ref": "#/$defs/waiver"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reproduction": {
+                "enum": [
+                  "unreproduced",
+                  "not_reproducible",
+                  "not_attempted"
+                ]
+              }
+            },
+            "required": [
+              "reproduction"
+            ]
+          },
+          "then": {
+            "required": [
+              "reproduction_notes"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "gate_effect": {
+                "const": "waiver"
+              }
+            },
+            "required": [
+              "gate_effect"
+            ]
+          },
+          "then": {
+            "required": [
+              "waiver"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "waiver"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "overallResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "policy_id",
+        "summary"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pass",
+            "fail",
+            "pass_with_waiver",
+            "needs_review"
+          ]
+        },
+        "policy_id": {
+          "description": "Declared rule-set id; PR 3 binds this to a versioned executable policy.",
+          "$ref": "#/$defs/identifier"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      }
+    }
+  }
+}
