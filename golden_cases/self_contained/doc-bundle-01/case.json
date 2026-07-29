@@ -1,0 +1,18 @@
+{
+  "case_id": "doc-bundle-01",
+  "record_type": "canonical",
+  "excluded_from_metrics": false,
+  "current_use": "public_key_regression",
+  "source": "promoted_from_examples/self_contained",
+  "domain_packs": [
+    "docs"
+  ],
+  "target": "golden_cases/self_contained/doc-bundle-01/artifacts",
+  "task_contract": "golden_cases/self_contained/doc-bundle-01/task_contract.json",
+  "key": {
+    "path": "golden_cases/self_contained/doc-bundle-01/key-v1.json",
+    "version": "1.0.0",
+    "sha256": "95b6511af59a4bd117be69197c2b3aa9cd68ac4de316316dd38229ab33683353"
+  },
+  "runner": "golden_cases/self_contained/doc-bundle-01/run_case.py"
+}

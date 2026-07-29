@@ -1,0 +1,8 @@
+Reviewer: checked-in-regression-fixture
+Context: primed
+
+I inspected both artifact snapshots in the prepared review bundle. The README contains one
+relative link to details.md, and the supplied details.md snapshot is the matching target.
+
+The artifact-count claim is refuted. details.md says that the audited bundle contains three
+Markdown artifacts, but the contract and prepared manifest contain exactly two.

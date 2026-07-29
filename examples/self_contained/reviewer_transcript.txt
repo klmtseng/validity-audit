@@ -1,6 +1,0 @@
-Reviewer: self-contained-example-reviewer
-Context: cold
-
-I inspected both artifact snapshots in the prepared review bundle. The README contains
-one relative link to details.md, and the supplied details.md snapshot is the matching
-target. I found no contradictory content or broken references for the bounded claim.

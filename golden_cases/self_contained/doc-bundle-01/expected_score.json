@@ -1,0 +1,18 @@
+{
+  "actual_total": 1,
+  "case_id": "doc-bundle-01",
+  "expected_total": 1,
+  "key_version": "1.0.0",
+  "matched_finding_ids": [
+    "incorrect-artifact-count"
+  ],
+  "matched_total": 1,
+  "mismatched_findings": [],
+  "missed_finding_ids": [],
+  "precision": 1.0,
+  "public_key_regression_only": true,
+  "recall": 1.0,
+  "score_version": "1.0.0",
+  "status": "pass",
+  "unexpected_finding_ids": []
+}

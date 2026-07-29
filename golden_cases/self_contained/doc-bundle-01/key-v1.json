@@ -1,0 +1,26 @@
+{
+  "record_type": "frozen_regression_key",
+  "case_id": "doc-bundle-01",
+  "key_version": "1.0.0",
+  "frozen": true,
+  "public_key_regression_only": true,
+  "expected_findings": [
+    {
+      "finding_id": "incorrect-artifact-count",
+      "title": "Details file overstates the audited artifact count",
+      "error_class": "correctness",
+      "severity": "med",
+      "reproduction": "reproduced",
+      "claim_ids": [
+        "artifact-count-accurate"
+      ],
+      "reproduce": "Compare details.md, which says the bundle contains three Markdown artifacts, with the task contract artifact_paths list and prepared manifest, which contain exactly two."
+    }
+  ],
+  "adjudication": {
+    "automatic_match": "finding_id, error_class, severity, reproduction, and the exact linked claim-id set must match",
+    "miss": "An expected finding absent or mismatched on any automatic-match field is a regression failure.",
+    "unexpected": "An additional finding is not automatically called a false positive; it requires human adjudication before the frozen key can change.",
+    "key_change": "Any accepted key change creates a new key version. Published historical key files are never silently rewritten."
+  }
+}
