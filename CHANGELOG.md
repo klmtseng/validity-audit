@@ -27,6 +27,8 @@ All notable changes to this project will be documented in this file.
   receipt ledger, packaged schema resources, and a frozen self-contained demonstration.
 - Add a public benchmark harness with a scored, self-contained golden regression case,
   frozen versioned key, explicit adjudication rules, and an offline CI execution path.
+- Add the v0.3 release-candidate README, worked unsigned-attestation JSON, and five-layer
+  architecture diagram with explicit adoption-mode maturity labels.
 
 ### Changed
 
@@ -44,6 +46,10 @@ All notable changes to this project will be documented in this file.
   retaining the historical protocol path as a v0.3 compatibility shim.
 - Promote the self-contained example to `golden_cases/self_contained/doc-bundle-01`;
   retain its historical runner path as a v0.3 compatibility launcher.
+- Classify reproduced `fitness` findings as advisory in the default policy, resolving the
+  previously omitted plan §8 category without changing the v0.3 policy identifier.
+- Document the legacy shim support window through all v0.3.x releases, with v0.4.0 as the
+  earliest removal point and a required changelog migration note.
 
 ### Fixed
 

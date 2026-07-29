@@ -1,0 +1,108 @@
+{
+  "$schema": "../../schemas/attestation.schema.json",
+  "artifact_manifest": {
+    "artifacts": [
+      {
+        "media_type": "text/markdown",
+        "path": "golden_cases/self_contained/doc-bundle-01/artifacts/README.md",
+        "sha256": "11699aacd0800985898f6fca725fd420452a549c572082b1984e1156fa2e769a",
+        "size_bytes": 202
+      },
+      {
+        "media_type": "text/markdown",
+        "path": "golden_cases/self_contained/doc-bundle-01/artifacts/details.md",
+        "sha256": "ebb18934ffb649a5caae26eae6df98cb304c84bb523e2109c9417f98a1decbea",
+        "size_bytes": 153
+      }
+    ],
+    "manifest_sha256": "dfae768d2940a85da874cf3a75a235f296cbcd08757ecce58c1718854e403f7d",
+    "void_if_changed": true
+  },
+  "attestation_id": "attestation-golden-doc-bundle-01",
+  "attestation_type": "unsigned_validity_attestation",
+  "claim_results": [
+    {
+      "claim_id": "relative-link-resolves",
+      "evidence": [
+        {
+          "description": "The reviewer followed the README's relative Details link in the supplied snapshot.",
+          "evidence_id": "reviewed-readme-link",
+          "kind": "file_line",
+          "locator": "golden_cases/self_contained/doc-bundle-01/artifacts/README.md -> details.md"
+        }
+      ],
+      "finding_ids": [],
+      "outcome": "supported",
+      "statement": "The README's relative Details link resolves within the audited artifact set."
+    },
+    {
+      "claim_id": "artifact-count-accurate",
+      "evidence": [
+        {
+          "description": "details.md claims three Markdown artifacts, while the supplied contract and manifest contain two.",
+          "evidence_id": "artifact-count-comparison",
+          "kind": "file_line",
+          "locator": "golden_cases/self_contained/doc-bundle-01/artifacts/details.md:5"
+        }
+      ],
+      "finding_ids": [
+        "incorrect-artifact-count"
+      ],
+      "outcome": "refuted",
+      "statement": "Every factual statement in details.md accurately describes the audited artifact set."
+    }
+  ],
+  "contract": {
+    "path": "golden_cases/self_contained/doc-bundle-01/task_contract.json",
+    "sha256": "768a683ac71c297e46a3792cf3761d9d669e5a0092bd22ce1dfadebb6a6dad18"
+  },
+  "findings": [
+    {
+      "confidence": "high",
+      "description": "The target says the audited bundle contains three Markdown artifacts, but the task contract and prepared artifact manifest enumerate exactly two.",
+      "error_class": "correctness",
+      "evidence": [
+        {
+          "description": "details.md claims three Markdown artifacts, while the supplied contract and manifest contain two.",
+          "evidence_id": "artifact-count-comparison",
+          "kind": "file_line",
+          "locator": "golden_cases/self_contained/doc-bundle-01/artifacts/details.md:5"
+        }
+      ],
+      "finding_id": "incorrect-artifact-count",
+      "gate_effect": "fail",
+      "reproduction": "reproduced",
+      "severity": "med",
+      "source": "primed_review",
+      "title": "Details file overstates the audited artifact count"
+    }
+  ],
+  "issued_at": "2026-07-29T00:06:00Z",
+  "overall_result": {
+    "policy_id": "validity-audit-default-v0.3.0",
+    "status": "fail",
+    "summary": "One or more reproduced findings triggered a fail-class policy gate."
+  },
+  "review": {
+    "bundle_sha256": "286ae3d371130fa30556d4f23d6eea153fcb76110d8075538911a9b77b1ab319",
+    "context": "primed",
+    "method": "operator_in_the_loop",
+    "operator_id": "golden-case-runner",
+    "priming_sources": [
+      "golden_cases/self_contained/doc-bundle-01/key-v1.json"
+    ],
+    "reviewer": {
+      "kind": "human",
+      "label": "checked-in-regression-fixture"
+    },
+    "transcript_sha256": "5d60f055859c68a7457d4f41e54d2b9694117236ebaf789a1c1c9c50600eed84"
+  },
+  "run": {
+    "completed_at": "2026-07-29T00:05:00Z",
+    "run_id": "run-golden-doc-bundle-01",
+    "started_at": "2026-07-29T00:00:00Z",
+    "task_id": "golden-doc-bundle-01"
+  },
+  "schema_version": "0.3.0",
+  "signature": null
+}

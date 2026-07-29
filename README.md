@@ -1,87 +1,50 @@
 # Validity Audit
 
-**A self-falsification protocol for any artifact that makes claims — and an audit that
-audits itself.**
+**A self-falsification protocol and reference runtime for bounded, evidence-backed claims about
+agent-produced work.**
 
-Most AI-era verification is a static checklist. Static evaluators decay: they miss
-failure modes nobody wrote down, they get gamed by the thing they measure, and nobody
-knows whether last month's revision made them better or worse. This project treats the
-audit protocol as a system under evaluation too.
+Validity Audit does not certify an agent, model, organization, or workflow globally. It produces an
+**unsigned validity attestation for one task run over one digest-bound artifact set**. The record
+says what was claimed, what evidence was reviewed, what reproduced findings triggered policy, and
+which exact bytes the result covers.
 
-## Three ideas
+The project exists because static evaluators decay. Builders miss their own assumptions; reviewers
+can hallucinate findings; public benchmarks get optimized against. Validity Audit combines
+independent review, reproduction gates, an accreting miss ledger, and public-key regression tests so
+the evaluator can be challenged too.
 
-**1. Adversarial two-stage review with a reproduction gate.**
-The builder runs a mechanical audit; then an independent reviewer who did *not* build
-the artifact attacks it. No finding counts until it is **reproduced** — by a runnable
-read-only check, or pinned to file:line with verbatim quotes. This blocks both builder
-blind spots and reviewer hallucinations.
+> **Maturity:** v0.3 release candidate work. The CLI path below is implemented and tested; signing,
+> provider adapters, API-key installation, and global agent certification are not.
 
-**2. A miss-ledger that makes the evaluator evolve.**
-Every failure the audit *didn't* catch is appended to a ledger as a category + detector.
-The next audit opens by replaying all historical misses as mandatory challenges. The
-checklist compounds; it is never finished. → [`protocol/COEVOLUTION.md`](protocol/COEVOLUTION.md)
+## Quickstart: reproduce the public golden case
 
-**3. Golden-case regression benchmarking — the audit's own scorecard.**
-For each audited target, verified expert findings become an answer key. After every
-protocol revision, a reviewer re-audits the target and the result is compared with the
-frozen key. Once a key is public, this measures regression against known failures — not
-fresh cold-review performance. Protocol changes get a number, not a feeling.
-→ [`golden_cases/`](golden_cases/)
+These are the same install and execution commands used by the offline CI job:
 
-## Historical result and provenance
-
-Generalizing the protocol (v1 → v2) was validated on a real content-pipeline case with
-a 6-finding expert key. The reported **~2.5/6** v1 figure was a retrospective
-structural-ceiling estimate, not a measured cold run. The **5/6** v2 figure was measured
-by a reviewer that was cold before the key was published; because the key is now public,
-future runs on this case are regression checks. That review additionally surfaced
-**two confirmed bugs in the target's own anti-fabrication gate**
-(empty-string subset pass, cross-item marking pass) that the builder had never noticed.
-The most instructive catch: the builder's verbal claim "covers all 110 items" was false
-(107) — *builders forget to verify their own claims; that is why independent review exists.*
-
-## How to use this
-
-This release includes the protocol, reference primitives, and one deliberately narrow
-end-to-end v0.3 CLI path. There are three ways in, by increasing effort:
-
-**1. Claude Code users: install it as a skill.**
-
-```
-/plugin marketplace add https://github.com/klmtseng/claude-skills-marketplace
+```console
+python -m pip install -e .
+python golden_cases/self_contained/doc-bundle-01/run_case.py
 ```
 
-The validity-audit skill ships in that marketplace. Invoke it before shipping anything
-that makes claims; it walks the agent through the six-step workflow (pin the claims →
-replay ledger challenges → mechanical audit → fresh-context adversarial review →
-reproduction gate → correction and ledger append).
+The second command runs `prepare` and `finalize`, verifies the complete unsigned attestation, and
+scores the imported reviewer fixture against a frozen key. Its final line is:
 
-**2. Any team or LLM workflow: adopt the process.**
+```text
+Golden case PASS: expected fail attestation and 1/1 regression score reproduced
+```
 
-No code required. The core is four rules:
+The apparent contrast is intentional: the audit correctly returns a blocking `fail` for the planted
+artifact defect, while the benchmark passes because that expected finding was reproduced. The case
+uses no API key; CI also blocks outbound socket access during execution.
 
-1. The builder self-audits against the relevant checklist in `domains/`.
-2. Someone who did not build the thing (a person, or a fresh model session) attacks the claims.
-3. No finding counts until it reproduces: a runnable read-only check, or a file:line quote.
-4. Every miss goes into a ledger; the next audit opens by replaying all historical misses.
+## Run one audit
 
-Copy `protocol/` into your process docs and start with rule 3. The reproduction gate is
-the piece that kills builder blind spots and reviewer hallucinations at the same time.
+Create a JSON task contract that names one task, its bounded claims, repository-relative artifacts,
+domain packs, and any reason-bearing policy overrides. Then prepare a fresh run directory:
 
-**3. Engineers: run or port the reference implementation.**
-
-Three mechanisms transplant independently into an existing harness: two-stage adversarial
-review with a reproduction gate (fits code review or CI), the miss-ledger
-(`protocol/ledger.py`, a small script with no dependencies), and golden-case recall
-scoring for your own evaluator (`golden_cases/` shows the historical format). The
-packaged runtime now proves one provider-neutral integration path:
-
-```bash
-python -m pip install -e ".[dev]"
-
+```console
 validity-audit prepare \
   --workspace . \
-  --contract golden_cases/self_contained/doc-bundle-01/task_contract.json \
+  --contract path/to/task_contract.json \
   --run-dir .validity-audit/runs/my-run \
   --review-context cold \
   --reviewer-kind human \
@@ -89,11 +52,11 @@ validity-audit prepare \
   --operator-id local-operator
 ```
 
-Give the emitted `review_bundle.json` to any independent reviewer. Retain their raw
-transcript and collect structured output matching
-[`schemas/reviewer_output.schema.json`](schemas/reviewer_output.schema.json), then run:
+Give the emitted `review_bundle.json`—not the answer key or miss ledger—to an independent reviewer.
+Retain the raw transcript and collect JSON that validates against
+[`schemas/reviewer_output.schema.json`](schemas/reviewer_output.schema.json). Then finalize:
 
-```bash
+```console
 validity-audit finalize \
   --workspace . \
   --run-dir .validity-audit/runs/my-run \
@@ -101,74 +64,218 @@ validity-audit finalize \
   --transcript path/to/raw_transcript.txt
 ```
 
-`prepare` validates the task contract, snapshots the exact artifact bytes, computes the
-digest chain, and runs deterministic probes. `finalize` refuses changed artifacts, retains
-the transcript, imports findings without trusting finder-supplied policy results, applies
-the versioned error-class policy, emits human- and machine-readable unsigned attestations,
-and appends a canonical receipt to `.validity-audit/attestations.jsonl`.
+`prepare` validates the contract, snapshots the exact artifact bytes, computes the digest chain,
+runs deterministic probes, and emits the provider-neutral review bundle. `finalize` refuses changed
+evidence, retains the raw transcript, imports findings without trusting reviewer-supplied policy
+results, applies the versioned policy, and writes:
 
-Each `prepare` invocation requires a new or empty `--run-dir`; evidence in an existing run
-directory is never overwritten. Idempotence means that fixed inputs, ids, and timestamps
-produce identical digests in separate fresh run directories—not that `prepare` mutates or
-reuses an existing directory.
+- `attestation.json` — machine-readable unsigned attestation;
+- `attestation.md` — human-readable report;
+- `run_state.json` — durable lifecycle and evidence digests;
+- an optional canonical receipt in `.validity-audit/attestations.jsonl`.
 
-The CLI has a stable automation contract:
+Every `prepare` requires a new or empty `--run-dir`. Equal inputs, ids, and timestamps produce equal
+digests in separate fresh directories; an existing evidence directory is never overwritten.
 
-| Exit code | Meaning |
-|---|---|
-| `0` | prepared successfully, or finalized as `pass` / `pass_with_waiver` |
+### Exit-code contract
+
+| Code | Meaning |
+|---:|---|
+| `0` | prepare succeeded, or finalize produced `pass` / `pass_with_waiver` |
 | `1` | invalid arguments, invalid input, or another operational error |
-| `2` | finalized with a blocking `fail` disposition |
-| `3` | finalized as `needs_review` |
-| `4` | prepared evidence failed a digest or provenance check |
+| `2` | finalize emitted a blocking `fail` attestation |
+| `3` | finalize emitted a `needs_review` attestation |
+| `4` | digest or provenance mismatch; no attestation emitted |
 
-Codes `2` and `3` still emit the attestation before returning; code `4` emits no
-attestation and leaves the run awaiting review.
+## What the output looks like
 
-Run the frozen and scored end-to-end regression case with:
+The human-readable report is deliberately short:
 
-```bash
-python golden_cases/self_contained/doc-bundle-01/run_case.py
+```markdown
+# Unsigned Validity Attestation
+
+- Task: `golden-doc-bundle-01`
+- Status: **fail**
+- Policy: `validity-audit-default-v0.3.0`
+
+## Findings
+
+- `incorrect-artifact-count` — **fail** — Details file overstates the audited artifact count
+
+> This v0.3 record is unsigned. It covers one task run and one artifact set;
+> it does not certify an agent globally.
 ```
 
-The separate `validity-audit-ledger` command remains available for replaying historical
-misses.
+See the complete, schema-valid
+[`docs/attestation-example.json`](docs/attestation-example.json). Its artifact, contract, review
+bundle, and transcript digests are real and reproduced by CI.
 
-This repo is the canonical protocol upstream and reference implementation.
+## Architecture: five assurance layers
 
-If you try any of these and it breaks, an issue describing the failure is worth more
-to me than a star.
+![Validity Audit five-layer architecture and adoption modes](docs/architecture.svg)
 
-## Architecture and maturity
+The layers are assurance responsibilities, not five Python packages:
 
-The five layers below are documentation vocabulary, not five Python packages. v0.3 is
-deliberately proving one integration path before adding provider-specific surfaces.
-
-| Layer | v0.3 surface | Status |
+| Layer | Responsibility | v0.3 implementation |
 |---|---|---|
-| 1. Contract | [`schemas/task_contract.schema.json`](schemas/task_contract.schema.json) | available |
-| 2. Evidence collection | artifact snapshots, digest manifest, deterministic probes, domain packs | available; probe set intentionally small |
-| 3. Independent review | provider-neutral bundle + structured import + raw transcript retention | available, operator-in-the-loop |
-| 4. Reproduction and policy | canonical finding axes + `validity-audit-default-v0.3.0` | available |
-| 5. Audit record | JSON + Markdown attestation + append-only receipt ledger | available, explicitly unsigned |
+| 1. Contract | Bound one task, claims, artifact set, packs, and overrides | versioned task-contract schema |
+| 2. Evidence | Snapshot bytes, compute digests, run deterministic probes | artifact manifest, probe report, review bundle |
+| 3. Independent review | Separate builder from reviewer and retain what the reviewer saw | cold/primed context, provider-neutral import, raw transcript |
+| 4. Reproduction and policy | Distinguish suspicion from reproduced failure | four finding axes, error-class gates, waivers |
+| 5. Audit record | Bind the outcome to one run and artifact set | JSON/Markdown attestation plus receipt ledger |
 
-The current attestation is explicitly unsigned. Signing, verification, provider adapters,
-and API-key-managed model installation are future work. The existing Claude Code skill is
-a downstream integration of this public protocol, not a separate upstream.
+The digest chain covers the task contract, every artifact, the canonical artifact manifest, probe
+report, review bundle, raw transcript, and final attestation receipt. Changing an artifact voids the
+record for the changed bytes.
 
-## Structure
+## Three adoption modes
 
-| Path | What it is |
+| Adoption mode | Maturity | What exists now |
+|---|---|---|
+| End-to-end repository / CLI | **Available** | install the package; run `prepare` and `finalize`; reproduce the public golden case |
+| Plugin or agent skill | **Partial / downstream** | the Claude Code skill applies this public protocol, but plugin distribution is maintained outside this repository |
+| Embedded API/model integration using the user's key | **Future** | no provider adapters, API-key management, or direct model invocation in v0.3 |
+
+This repository is the canonical protocol upstream. Downstream skills or plugins should sync from
+it rather than silently becoming a second source of truth.
+
+## Cold evaluation versus public-key regression
+
+These are different claims and must remain visibly separate:
+
+| Evaluation | Reviewer receives | What it can support |
+|---|---|---|
+| Cold review | task, claims, and artifacts only; no key, hints, or miss ledger | bounded evidence about first-pass discovery, if contamination controls and denominator are documented |
+| Primed review | declared hints or prior findings | targeted coverage and deeper follow-up, not independent cold performance |
+| Public-key regression | checked-in target and frozen expected findings | whether a protocol revision lost known catches; not new cold recall |
+
+The public `doc-bundle-01` score is regression evidence. The checked-in reviewer output is a
+deterministic primed fixture, not model-performance evidence. The historical `~2.5/6` v1 figure was
+a retrospective structural-ceiling estimate; the historical `5/6` v2 figure was measured before
+that key became public. Future runs on that public key are regression runs.
+
+## Default error-class policy
+
+Policy is versioned as `validity-audit-default-v0.3.0` and is the sole writer of `gate_effect`.
+
+| Reproduced error class | Default gate effect |
 |---|---|
-| [`domains/`](domains/) | Three-tier threat model (T1 claims false / T2 unclaimed risks / T3 unfit-for-purpose) + Stage-1 checklist packs: quant, generated content, deployed systems, documentation |
-| [`golden_cases/`](golden_cases/) | Public regression mechanism + anonymized historical answer keys |
-| [`protocol/`](protocol/) | The core two-stage protocol, runnable leakage-audit template, meta-audit of the framework itself, coevolution design, worked case study |
-| [`schemas/`](schemas/) | Versioned task-contract and unsigned-attestation schemas, examples, and digest rules |
-| [`examples/self_contained/`](examples/self_contained/) | Frozen prepare/finalize demonstration with expected unsigned attestation |
+| `correctness` | `fail` |
+| `evidence_tampering` | `fail` |
+| `fabrication` | `fail` |
+| `leakage` | `fail` |
+| `material_requirement_miss` | `fail` |
+| `unauthorized_action` | `fail` |
+| `fitness` | `advisory` |
+| `maintainability` | `advisory` |
+| `other` or an unclassified open slug | `none`; overall result becomes `needs_review` |
+
+A reason-bearing task-contract override can explicitly classify a slug as `fail`, `advisory`, or
+`none`. A non-reproduced fail-class suspicion routes to `needs_review`. A waiver can change an active
+reproduced fail result only when it records issuer, reason, issue time, expiry, and the original
+policy result; it never erases the underlying finding.
+
+## Threat model and honest limits
+
+Validity Audit is designed to expose false or unsupported claims, missed material requirements,
+hidden operational risks, and true-but-unfit outputs. It reduces several failure modes but does not
+eliminate them:
+
+- **Unsigned record:** `signature` is required to be `null`; reviewer and operator labels are
+  descriptive, not authenticated identities or non-repudiation.
+- **Bounded assurance:** one attestation covers one task run and artifact set. Linked run ids do not
+  create a workflow certificate, and a passing run does not certify an agent globally.
+- **Reviewer limits:** a reviewer can still miss defects, share the builder's blind spots, or be
+  contaminated by prior context. Transcript and bundle digests record evidence boundaries but do
+  not prove the reviewer followed them.
+- **Operator honesty:** transcript retention makes later comparison possible but cannot prevent an
+  operator from withholding relevant material before it enters the run.
+- **Public-key overfitting:** published keys measure regression and are vulnerable to optimization.
+  Cold-performance claims require never-published material, a defined corpus and scorer, false
+  positives, and contamination controls.
+- **Small deterministic floor:** current probes check artifact readability and relative Markdown
+  links; the injected benchmark deliberately shows 0/5 reasoning-level coverage.
+- **No provider execution:** v0.3 generates and imports review material but does not call a model,
+  manage API keys, sandbox reviewers, or guarantee model-family independence.
+- **No signing or supply-chain identity:** artifact digests detect byte mismatch; they do not attest
+  who created the artifact, who ran the audit, or whether the runner itself was trustworthy.
+- **No multi-file crash transaction:** evidence files are atomic and ledger duplicates are
+  preflighted, but v0.3 does not claim transactional rollback across every output.
+
+## Audit the auditor
+
+Validity Audit keeps two feedback mechanisms:
+
+1. **Miss-ledger coevolution:** every verified miss becomes a replayable challenge for the next run.
+2. **Golden-case regression:** after a protocol change, replay frozen public findings and report
+   misses and unexpected findings. Unexpected findings require adjudication; a key change creates a
+   new immutable version.
+
+The planted deterministic-floor benchmark makes the current lower boundary explicit:
+
+| Class | Caught | False alarms / clean cases |
+|---|---:|---:|
+| Mechanical planted defects | 6/6 | 0/6 |
+| Reasoning-level planted defects | 0/5 | — |
+| Overall deterministic floor | 6/11 | — |
+
+That is a reason to require independent review, not a claim that the evaluator is complete.
+
+## Compatibility window
+
+The canonical v0.3 paths and their legacy launchers are:
+
+| Legacy path | Canonical replacement | Support window |
+|---|---|---|
+| `protocol/injected_bug_recall.py` | `benchmarks/injected/run.py` | retained through all v0.3.x releases; earliest removal v0.4.0 |
+| `examples/self_contained/run_demo.py` | `golden_cases/self_contained/doc-bundle-01/run_case.py` | retained through all v0.3.x releases; earliest removal v0.4.0 |
+| `protocol/ledger.py` | `validity-audit-ledger` or `validity_audit/ledger.py` | retained through all v0.3.x releases; earliest removal v0.4.0 |
+
+Any removal requires a changelog entry and migration note; v0.3 compatibility behavior is tested in
+CI.
+
+## Repository map
+
+| Path | Purpose |
+|---|---|
+| [`validity_audit/`](validity_audit/) | reference runtime, policy, probes, schemas, digests, and ledger |
+| [`schemas/`](schemas/) | public JSON Schemas, examples, and canonicalization rules |
+| [`domains/`](domains/) | checklist packs and three-tier threat model |
+| [`benchmarks/`](benchmarks/) | injected deterministic floor, public-key scorer, and offline guard |
+| [`golden_cases/`](golden_cases/) | historical public keys and the runnable self-contained case |
+| [`protocol/`](protocol/) | protocol design, coevolution, meta-audit, and compatibility shims |
+| [`docs/`](docs/) | architecture and worked attestation artifacts |
+
+## Roadmap
+
+The next gate is **not** an automatic release. After the benchmark and documentation PRs merge, the
+separate v0.3 release gate must rerun tests, clean-install and wheel checks, offline reproduction,
+link and hygiene checks, digest recomputation, limitation review, and an independent reviewed-SHA
+audit.
+
+Later candidates include:
+
+- signed attestations and verification with explicit identity semantics;
+- provider adapters and user-controlled API-key integrations;
+- pack discovery and compatibility validation;
+- protected never-published cold corpora and contamination controls;
+- cross-case regression reporting without double-counting aliases;
+- stronger transactional and supply-chain guarantees.
+
+No roadmap item is presented as available until it ships and is exercised by CI.
 
 ## Origin
 
-Distilled from ~30 audited projects (quant backtests, generative-narrative engines,
-educational content pipelines, deployed prediction systems, internal rule sets). First
-published as part of [relationship-validity-monitor](https://github.com/klmtseng/relationship-validity-monitor);
-promoted to a standalone project when the protocol generalized beyond finance.
+The protocol was distilled from audits of quant backtests, generative systems, educational content
+pipelines, deployed prediction systems, and internal rule sets. It first appeared inside
+[relationship-validity-monitor](https://github.com/klmtseng/relationship-validity-monitor) and
+became a standalone project when the failure pattern generalized beyond finance.
+
+See [`protocol/COEVOLUTION.md`](protocol/COEVOLUTION.md) for the miss-ledger design,
+[`protocol/META_AUDIT.md`](protocol/META_AUDIT.md) for the framework's own audit, and
+[`golden_cases/README.md`](golden_cases/README.md) for public-key provenance.
+
+---
+
+MIT License. This is research and engineering infrastructure, not investment, legal, safety, or
+compliance advice.

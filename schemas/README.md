@@ -144,7 +144,7 @@ The default policy is error-class based:
 | Error class | Default result when reproduced |
 |---|---|
 | `correctness`, `evidence_tampering`, `fabrication`, `leakage`, `material_requirement_miss`, `unauthorized_action` | `fail` |
-| `maintainability` | `advisory` |
+| `fitness`, `maintainability` | `advisory` |
 | `other` or any unclassified open slug | `none`; overall `needs_review` |
 
 Reason-bearing task-contract overrides can replace an error class with `fail`,
