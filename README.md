@@ -191,7 +191,9 @@ eliminate them:
   create a workflow certificate, and a passing run does not certify an agent globally.
 - **Reviewer limits:** a reviewer can still miss defects, share the builder's blind spots, or be
   contaminated by prior context. Transcript and bundle digests record evidence boundaries but do
-  not prove the reviewer followed them.
+  not prove the reviewer followed them. Reviewer-controlled `finding.title` values are neutralised
+  to literal text in `attestation.md` (inline CommonMark punctuation backslash-escaped; line
+  separators collapsed to a space); they cannot form clickable links, images, or raw HTML.
 - **Operator honesty:** transcript retention makes later comparison possible but cannot prevent an
   operator from withholding relevant material before it enters the run.
 - **Public-key overfitting:** published keys measure regression and are vulnerable to optimization.

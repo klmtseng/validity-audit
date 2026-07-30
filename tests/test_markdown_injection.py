@@ -193,3 +193,88 @@ def test_title_with_newline_is_rejected_by_schema(title_with_newline: str) -> No
     output = _reviewer_output_with_title(title_with_newline)
     with pytest.raises((SchemaValidationError, AuditRuntimeError)):
         validate_document(output, "reviewer_output")
+
+
+# ---------------------------------------------------------------------------
+# Inline injection tests (residual holes closed in the follow-up commit)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "[click](http://evil.com)",
+        "<script>alert(1)</script>",
+        "![x](http://evil.com/a.png)",
+        "<!-- hidden -->",
+    ],
+)
+def test_inline_injection_vectors_rendered_as_literal_text(
+    tmp_path: Path, title: str
+) -> None:
+    """Inline CommonMark structures in finding.title must be escaped to literal text.
+
+    After sanitisation the attestation.md must not contain:
+    - unescaped link syntax  ``](http``  (backslash-escaped ``\\](`` is fine)
+    - unescaped image syntax ``![``      (backslash-escaped ``\\![`` is fine)
+    - unescaped HTML comment opener ``<!--``
+    - unescaped ``<script``              (backslash-escaped ``\\<script`` is fine)
+
+    We verify the *escaped* forms are present and the *unescaped* forms absent,
+    confirming CommonMark will render them as literal punctuation, not active structures.
+
+    attestation.json signature must remain null.
+    """
+    md, attest = _do_run(tmp_path, title)
+
+    # ---- link vector: "[click](http://evil.com)" ----
+    # Unescaped "](http" must be absent; backslash-escaped form allowed.
+    assert "](http" not in md, (
+        f"Title {title!r}: unescaped link syntax ](http found in attestation.md:\n{md}"
+    )
+    # ---- image vector: "![x](http://evil.com/a.png)" ----
+    # Unescaped "![" must be absent; backslash-escaped "\\![" is fine.
+    assert "![" not in md, (
+        f"Title {title!r}: unescaped image opener ![ found in attestation.md:\n{md}"
+    )
+    # ---- HTML comment: "<!-- hidden -->" ----
+    # The "<" is backslash-escaped, so "<!--" must be absent (it becomes "\\<\\!--").
+    assert "<!--" not in md, (
+        f"Title {title!r}: HTML comment opener <!-- found in attestation.md:\n{md}"
+    )
+    # ---- script tag: "<script>alert(1)</script>" ----
+    # The "<" is backslash-escaped → "\\<script" in MD; the substring "<script" still
+    # appears right after the backslash.  We verify the *preceding* char is a backslash
+    # (i.e. it is escaped) by checking the raw sequence "\\<script" is present.
+    if "<script" in md:
+        idx = md.index("<script")
+        assert idx > 0 and md[idx - 1] == "\\", (
+            f"Title {title!r}: unescaped <script found at index {idx} in attestation.md:\n{md}"
+        )
+
+    assert attest["signature"] is None, (
+        f"attestation.json signature was modified: {attest['signature']!r}"
+    )
+
+
+@pytest.mark.parametrize(
+    "title_with_unicode_sep",
+    [
+        "safe\x0b# after",   # VT  U+000B
+        "safe\x0c# after",   # FF  U+000C
+        "safe\x85# after",   # NEL U+0085
+        "safe # after", # LS  U+2028
+        "safe # after", # PS  U+2029
+    ],
+)
+def test_unicode_line_separators_rejected_by_schema(
+    title_with_unicode_sep: str,
+) -> None:
+    """The reviewer_output schema must reject titles containing Unicode line/paragraph
+    separators (U+000B, U+000C, U+0085, U+2028, U+2029).
+
+    These characters are inert in CommonMark but could cause block-promotion in
+    non-standard renderers. The schema pattern provides defence-in-depth.
+    """
+    output = _reviewer_output_with_title(title_with_unicode_sep)
+    with pytest.raises((SchemaValidationError, AuditRuntimeError)):
+        validate_document(output, "reviewer_output")

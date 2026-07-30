@@ -6,21 +6,26 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- **Markdown injection (tag-blocking):** reviewer-controlled `finding.title` values are now
-  sanitized before insertion into `attestation.md`.  Newlines are collapsed to a space;
-  leading markdown structural characters (`#`, `-`, `>`, `|`, backtick) are backslash-escaped
-  so they cannot take effect as block-level elements.  The `reviewer_output` schema now
-  additionally enforces a single-line constraint on `title` (pattern `^[^\n\r]*$`).
+- **Markdown injection (tag-blocking, extended):** reviewer-controlled `finding.title`
+  values are sanitized before insertion into `attestation.md`.  ASCII newlines and Unicode
+  line/paragraph separators (U+000B, U+000C, U+0085, U+2028, U+2029) are collapsed to a
+  space; all CommonMark inline punctuation characters (`\`, `[`, `]`, `(`, `)`, `_`, `*`,
+  `~`, `<`, `>`, `!`, `&`, backtick) are backslash-escaped so links, images, raw HTML,
+  HTML comments, and emphasis spans render as literal text.  Leading markdown structural
+  characters (`#`, `-`, `>`, `|`, backtick) are additionally escaped for belt-and-suspenders
+  block-level protection.  The `reviewer_output` schema now enforces a single-line
+  constraint on `title` (pattern `^[^\n\r  ]*$`) to block
+  Unicode line-separator bypass at the schema layer.
 - **Receipt-digest overclaim (tag-blocking):** documentation incorrectly stated that the
   digest chain covers the "final attestation receipt".  The receipt ledger
   (`.validity-audit/attestations.jsonl`) holds the attestation SHA-256 but is itself a
   mutable append-only file not included in the chain.  README corrected to reflect the
   actual boundary.
 - **Dev-install test collection failure (tag-blocking):** `tests/test_benchmarks.py`
-  imported `benchmarks/injected/run.py`, which unconditionally imported `numpy` (a `quant`
-  extra).  A fresh `.[dev]` install without `quant` caused collection to abort.  Fixed by
-  lazy-importing numpy inside `run.py` with a graceful `None` fallback, and guarding the
-  two affected benchmark tests with `pytest.importorskip("numpy")`.
+  imported `benchmarks/injected/run.py`, which hard-imported `numpy` (a `quant` extra).
+  A fresh `.[dev]` install without `quant` caused collection to abort.  Fixed by guarding
+  the two numpy-dependent benchmark tests with `pytest.importorskip("numpy")`; the tests
+  are skipped when numpy is absent and collected normally when it is present.
 
 ## Unreleased
 
