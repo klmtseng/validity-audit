@@ -84,7 +84,7 @@
     "summary": "One or more reproduced findings triggered a fail-class policy gate."
   },
   "review": {
-    "bundle_sha256": "286ae3d371130fa30556d4f23d6eea153fcb76110d8075538911a9b77b1ab319",
+    "bundle_sha256": "c46e766d6211972d1b660a347100a5af0915cccdcbac713aa2f4c8eb464a2932",
     "context": "primed",
     "method": "operator_in_the_loop",
     "operator_id": "golden-case-runner",
