@@ -531,6 +531,29 @@ def _assert_reviewer_matches_state(
         raise AuditRuntimeError("priming sources do not match the prepared bundle")
 
 
+_MD_STRUCTURE_STARTS = ("#", "-", ">", "|", "`")
+
+
+def _sanitize_md_title(title: str) -> str:
+    """Neutralize reviewer-controlled title text for safe inline rendering in Markdown.
+
+    Two attack surfaces:
+    1. Embedded newlines that promote the remainder of the title to a new
+       Markdown block (e.g. a heading).  Mitigation: collapse all line
+       terminators to a single space.
+    2. A title that, after newline removal, begins with a Markdown structural
+       character (#, -, >, |, backtick).  When rendered as the last token on
+       a list-item line these are safe, but belt-and-suspenders: prefix a
+       backslash escape so no renderer can treat the character as structure.
+    """
+    # Step 1: remove all newline characters
+    sanitized = title.replace("\r\n", " ").replace("\r", " ").replace("\n", " ")
+    # Step 2: escape leading markdown structural characters
+    if sanitized.startswith(_MD_STRUCTURE_STARTS):
+        sanitized = "\\" + sanitized
+    return sanitized
+
+
 def _render_attestation(attestation: dict[str, Any]) -> str:
     lines = [
         "# Unsigned Validity Attestation",
@@ -562,7 +585,7 @@ def _render_attestation(attestation: dict[str, Any]) -> str:
         for finding in attestation["findings"]:
             lines.append(
                 f"- `{finding['finding_id']}` — **{finding['gate_effect']}** — "
-                f"{finding['title']}"
+                f"{_sanitize_md_title(finding['title'])}"
             )
     lines.extend(
         [
