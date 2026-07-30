@@ -36,8 +36,13 @@ Draft 2020-12 JSON Schemas define:
 - an unsigned validity attestation.
 
 The attestation binds the contract, individual artifacts, canonical artifact manifest, probe
-report, review bundle, raw transcript, and final receipt through SHA-256 digests. In v0.3,
-`signature` is required to be `null`.
+report, review bundle, and raw transcript through SHA-256 digests. The receipt ledger is a
+downstream copy that holds the attestation SHA-256; it is itself a mutable append-only file and
+is not part of the digest chain. In v0.3, `signature` is required to be `null`.
+
+Reviewer-controlled `finding.title` values are constrained to a single line by schema and
+neutralised to literal text when rendered into `attestation.md`; they cannot form headings,
+links, images, or raw HTML in the human-readable record.
 
 ### Fail-closed policy and durable run states
 
@@ -106,6 +111,7 @@ The principal receipts are:
 | [PR #5](https://github.com/klmtseng/validity-audit/pull/5) | two-stage runtime, digest chain, reviewer import, policy engine, run states, output receipts | C1–C5 revised and independently reproduced; merged through `9637208f` and `74172ab9` |
 | [PR #6](https://github.com/klmtseng/validity-audit/pull/6) | benchmark relocation, scored golden case, offline reproducibility CI | Claude Code `GO`, no conditions; merged as `fa30df92` |
 | [PR #7](https://github.com/klmtseng/validity-audit/pull/7) | release-candidate README, worked attestation, architecture diagram, N1 fitness policy, shim window | stacked `GO`, then final retarget `GO` on an identical tree; merged as `fa055647` |
+| [PR #10](https://github.com/klmtseng/validity-audit/pull/10) | pre-tag fixes from the [issue #9](https://github.com/klmtseng/validity-audit/issues/9) two-AI cross-audit: version identity, attestation markdown-injection neutralisation (block-level and inline), receipt-digest wording, dev-install test collection | roles reversed for this PR: Claude Code implemented; a fresh-context adversarial reviewer returned `GO` after a follow-up closed inline/Unicode gaps; Codex was unavailable, so no heterogeneous second view — disclosed on the PR; merged as `f6946496` |
 
 The runtime scope was agreed in
 [planning issue #3](https://github.com/klmtseng/validity-audit/issues/3). PR bodies and review
@@ -119,7 +125,7 @@ number.
 
 | Result | Provenance label | What it supports |
 |---|---|---|
-| **124/124 tests passed** on the v0.3 release-candidate tree | release-gate verification; Python 3.12 clean environment, with CI also covering Python 3.11/3.12 and offline regression | implementation and regression checks passed; this is not evaluator accuracy |
+| **142/142 tests passed** on the v0.3.0 pre-tag tree (124/124 on the earlier release-candidate tree) | release-gate verification; Python 3.12 clean environment, with CI also covering Python 3.11/3.12 and offline regression | implementation and regression checks passed; this is not evaluator accuracy |
 | **1/1 expected finding matched**, 0 missed, 0 unexpected; expected policy result `fail` | public-key regression; frozen checked-in key and primed reviewer fixture | the current protocol retains this known catch; not cold-review or model-performance evidence |
 | **6/6 mechanical planted defects caught**, **0/6 false alarms** on paired clean cases | deterministic planted benchmark; deliberately easy mechanical cases | a fixed mechanical smoke test for deterministic probes, not general precision or recall |
 | **0/5 reasoning-level planted defects caught**; **6/11 overall floor** | deterministic planted benchmark | deterministic checks do not replace independent reasoning review |
