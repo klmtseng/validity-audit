@@ -6,8 +6,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from benchmarks.golden.score import ScoringError, score_findings
-from benchmarks.injected.run import run as run_injected
 
 ROOT = Path(__file__).resolve().parents[1]
 CASE = ROOT / "golden_cases" / "self_contained" / "doc-bundle-01"
@@ -18,6 +19,8 @@ def load(name: str) -> dict:
 
 
 def test_injected_floor_baseline_is_preserved(capsys) -> None:
+    pytest.importorskip("numpy", reason="injected benchmark requires numpy (quant extra)")
+    from benchmarks.injected.run import run as run_injected
     result = run_injected()
     capsys.readouterr()
     assert result["mechanical_caught"] == 6
@@ -31,6 +34,7 @@ def test_injected_floor_baseline_is_preserved(capsys) -> None:
 
 
 def test_legacy_injected_shim_matches_canonical_output() -> None:
+    pytest.importorskip("numpy", reason="injected benchmark requires numpy (quant extra)")
     canonical = subprocess.run(
         [sys.executable, "benchmarks/injected/run.py"],
         cwd=ROOT,

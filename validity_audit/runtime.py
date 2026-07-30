@@ -531,6 +531,50 @@ def _assert_reviewer_matches_state(
         raise AuditRuntimeError("priming sources do not match the prepared bundle")
 
 
+_MD_STRUCTURE_STARTS = ("#", "-", ">", "|", "`")
+
+# CommonMark ASCII punctuation that triggers inline structures.
+# Backslash must come first so that escaping other chars doesn't double-escape it.
+_MD_INLINE_PUNCT = "\\[]()_*~<>!&`"
+
+# Unicode line/paragraph separators and control line breaks that some renderers
+# treat as block boundaries (U+000B VT, U+000C FF, U+0085 NEL, U+2028 LS, U+2029 PS).
+_UNICODE_LINE_SEPS = ("\x0b", "\x0c", "\x85", " ", " ")
+
+
+def _sanitize_md_title(title: str) -> str:
+    """Neutralize reviewer-controlled title text for safe inline rendering in Markdown.
+
+    Three attack surfaces:
+    1. Embedded newlines that promote the remainder of the title to a new
+       Markdown block (e.g. a heading).  Mitigation: collapse all ASCII line
+       terminators and Unicode line/paragraph separators to a single space.
+    2. A title that, after newline removal, begins with a Markdown structural
+       character (#, -, >, |, backtick).  When rendered as the last token on
+       a list-item line these are safe, but belt-and-suspenders: prefix a
+       backslash escape so no renderer can treat the character as structure.
+    3. Inline CommonMark punctuation that forms links, images, raw HTML, code
+       spans, emphasis, or HTML comments.  Each punctuation character is
+       backslash-escaped so CommonMark parsers treat it as a literal character.
+    """
+    # Step 1: collapse ASCII newlines and Unicode line/paragraph separators
+    sanitized = title.replace("\r\n", " ").replace("\r", " ").replace("\n", " ")
+    for sep in _UNICODE_LINE_SEPS:
+        sanitized = sanitized.replace(sep, " ")
+    # Step 2: backslash-escape every inline CommonMark punctuation character
+    # (backslash is processed first to avoid double-escaping subsequent chars)
+    result = []
+    for ch in sanitized:
+        if ch in _MD_INLINE_PUNCT:
+            result.append("\\")
+        result.append(ch)
+    sanitized = "".join(result)
+    # Step 3: escape leading markdown block-structural characters (belt-and-suspenders)
+    if sanitized.startswith(_MD_STRUCTURE_STARTS):
+        sanitized = "\\" + sanitized
+    return sanitized
+
+
 def _render_attestation(attestation: dict[str, Any]) -> str:
     lines = [
         "# Unsigned Validity Attestation",
@@ -562,7 +606,7 @@ def _render_attestation(attestation: dict[str, Any]) -> str:
         for finding in attestation["findings"]:
             lines.append(
                 f"- `{finding['finding_id']}` — **{finding['gate_effect']}** — "
-                f"{finding['title']}"
+                f"{_sanitize_md_title(finding['title'])}"
             )
     lines.extend(
         [
