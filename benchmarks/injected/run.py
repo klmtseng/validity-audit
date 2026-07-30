@@ -28,7 +28,12 @@ import sys
 import tempfile
 from pathlib import Path
 
-import numpy as np
+try:
+    import numpy as np
+    _NUMPY_AVAILABLE = True
+except ImportError:
+    np = None  # type: ignore[assignment]
+    _NUMPY_AVAILABLE = False
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -71,7 +76,9 @@ def flagged_survivorship(bug: bool) -> bool | None:
     return "RED_FLAG" in r["verdict"]
 
 
-def flagged_label_shuffle(bug: bool) -> bool:
+def flagged_label_shuffle(bug: bool) -> bool | None:
+    if not _NUMPY_AVAILABLE:
+        return None
     rng = np.random.default_rng(0)
     X = rng.normal(size=(300, 3))
     signal = X[:, 0] + 0.3 * rng.normal(size=300)
@@ -85,7 +92,9 @@ def flagged_label_shuffle(bug: bool) -> bool:
     return "RED_FLAG" in r["verdict"]
 
 
-def flagged_ci(bug: bool) -> bool:
+def flagged_ci(bug: bool) -> bool | None:
+    if not _NUMPY_AVAILABLE:
+        return None
     # claim: strategy mean beats baseline 0.0. bug: noisy values whose CI overlaps 0.
     rng = np.random.default_rng(2)
     vals = rng.normal(0.05, 0.5, size=8) if bug else rng.normal(1.2, 0.2, size=8)
