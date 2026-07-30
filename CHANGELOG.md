@@ -21,6 +21,13 @@ All notable changes to this project will be documented in this file.
   (`.validity-audit/attestations.jsonl`) holds the attestation SHA-256 but is itself a
   mutable append-only file not included in the chain.  README corrected to reflect the
   actual boundary.
+- **Golden-case fixture regenerated after the schema tightening:** the review bundle
+  embeds the `reviewer_output` schema, so the single-line `title` constraint above changed
+  `review.bundle_sha256` (`286ae3d3…` → `c46e766d…`). `expected_attestation.json` and
+  `docs/attestation-example.json` are updated to the new digest; every other attestation
+  field is byte-identical (verified by field-level diff). The scoring key (`key-v1.json`)
+  is unchanged — this is a fixture refresh forced by a deliberate schema change, not a
+  behavioral change to scoring or evaluation.
 - **Dev-install test collection failure (tag-blocking):** `tests/test_benchmarks.py`
   imported `benchmarks/injected/run.py`, which hard-imported `numpy` (a `quant` extra).
   A fresh `.[dev]` install without `quant` caused collection to abort.  Fixed by guarding
