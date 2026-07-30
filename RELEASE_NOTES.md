@@ -1,7 +1,7 @@
 # Validity Audit v0.3.0
 
-> **Draft release notes.** v0.3.0 has not been tagged or published. These notes require
-> project-owner approval before a separate release authorization.
+> **Approved release notes.** Reviewed through the three-party loop (PR #8, verdict `GO` at
+> `be7b85de`) and approved by the project owner, who authorized the `v0.3.0` tag and release.
 
 Validity Audit v0.3.0 turns the repository's self-falsification protocol into a runnable,
 provider-neutral reference path for one bounded audit:
