@@ -39,7 +39,9 @@ uses no API key; CI also blocks outbound socket access during execution.
 ## Run one audit
 
 Create a JSON task contract that names one task, its bounded claims, repository-relative artifacts,
-domain packs, and any reason-bearing policy overrides. Then prepare a fresh run directory:
+domain packs, and any reason-bearing policy overrides. See
+[`schemas/examples/task_contract.json`](schemas/examples/task_contract.json) for a minimal example.
+Then prepare a fresh run directory:
 
 ```console
 validity-audit prepare \
@@ -125,8 +127,10 @@ The layers are assurance responsibilities, not five Python packages:
 | 5. Audit record | Bind the outcome to one run and artifact set | JSON/Markdown attestation plus receipt ledger |
 
 The digest chain covers the task contract, every artifact, the canonical artifact manifest, probe
-report, review bundle, raw transcript, and final attestation receipt. Changing an artifact voids the
-record for the changed bytes.
+report, review bundle, raw transcript, and final attestation. Changing an artifact voids the
+record for the changed bytes. The optional receipt ledger (`.validity-audit/attestations.jsonl`)
+holds the attestation SHA-256 but is itself a mutable append-only file and is not part of the
+digest chain.
 
 ## Three adoption modes
 
