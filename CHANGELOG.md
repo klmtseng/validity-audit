@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Domain pack: external repository intake** (`domains/external-repo.md`, X1–X8) —
+  claims surface (listed ≠ shipped, fixture ≠ runtime, marketing-quantity trust chain)
+  plus pre-execution safety surface (installer env-override injection, diagnostic
+  commands that write, exhaustive egress enumeration, extension sandbox model, SSRF /
+  callback surface). Pack-specific non-negotiable: cross-family review — in the source
+  audit, all four safety-surface findings missed by three same-family perspectives came
+  from the cross-family reviewer. Ships without a public golden key for now: the source
+  case targets an unnamed third-party repository, so a deterministic public
+  reproduction key is not yet possible.
+
 ## [0.3.0] — 2026-07-30
 
 ### Fixed

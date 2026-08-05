@@ -10,6 +10,7 @@ checklist changes. Route by target type; load multiple packs if the target spans
 | Generated content / educational material / datasets | `content.md` |
 | Deployed systems / pipelines / project handoff | `systems.md` |
 | Documentation / rule sets / runbooks | `docs.md` |
+| External repository intake (pre-execution) | `external-repo.md` — cross-family review is non-negotiable for this pack |
 
 ## Three-tier threat model (decide before you start)
 
