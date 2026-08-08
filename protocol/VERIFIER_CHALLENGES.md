@@ -69,10 +69,15 @@ Not every off-the-shelf tool needs a repository fixture. The requirement is stro
 - a missing non-Markdown artifact that must fail closed rather than being reported readable;
 - non-UTF-8 Markdown that must fail the link checker rather than crashing or disappearing.
 
-`tests/test_benchmarks.py` also challenges the public-key scorer's denominator semantics. The scorer
-must distinguish an explicit empty `expected_findings`, `findings`, or `claim_results` list from a
-missing field. Missing denominator-bearing fields are malformed evidence and must raise a scoring
-error rather than being silently interpreted as zero observations.
+`tests/test_benchmarks.py` challenges the public-key scorer's denominator semantics. The scorer must
+distinguish an explicit empty `expected_findings`, `findings`, or `claim_results` list from a missing
+field. Missing denominator-bearing fields are malformed evidence and must raise a scoring error
+rather than being silently interpreted as zero observations.
+
+`tests/test_runtime.py` challenges the real review-import path used by `finalize_run`. A complete
+claim set must import successfully, while incomplete claim coverage, links to findings that were not
+imported, and a refuted claim with no linked finding must fail before an attestation is emitted. This
+keeps review evidence from becoming a clean record after linkage information is missing or invalid.
 
 These controls are intentionally narrow. They do not imply that every verifier in the repository has
 standing challenges yet.

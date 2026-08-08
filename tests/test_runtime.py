@@ -406,6 +406,64 @@ def test_finalize_rejects_review_identity_mismatch(tmp_path: Path) -> None:
         )
 
 
+def test_review_import_positive_control_exact_claim_coverage_passes(tmp_path: Path) -> None:
+    workspace = make_workspace(tmp_path)
+    prepare(workspace)
+    result = finalize(workspace, reviewer_output(), append_ledger=False)
+    assert result["status"] == "pass"
+
+
+def test_review_import_negative_control_missing_claim_result_fails_closed(tmp_path: Path) -> None:
+    workspace = make_workspace(tmp_path)
+    prepare(workspace)
+    output = reviewer_output()
+    output["claim_results"] = []
+    write_json(workspace / "reviewer-output.json", output)
+    (workspace / "transcript.txt").write_text("Transcript.\n", encoding="utf-8")
+    with pytest.raises(AuditRuntimeError):
+        finalize_run(
+            workspace=workspace,
+            run_dir=".validity-audit/runs/test-run",
+            reviewer_output_path="reviewer-output.json",
+            transcript_path="transcript.txt",
+            completed_at=COMPLETED,
+            issued_at=ISSUED,
+            append_ledger=False,
+        )
+    assert not (workspace / ".validity-audit/runs/test-run/attestation.json").exists()
+
+
+def test_review_import_fault_control_unknown_finding_link_fails_closed(tmp_path: Path) -> None:
+    workspace = make_workspace(tmp_path)
+    prepare(workspace)
+    output = reviewer_output()
+    output["claim_results"][0]["finding_ids"] = ["finding-that-was-not-imported"]
+    write_json(workspace / "reviewer-output.json", output)
+    (workspace / "transcript.txt").write_text("Transcript.\n", encoding="utf-8")
+    with pytest.raises(AuditRuntimeError, match="references unknown findings"):
+        finalize_run(
+            workspace=workspace,
+            run_dir=".validity-audit/runs/test-run",
+            reviewer_output_path="reviewer-output.json",
+            transcript_path="transcript.txt",
+            completed_at=COMPLETED,
+            issued_at=ISSUED,
+            append_ledger=False,
+        )
+    assert not (workspace / ".validity-audit/runs/test-run/attestation.json").exists()
+
+
+def test_review_import_negative_control_refuted_claim_without_finding_fails_closed(
+    tmp_path: Path,
+) -> None:
+    workspace = make_workspace(tmp_path)
+    prepare(workspace)
+    output = reviewer_output(outcome="refuted")
+    with pytest.raises(AuditRuntimeError, match="must reference a finding"):
+        finalize(workspace, output, append_ledger=False)
+    assert not (workspace / ".validity-audit/runs/test-run/attestation.json").exists()
+
+
 def test_finalize_cannot_run_twice(tmp_path: Path) -> None:
     workspace = make_workspace(tmp_path)
     prepare(workspace)
