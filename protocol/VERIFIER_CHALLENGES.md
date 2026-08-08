@@ -4,7 +4,7 @@ A validity claim can fail even when every reported check is green. The check its
 fail-open, may silently skip inputs, or may produce a number that no longer measures the property
 its name implies.
 
-This document defines the v0.4 development contract for challenging **home-grown verifiers** and
+This document defines the v0.4 verifier-challenge contract for challenging **home-grown verifiers** and
 wrappers whose result contributes to an audit conclusion. It does not make v0.3 attestations
 stronger retroactively, and it does not claim that negative controls prove a specification is fit
 for purpose.
