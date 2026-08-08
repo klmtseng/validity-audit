@@ -26,11 +26,22 @@ def _load_object(path: Path, label: str) -> dict[str, Any]:
     return value
 
 
+def _required_list(document: dict[str, Any], field: str, label: str) -> list[Any]:
+    if field not in document:
+        raise ScoringError(f"{label} is missing required field {field!r}")
+    value = document[field]
+    if not isinstance(value, list):
+        raise ScoringError(f"{label} field {field!r} must be a list")
+    return value
+
+
 def _unique_by_id(
     records: list[dict[str, Any]], id_field: str, label: str
 ) -> dict[str, dict[str, Any]]:
     indexed: dict[str, dict[str, Any]] = {}
     for record in records:
+        if not isinstance(record, dict):
+            raise ScoringError(f"{label} must contain JSON objects")
         record_id = record.get(id_field)
         if not isinstance(record_id, str) or not record_id:
             raise ScoringError(f"{label} contains a missing or invalid {id_field}")
@@ -42,9 +53,22 @@ def _unique_by_id(
 
 def _claim_links(reviewer_output: dict[str, Any]) -> dict[str, set[str]]:
     links: dict[str, set[str]] = {}
-    for result in reviewer_output.get("claim_results", []):
+    for result in _required_list(reviewer_output, "claim_results", "reviewer output"):
+        if not isinstance(result, dict):
+            raise ScoringError("reviewer claim_results must contain JSON objects")
         claim_id = result.get("claim_id")
-        for finding_id in result.get("finding_ids", []):
+        if not isinstance(claim_id, str) or not claim_id:
+            raise ScoringError("reviewer claim_results contains a missing or invalid claim_id")
+        finding_ids = result.get("finding_ids")
+        if not isinstance(finding_ids, list):
+            raise ScoringError(
+                f"reviewer claim result {claim_id!r} is missing a valid finding_ids list"
+            )
+        for finding_id in finding_ids:
+            if not isinstance(finding_id, str) or not finding_id:
+                raise ScoringError(
+                    f"reviewer claim result {claim_id!r} contains an invalid finding_id"
+                )
             links.setdefault(finding_id, set()).add(claim_id)
     return links
 
@@ -57,10 +81,14 @@ def score_findings(
         raise ScoringError("key must declare record_type=frozen_regression_key and frozen=true")
 
     expected = _unique_by_id(
-        key.get("expected_findings", []), "finding_id", "expected findings"
+        _required_list(key, "expected_findings", "key"),
+        "finding_id",
+        "expected findings",
     )
     actual = _unique_by_id(
-        reviewer_output.get("findings", []), "finding_id", "reviewer findings"
+        _required_list(reviewer_output, "findings", "reviewer output"),
+        "finding_id",
+        "reviewer findings",
     )
     claim_links = _claim_links(reviewer_output)
 
