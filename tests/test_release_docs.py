@@ -62,18 +62,23 @@ def test_verifier_challenge_contract_names_all_three_controls() -> None:
         assert required in protocol
 
 
-def test_architecture_svg_is_parseable_and_names_all_layers_and_modes() -> None:
+def test_architecture_svg_is_parseable_and_names_v04_flow_and_challenge_loop() -> None:
     root = ET.parse(ROOT / "docs" / "architecture.svg").getroot()
     text = " ".join(part.strip() for part in root.itertext() if part.strip())
     for required in (
-        "Contract boundary",
-        "Evidence capture and probes",
-        "Independent cold / primed review",
-        "Reproduction and error-class policy",
-        "Unsigned attestation and receipt",
-        "Repository / CLI",
-        "Plugin / agent skill",
-        "Embedded API / model",
+        "Task boundary",
+        "Capture bytes",
+        "Independent review",
+        "Reproduce + policy",
+        "Attestation",
+        "Challenge the mechanisms that produce the green check",
+        "Known controls",
+        "Coverage accounting",
+        "Standing challenges",
+        "Regression memory",
+        "Probes + scorer",
+        "Importer / linkage next",
+        "One task · one artifact set · one evidence chain · unsigned record",
     ):
         assert required in text
 
