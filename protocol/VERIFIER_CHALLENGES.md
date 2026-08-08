@@ -42,7 +42,8 @@ unreadable, filtered, or skipped, the audit evidence should report at least:
 - why each skip class occurred.
 
 A clean result over an unknown denominator is not equivalent to a clean result over the declared
-artifact set.
+artifact set. A missing denominator-bearing field is also not equivalent to an explicitly declared
+empty list: omission means the verifier does not know what population it is scoring.
 
 ## Standing versus one-off controls
 
@@ -61,16 +62,20 @@ Not every off-the-shelf tool needs a repository fixture. The requirement is stro
 
 ### Current implementation status
 
-`tests/test_probe_challenges.py` is the first standing implementation of this contract. It exercises
-`validity_audit.probes.run_probes` directly with:
+`tests/test_probe_challenges.py` exercises `validity_audit.probes.run_probes` directly with:
 
 - a clean artifact that must pass;
 - a broken Markdown reference that must fail;
 - a missing non-Markdown artifact that must fail closed rather than being reported readable;
 - non-UTF-8 Markdown that must fail the link checker rather than crashing or disappearing.
 
-This is intentionally narrow. It does not imply that every verifier in the repository has standing
-controls yet.
+`tests/test_benchmarks.py` also challenges the public-key scorer's denominator semantics. The scorer
+must distinguish an explicit empty `expected_findings`, `findings`, or `claim_results` list from a
+missing field. Missing denominator-bearing fields are malformed evidence and must raise a scoring
+error rather than being silently interpreted as zero observations.
+
+These controls are intentionally narrow. They do not imply that every verifier in the repository has
+standing challenges yet.
 
 ## What this does not prove
 
