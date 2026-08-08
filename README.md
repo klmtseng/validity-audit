@@ -13,8 +13,10 @@ can hallucinate findings; public benchmarks get optimized against. Validity Audi
 independent review, reproduction gates, an accreting miss ledger, and public-key regression tests so
 the evaluator can be challenged too.
 
-> **Maturity:** v0.3 release candidate work. The CLI path below is implemented and tested; signing,
-> provider adapters, API-key installation, and global agent certification are not.
+> **Maturity:** v0.3.0 is the latest released line; master is v0.4 development. The v0.3 CLI path
+> below is implemented and tested. Current v0.4 work is extending how verifiers themselves are
+> challenged; signing, provider adapters, API-key installation, and global agent certification are
+> not available.
 
 ## Quickstart: reproduce the public golden case
 
@@ -210,12 +212,17 @@ eliminate them:
 
 ## Audit the auditor
 
-Validity Audit keeps two feedback mechanisms:
+Validity Audit currently uses two shipped feedback mechanisms and one v0.4 development contract:
 
 1. **Miss-ledger coevolution:** every verified miss becomes a replayable challenge for the next run.
 2. **Golden-case regression:** after a protocol change, replay frozen public findings and report
    misses and unexpected findings. Unexpected findings require adjudication; a key change creates a
    new immutable version.
+3. **Verifier challenges (v0.4 development):** home-grown checks should prove that they can pass a
+   known-good input, fail a known-bad input, and fail closed when the checker itself breaks. The
+   current protocol contract is documented in
+   [`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md); standing runtime/CI coverage
+   will be added only when it is implemented and exercised.
 
 The planted deterministic-floor benchmark makes the current lower boundary explicit:
 
@@ -249,17 +256,21 @@ CI.
 | [`domains/`](domains/) | checklist packs and three-tier threat model |
 | [`benchmarks/`](benchmarks/) | injected deterministic floor, public-key scorer, and offline guard |
 | [`golden_cases/`](golden_cases/) | historical public keys and the runnable self-contained case |
-| [`protocol/`](protocol/) | protocol design, coevolution, meta-audit, and compatibility shims |
+| [`protocol/`](protocol/) | protocol design, coevolution, verifier challenges, meta-audit, and compatibility shims |
 | [`docs/`](docs/) | architecture and worked attestation artifacts |
 
 ## Roadmap
 
-The next gate is **not** an automatic release. After the benchmark and documentation PRs merge, the
-separate v0.3 release gate must rerun tests, clean-install and wheel checks, offline reproduction,
-link and hygiene checks, digest recomputation, limitation review, and an independent reviewed-SHA
-audit.
+v0.3.0 was released on 2026-07-30. `master` now represents v0.4 development rather than an
+unreleased v0.3 release candidate.
 
-Later candidates include:
+The near-term v0.4 direction is to turn verifier challenges from a protocol rule into durable,
+executable evidence where it adds real assurance. The first targets are home-grown checks and
+wrappers whose exit-code handling, skip behavior, or evidence filtering can turn checker failure into
+a false pass. This work must preserve the distinction between **checking the checker** and proving
+that the checked property is the right property for the task.
+
+Other later candidates include:
 
 - signed attestations and verification with explicit identity semantics;
 - provider adapters and user-controlled API-key integrations;
@@ -278,8 +289,9 @@ pipelines, deployed prediction systems, and internal rule sets. It first appeare
 became a standalone project when the failure pattern generalized beyond finance.
 
 See [`protocol/COEVOLUTION.md`](protocol/COEVOLUTION.md) for the miss-ledger design,
-[`protocol/META_AUDIT.md`](protocol/META_AUDIT.md) for the framework's own audit, and
-[`golden_cases/README.md`](golden_cases/README.md) for public-key provenance.
+[`protocol/META_AUDIT.md`](protocol/META_AUDIT.md) for the framework's own audit,
+[`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md) for the v0.4 verifier contract,
+and [`golden_cases/README.md`](golden_cases/README.md) for public-key provenance.
 
 ---
 
