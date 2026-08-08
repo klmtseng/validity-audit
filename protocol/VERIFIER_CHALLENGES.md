@@ -59,6 +59,19 @@ Not every off-the-shelf tool needs a repository fixture. The requirement is stro
 - filters that decide which inputs count;
 - evidence importers that can downgrade or discard failures.
 
+### Current implementation status
+
+`tests/test_probe_challenges.py` is the first standing implementation of this contract. It exercises
+`validity_audit.probes.run_probes` directly with:
+
+- a clean artifact that must pass;
+- a broken Markdown reference that must fail;
+- a missing non-Markdown artifact that must fail closed rather than being reported readable;
+- non-UTF-8 Markdown that must fail the link checker rather than crashing or disappearing.
+
+This is intentionally narrow. It does not imply that every verifier in the repository has standing
+controls yet.
+
 ## What this does not prove
 
 Verifier challenges test the trustworthiness of the checking mechanism. They do **not** prove that
