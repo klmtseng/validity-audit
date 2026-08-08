@@ -88,9 +88,41 @@ def test_mismatched_taxonomy_fails_regression() -> None:
 def test_duplicate_finding_ids_are_rejected() -> None:
     output = copy.deepcopy(load("reviewer_output.json"))
     output["findings"].append(copy.deepcopy(output["findings"][0]))
-    try:
+    with pytest.raises(ScoringError, match="duplicate finding_id"):
         score_findings(load("key-v1.json"), output)
-    except ScoringError as exc:
-        assert "duplicate finding_id" in str(exc)
-    else:
-        raise AssertionError("duplicate finding ids should not be scored")
+
+
+def test_explicit_empty_findings_are_not_confused_with_missing_field() -> None:
+    key = copy.deepcopy(load("key-v1.json"))
+    key["expected_findings"] = []
+    output = copy.deepcopy(load("reviewer_output.json"))
+    output["findings"] = []
+    output["claim_results"] = []
+
+    result = score_findings(key, output)
+
+    assert result["status"] == "pass"
+    assert result["expected_total"] == 0
+    assert result["actual_total"] == 0
+    assert result["recall"] is None
+    assert result["precision"] is None
+
+
+@pytest.mark.parametrize(
+    ("document_name", "missing_field", "message"),
+    [
+        ("key", "expected_findings", "key is missing required field 'expected_findings'"),
+        ("reviewer", "findings", "reviewer output is missing required field 'findings'"),
+        ("reviewer", "claim_results", "reviewer output is missing required field 'claim_results'"),
+    ],
+)
+def test_scorer_fault_control_missing_denominator_fields_fail_closed(
+    document_name: str, missing_field: str, message: str
+) -> None:
+    key = copy.deepcopy(load("key-v1.json"))
+    output = copy.deepcopy(load("reviewer_output.json"))
+    target = key if document_name == "key" else output
+    del target[missing_field]
+
+    with pytest.raises(ScoringError, match=message.replace("'", "\\'")):
+        score_findings(key, output)
