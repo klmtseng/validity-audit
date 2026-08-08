@@ -3,6 +3,13 @@
 **A self-falsification protocol and reference runtime for bounded, evidence-backed claims about
 agent-produced work.**
 
+Most evaluation systems ask whether the agent output passes a check. Validity Audit also asks a
+second question: **has the checker demonstrated that it can fail when it should?** In v0.4
+development, home-grown verifiers are challenged with known-good, known-bad, and broken-input
+controls so a green result is less likely to be a silent fail-open.
+
+![Validity Audit architecture: bounded audit flow plus verifier challenge loop](docs/architecture.svg)
+
 Validity Audit does not certify an agent, model, organization, or workflow globally. It produces an
 **unsigned validity attestation for one task run over one digest-bound artifact set**. The record
 says what was claimed, what evidence was reviewed, what reproduced findings triggered policy, and
@@ -10,8 +17,8 @@ which exact bytes the result covers.
 
 The project exists because static evaluators decay. Builders miss their own assumptions; reviewers
 can hallucinate findings; public benchmarks get optimized against. Validity Audit combines
-independent review, reproduction gates, an accreting miss ledger, and public-key regression tests so
-the evaluator can be challenged too.
+independent review, reproduction gates, an accreting miss ledger, public-key regression tests, and
+standing verifier challenges so the evaluator can be challenged too.
 
 > **Maturity:** v0.3.0 is the latest released line; master is v0.4 development. The v0.3 CLI path
 > below is implemented and tested. Current v0.4 work is extending how verifiers themselves are
@@ -114,19 +121,19 @@ See the complete, schema-valid
 [`docs/attestation-example.json`](docs/attestation-example.json). Its artifact, contract, review
 bundle, and transcript digests are real and reproduced by CI.
 
-## Architecture: five assurance layers
+## Architecture: bounded audit + verifier challenge loop
 
-![Validity Audit five-layer architecture and adoption modes](docs/architecture.svg)
+The top path is the bounded audit run. The lower loop is deliberately separate: it challenges the
+mechanisms that generate evidence so a checker cannot earn trust merely by returning green.
 
-The layers are assurance responsibilities, not five Python packages:
-
-| Layer | Responsibility | v0.3 implementation |
+| Layer | Responsibility | Current implementation |
 |---|---|---|
 | 1. Contract | Bound one task, claims, artifact set, packs, and overrides | versioned task-contract schema |
 | 2. Evidence | Snapshot bytes, compute digests, run deterministic probes | artifact manifest, probe report, review bundle |
 | 3. Independent review | Separate builder from reviewer and retain what the reviewer saw | cold/primed context, provider-neutral import, raw transcript |
-| 4. Reproduction and policy | Distinguish suspicion from reproduced failure | four finding axes, error-class gates, waivers |
+| 4. Reproduction and policy | Distinguish suspicion from reproduced failure | four finding axes, error-class gates, scorer, waivers |
 | 5. Audit record | Bind the outcome to one run and artifact set | JSON/Markdown attestation plus receipt ledger |
+| Verifier challenge loop | Prove home-grown checks can pass, fail, and fail closed; account for skipped inputs | standing probe and scorer controls; additional importer/linkage challenge targeted for v0.4 |
 
 The digest chain covers the task contract, every artifact, the canonical artifact manifest, probe
 report, review bundle, raw transcript, and final attestation. Changing an artifact voids the
@@ -212,17 +219,18 @@ eliminate them:
 
 ## Audit the auditor
 
-Validity Audit currently uses two shipped feedback mechanisms and one v0.4 development contract:
+Validity Audit currently uses two shipped feedback mechanisms plus standing v0.4 verifier
+challenges:
 
 1. **Miss-ledger coevolution:** every verified miss becomes a replayable challenge for the next run.
 2. **Golden-case regression:** after a protocol change, replay frozen public findings and report
    misses and unexpected findings. Unexpected findings require adjudication; a key change creates a
    new immutable version.
-3. **Verifier challenges (v0.4 development):** home-grown checks should prove that they can pass a
-   known-good input, fail a known-bad input, and fail closed when the checker itself breaks. The
-   current protocol contract is documented in
-   [`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md); standing runtime/CI coverage
-   will be added only when it is implemented and exercised.
+3. **Verifier challenges (v0.4 development):** home-grown checks prove that they can pass a
+   known-good input, fail a known-bad input, and fail closed when the checker or its evidence breaks.
+   Standing tests currently exercise the deterministic probes and public-key scorer directly. The
+   contract and current coverage are documented in
+   [`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md).
 
 The planted deterministic-floor benchmark makes the current lower boundary explicit:
 
