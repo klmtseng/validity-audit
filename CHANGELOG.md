@@ -4,101 +4,56 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-08-08
+
 ### Added
 
-- **Domain pack: external repository intake** (`domains/external-repo.md`, X1–X8) —
-  claims surface (listed ≠ shipped, fixture ≠ runtime, marketing-quantity trust chain)
-  plus pre-execution safety surface (installer env-override injection, diagnostic
-  commands that write, exhaustive egress enumeration, extension sandbox model, SSRF /
-  callback surface). Pack-specific non-negotiable: cross-family review — in the source
-  audit, all four safety-surface findings missed by three same-family perspectives came
-  from the cross-family reviewer. Ships without a public golden key for now: the source
-  case targets an unnamed third-party repository, so a deterministic public
-  reproduction key is not yet possible.
+- Add the v0.4 verifier-challenge protocol: positive, negative, and fault controls plus skip accounting for home-grown verifiers.
+- Add standing fail-closed challenges for deterministic artifact and Markdown probes.
+- Add standing denominator-integrity challenges for the frozen public-key regression scorer; missing populations are errors rather than implicit empty lists.
+- Add standing review-import and claim-linkage challenges covering complete claim coverage, unknown finding links, and refuted claims without linked findings.
+- Add a v0.4 architecture diagram that shows the bounded audit pipeline and the verifier-challenge feedback loop.
+- Add the external-repository-intake domain pack (`domains/external-repo.md`, X1–X8), including claims-surface and pre-execution safety checks. It ships without a public golden key because its motivating source case is not a deterministic public fixture.
+
+### Changed
+
+- Mark post-v0.3 master development with an explicit development version, then promote the package to `0.4.0` for this release.
+- Make the README lead with the verifier-challenge thesis and document the three implemented standing challenge families.
+- Keep the v0.3 attestation schema and `validity-audit-default-v0.3.0` policy identifier unchanged; v0.4 hardens verifier behavior without silently changing existing record semantics.
+- Keep the historical v0.3 compatibility entry points in v0.4.0 for migration convenience while marking them deprecated.
+
+### Fixed
+
+- Fail closed when deterministic probes cannot read an artifact instead of reporting an unconditional readability pass.
+- Fail closed when the public-key scorer is missing `expected_findings`, reviewer `findings`, or `claim_results`; an explicit empty list remains a distinct valid declaration.
+- Remove release-identity drift where post-v0.3 master changes still identified themselves as package version `0.3.0`.
 
 ## [0.3.0] — 2026-07-30
 
 ### Fixed
 
-- **Markdown injection (tag-blocking, extended):** reviewer-controlled `finding.title`
-  values are sanitized before insertion into `attestation.md`.  ASCII newlines and Unicode
-  line/paragraph separators (U+000B, U+000C, U+0085, U+2028, U+2029) are collapsed to a
-  space; all CommonMark inline punctuation characters (`\`, `[`, `]`, `(`, `)`, `_`, `*`,
-  `~`, `<`, `>`, `!`, `&`, backtick) are backslash-escaped so links, images, raw HTML,
-  HTML comments, and emphasis spans render as literal text.  Leading markdown structural
-  characters (`#`, `-`, `>`, `|`, backtick) are additionally escaped for belt-and-suspenders
-  block-level protection.  The `reviewer_output` schema now enforces a single-line
-  constraint on `title` (pattern `^[^\n\r  ]*$`) to block
-  Unicode line-separator bypass at the schema layer.
-- **Receipt-digest overclaim (tag-blocking):** documentation incorrectly stated that the
-  digest chain covers the "final attestation receipt".  The receipt ledger
-  (`.validity-audit/attestations.jsonl`) holds the attestation SHA-256 but is itself a
-  mutable append-only file not included in the chain.  README corrected to reflect the
-  actual boundary.
-- **Golden-case fixture regenerated after the schema tightening:** the review bundle
-  embeds the `reviewer_output` schema, so the single-line `title` constraint above changed
-  `review.bundle_sha256` (`286ae3d3…` → `c46e766d…`). `expected_attestation.json` and
-  `docs/attestation-example.json` are updated to the new digest; every other attestation
-  field is byte-identical (verified by field-level diff). The scoring key (`key-v1.json`)
-  is unchanged — this is a fixture refresh forced by a deliberate schema change, not a
-  behavioral change to scoring or evaluation.
-- **Dev-install test collection failure (tag-blocking):** `tests/test_benchmarks.py`
-  imported `benchmarks/injected/run.py`, which hard-imported `numpy` (a `quant` extra).
-  A fresh `.[dev]` install without `quant` caused collection to abort.  Fixed by guarding
-  the two numpy-dependent benchmark tests with `pytest.importorskip("numpy")`; the tests
-  are skipped when numpy is absent and collected normally when it is present.
-
-## Unreleased
+- **Markdown injection (tag-blocking, extended):** reviewer-controlled `finding.title` values are sanitized before insertion into `attestation.md`. ASCII newlines and Unicode line/paragraph separators are collapsed to a space; CommonMark inline punctuation is escaped so links, images, raw HTML, comments, and emphasis render as literal text. The reviewer-output schema enforces a single-line title constraint.
+- **Receipt-digest overclaim (tag-blocking):** documentation previously overstated the digest boundary. The receipt ledger holds the attestation SHA-256 but is itself mutable and is not part of the digest chain.
+- **Golden-case fixture regenerated after schema tightening:** the review bundle embeds the reviewer-output schema, so the title constraint changed its digest. The expected attestation and worked example were refreshed; the scoring key was unchanged.
+- **Dev-install test collection failure (tag-blocking):** numpy-dependent injected-benchmark tests now skip cleanly when the optional quant extra is absent instead of aborting collection.
 
 ### Added
 
-- Add Draft 2020-12 schemas for the minimal task contract and unsigned validity attestation.
-- Add digest-bound schema examples and regression tests for taxonomy, waivers, review context,
-  signatures, and cross-document integrity.
-- Standardize fixed schema vocabulary on `snake_case`, including `not_attempted`,
-  `pass_with_waiver`, and `needs_review`.
-- Preserve the original policy result and issue time inside every waiver.
-- Fail loudly when the optional JSON Schema `date-time` format checker is unavailable.
-- New docs-pack check D7 "Claimed vs. delivered": feature claims must be verified by
-  a live run or shipping signals (negative signals decisive, positive ones just
-  another claim), not by file existence.
+- Add Draft 2020-12 schemas for the minimal task contract, reviewer output, and unsigned validity attestation.
 - Add the two-stage `validity-audit prepare` / `finalize` CLI.
-- Bind contracts, artifacts, canonical manifests, probe reports, review bundles, and raw
-  reviewer transcripts into one digest-checked run.
-- Add deterministic artifact and Markdown-link probes, approved run-state vocabulary and
-  history, provider-neutral reviewer-output import, and transcript retention.
-- Add the versioned `validity-audit-default-v0.3.0` error-class policy as the sole writer
-  of finding gate effects.
-- Add human- and machine-readable unsigned attestations, an append-only attestation
-  receipt ledger, packaged schema resources, and a frozen self-contained demonstration.
-- Add a public benchmark harness with a scored, self-contained golden regression case,
-  frozen versioned key, explicit adjudication rules, and an offline CI execution path.
-- Add the v0.3 release-candidate README, worked unsigned-attestation JSON, and five-layer
-  architecture diagram with explicit adoption-mode maturity labels.
+- Bind contracts, artifacts, canonical manifests, probe reports, review bundles, and raw reviewer transcripts into one digest-checked run.
+- Add deterministic artifact and Markdown-link probes, durable run-state vocabulary, provider-neutral reviewer-output import, and transcript retention.
+- Add the versioned `validity-audit-default-v0.3.0` error-class policy as the sole writer of finding gate effects.
+- Add human- and machine-readable unsigned attestations, an append-only attestation receipt ledger, packaged schema resources, and a frozen self-contained demonstration.
+- Add a public benchmark harness with a scored golden regression case, frozen versioned key, explicit adjudication rules, and offline CI execution.
 
 ### Changed
 
-- Begin the v0.3 packaging and test foundation.
-- Complete the default fail-class policy with the approved `snake_case` taxonomy; route
-  unclassified and `other` findings to `needs_review` instead of advisory pass-through.
+- Standardize fixed schema vocabulary on `snake_case`.
+- Preserve original policy results and issue times inside waivers.
 - Implement and document the stable CLI exit-code contract (`0` through `4`).
-- Define idempotent preparation as deterministic output across fresh run directories;
-  existing evidence directories remain immutable.
-- Validate canonical ledger severities instead of silently ranking unknown values as zero.
-- Preserve the historical `protocol/ledger.py` command through a compatibility shim.
+- Define idempotent preparation as deterministic output across fresh run directories; existing evidence directories remain immutable.
 - Correct public benchmark provenance and distinguish public-key regression from cold evaluation.
-- Mark the duplicated content-pipeline golden case as a metric-excluded alias.
-- Relocate the injected-bug floor demonstration to `benchmarks/injected/run.py` while
-  retaining the historical protocol path as a v0.3 compatibility shim.
-- Promote the self-contained example to `golden_cases/self_contained/doc-bundle-01`;
-  retain its historical runner path as a v0.3 compatibility launcher.
-- Classify reproduced `fitness` findings as advisory in the default policy, resolving the
-  previously omitted plan §8 category without changing the v0.3 policy identifier.
-- Document the legacy shim support window through all v0.3.x releases, with v0.4.0 as the
-  earliest removal point and a required changelog migration note.
-
-### Fixed
-
-- Correct repository-relative documentation links.
-- Mark referenced `engine_v2` helpers as planned rather than present.
-- Preserve the legacy no-argument ledger behavior (`challenges`) in the compatibility shim.
+- Mark the duplicated content-pipeline golden case as metric-excluded alias.
+- Classify reproduced `fitness` findings as advisory in the default policy.
+- Document the legacy shim support window through all v0.3.x releases, with v0.4.0 as the earliest removal point.

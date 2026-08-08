@@ -1,29 +1,16 @@
 # Validity Audit
 
-**A self-falsification protocol and reference runtime for bounded, evidence-backed claims about
-agent-produced work.**
+**A self-falsification protocol and reference runtime for bounded, evidence-backed claims about agent-produced work.**
 
-Most evaluation systems ask whether the agent output passes a check. Validity Audit also asks a
-second question: **has the checker demonstrated that it can fail when it should?** In v0.4
-development, home-grown verifiers are challenged with known-good, known-bad, and broken-input
-controls so a green result is less likely to be a silent fail-open.
+Most evaluation systems ask whether the agent output passes a check. Validity Audit asks a second question too: **has the checker demonstrated that it can fail when it should?** v0.4.0 adds standing positive, negative, and fault controls around representative home-grown verifiers so a green result is less likely to be a silent fail-open.
 
 ![Validity Audit architecture: bounded audit flow plus verifier challenge loop](docs/architecture.svg)
 
-Validity Audit does not certify an agent, model, organization, or workflow globally. It produces an
-**unsigned validity attestation for one task run over one digest-bound artifact set**. The record
-says what was claimed, what evidence was reviewed, what reproduced findings triggered policy, and
-which exact bytes the result covers.
+Validity Audit does not certify an agent, model, organization, or workflow globally. It produces an **unsigned validity attestation for one task run over one digest-bound artifact set**. The record says what was claimed, what evidence was reviewed, what reproduced findings triggered policy, and which exact bytes the result covers.
 
-The project exists because static evaluators decay. Builders miss their own assumptions; reviewers
-can hallucinate findings; public benchmarks get optimized against. Validity Audit combines
-independent review, reproduction gates, an accreting miss ledger, public-key regression tests, and
-standing verifier challenges so the evaluator can be challenged too.
+The project exists because static evaluators decay. Builders miss their own assumptions; reviewers can hallucinate findings; public benchmarks get optimized against. Validity Audit combines independent review, reproduction gates, an accreting miss ledger, public-key regression tests, and standing verifier challenges so the evaluator can be challenged too.
 
-> **Maturity:** v0.3.0 is the latest released line; master is v0.4 development. The v0.3 CLI path
-> below is implemented and tested. Current v0.4 work is extending how verifiers themselves are
-> challenged; signing, provider adapters, API-key installation, and global agent certification are
-> not available.
+> **Maturity:** v0.4.0 is the current release. The bounded `prepare` / `finalize` audit path remains compatible with v0.3 records and policy identifiers. v0.4 adds three standing challenge families: deterministic probes, public-key scorer denominator integrity, and review-import / claim-link integrity. Signing, provider adapters, API-key installation, and global agent certification are not available.
 
 ## Quickstart: reproduce the public golden case
 
@@ -34,23 +21,35 @@ python -m pip install -e .
 python golden_cases/self_contained/doc-bundle-01/run_case.py
 ```
 
-The second command runs `prepare` and `finalize`, verifies the complete unsigned attestation, and
-scores the imported reviewer fixture against a frozen key. Its final line is:
+The second command runs `prepare` and `finalize`, verifies the complete unsigned attestation, and scores the imported reviewer fixture against a frozen key. Its final line is:
 
 ```text
 Golden case PASS: expected fail attestation and 1/1 regression score reproduced
 ```
 
-The apparent contrast is intentional: the audit correctly returns a blocking `fail` for the planted
-artifact defect, while the benchmark passes because that expected finding was reproduced. The case
-uses no API key; CI also blocks outbound socket access during execution.
+The apparent contrast is intentional: the audit correctly returns a blocking `fail` for the planted artifact defect, while the benchmark passes because that expected finding was reproduced. The case uses no API key; CI also blocks outbound socket access during execution.
+
+## What v0.4 challenges
+
+A checker is not trusted merely because it printed PASS. The v0.4 protocol distinguishes:
+
+| Control | Expected behavior |
+|---|---|
+| Positive | known-good input must pass |
+| Negative | known-bad input must fail |
+| Fault | broken, missing, or malformed input must hard-fail rather than become a clean pass |
+
+Three representative standing challenge families exercise the real production paths in tests and CI:
+
+1. **Deterministic probes** — readable artifacts pass; broken Markdown, missing artifacts, and invalid text fail closed.
+2. **Public-key scorer** — missing denominator-bearing fields are errors; explicit empty populations remain valid and distinct.
+3. **Review import / claim linkage** — missing claim coverage, unknown finding links, and refuted claims without linked findings cannot produce a clean attestation.
+
+This is deliberately not a claim that every verifier has been proven correct. The full contract, including skip accounting and its limits, is in [`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md).
 
 ## Run one audit
 
-Create a JSON task contract that names one task, its bounded claims, repository-relative artifacts,
-domain packs, and any reason-bearing policy overrides. See
-[`schemas/examples/task_contract.json`](schemas/examples/task_contract.json) for a minimal example.
-Then prepare a fresh run directory:
+Create a JSON task contract that names one task, its bounded claims, repository-relative artifacts, domain packs, and any reason-bearing policy overrides. See [`schemas/examples/task_contract.json`](schemas/examples/task_contract.json) for a minimal example. Then prepare a fresh run directory:
 
 ```console
 validity-audit prepare \
@@ -63,9 +62,7 @@ validity-audit prepare \
   --operator-id local-operator
 ```
 
-Give the emitted `review_bundle.json`—not the answer key or miss ledger—to an independent reviewer.
-Retain the raw transcript and collect JSON that validates against
-[`schemas/reviewer_output.schema.json`](schemas/reviewer_output.schema.json). Then finalize:
+Give the emitted `review_bundle.json`—not the answer key or miss ledger—to an independent reviewer. Retain the raw transcript and collect JSON that validates against [`schemas/reviewer_output.schema.json`](schemas/reviewer_output.schema.json). Then finalize:
 
 ```console
 validity-audit finalize \
@@ -75,18 +72,14 @@ validity-audit finalize \
   --transcript path/to/raw_transcript.txt
 ```
 
-`prepare` validates the contract, snapshots the exact artifact bytes, computes the digest chain,
-runs deterministic probes, and emits the provider-neutral review bundle. `finalize` refuses changed
-evidence, retains the raw transcript, imports findings without trusting reviewer-supplied policy
-results, applies the versioned policy, and writes:
+`prepare` validates the contract, snapshots the exact artifact bytes, computes the digest chain, runs deterministic probes, and emits the provider-neutral review bundle. `finalize` refuses changed evidence, retains the raw transcript, imports findings without trusting reviewer-supplied policy results, applies the versioned policy, and writes:
 
 - `attestation.json` — machine-readable unsigned attestation;
 - `attestation.md` — human-readable report;
 - `run_state.json` — durable lifecycle and evidence digests;
 - an optional canonical receipt in `.validity-audit/attestations.jsonl`.
 
-Every `prepare` requires a new or empty `--run-dir`. Equal inputs, ids, and timestamps produce equal
-digests in separate fresh directories; an existing evidence directory is never overwritten.
+Every `prepare` requires a new or empty `--run-dir`. Equal inputs, ids, and timestamps produce equal digests in separate fresh directories; an existing evidence directory is never overwritten.
 
 ### Exit-code contract
 
@@ -113,195 +106,66 @@ The human-readable report is deliberately short:
 
 - `incorrect-artifact-count` — **fail** — Details file overstates the audited artifact count
 
-> This v0.3 record is unsigned. It covers one task run and one artifact set;
+> This record is unsigned. It covers one task run and one artifact set;
 > it does not certify an agent globally.
 ```
 
-See the complete, schema-valid
-[`docs/attestation-example.json`](docs/attestation-example.json). Its artifact, contract, review
-bundle, and transcript digests are real and reproduced by CI.
+See the complete, schema-valid [`docs/attestation-example.json`](docs/attestation-example.json).
 
-## Architecture: bounded audit + verifier challenge loop
+## Assurance layers
 
-The top path is the bounded audit run. The lower loop is deliberately separate: it challenges the
-mechanisms that generate evidence so a checker cannot earn trust merely by returning green.
+Validity Audit keeps different kinds of evidence separate rather than collapsing them into one score.
 
-| Layer | Responsibility | Current implementation |
-|---|---|---|
-| 1. Contract | Bound one task, claims, artifact set, packs, and overrides | versioned task-contract schema |
-| 2. Evidence | Snapshot bytes, compute digests, run deterministic probes | artifact manifest, probe report, review bundle |
-| 3. Independent review | Separate builder from reviewer and retain what the reviewer saw | cold/primed context, provider-neutral import, raw transcript |
-| 4. Reproduction and policy | Distinguish suspicion from reproduced failure | four finding axes, error-class gates, scorer, waivers |
-| 5. Audit record | Bind the outcome to one run and artifact set | JSON/Markdown attestation plus receipt ledger |
-| Verifier challenge loop | Prove home-grown checks can pass, fail, and fail closed; account for skipped inputs | standing probe and scorer controls; additional importer/linkage challenge targeted for v0.4 |
+1. **Contract** — define the bounded claims, artifact set, domain packs, and policy overrides.
+2. **Evidence** — snapshot exact artifact bytes, compute canonical digests, and run deterministic probes.
+3. **Independent review** — provide a provider-neutral bundle to a human or model reviewer and retain the raw transcript.
+4. **Reproduction and policy** — reproduced findings receive policy effects from versioned code, not from the reviewer.
+5. **Attestation** — emit a machine-readable and human-readable unsigned record bound to the evidence chain.
+6. **Verifier challenges** — exercise representative home-grown checkers with known-good, known-bad, and broken inputs so their own failure semantics are regression-tested.
 
-The digest chain covers the task contract, every artifact, the canonical artifact manifest, probe
-report, review bundle, raw transcript, and final attestation. Changing an artifact voids the
-record for the changed bytes. The optional receipt ledger (`.validity-audit/attestations.jsonl`)
-holds the attestation SHA-256 but is itself a mutable append-only file and is not part of the
-digest chain.
+## Review contexts and benchmark provenance
 
-## Three adoption modes
+A `cold` review excludes answer keys, the miss ledger, and builder hint lists. A `primed` review records the sources used to prime the reviewer. Public golden cases are **regression evidence**, not fresh cold-review accuracy measurements: once the key is public, repeated success can demonstrate reproducibility and non-regression, but not independent recall.
 
-| Adoption mode | Maturity | What exists now |
-|---|---|---|
-| End-to-end repository / CLI | **Available** | install the package; run `prepare` and `finalize`; reproduce the public golden case |
-| Plugin or agent skill | **Partial / downstream** | the Claude Code skill applies this public protocol, but plugin distribution is maintained outside this repository |
-| Embedded API/model integration using the user's key | **Future** | no provider adapters, API-key management, or direct model invocation in v0.3 |
+Unexpected findings in public-key scoring are sent to adjudication rather than automatically counted as false positives. Accepted key changes require a new immutable key version.
 
-This repository is the canonical protocol upstream. Downstream skills or plugins should sync from
-it rather than silently becoming a second source of truth.
+## Default policy
 
-## Cold evaluation versus public-key regression
+The versioned `validity-audit-default-v0.3.0` policy remains the authority for v0.4 attestations; the release does not silently change v0.3 record semantics.
 
-These are different claims and must remain visibly separate:
-
-| Evaluation | Reviewer receives | What it can support |
-|---|---|---|
-| Cold review | task, claims, and artifacts only; no key, hints, or miss ledger | bounded evidence about first-pass discovery, if contamination controls and denominator are documented |
-| Primed review | declared hints or prior findings | targeted coverage and deeper follow-up, not independent cold performance |
-| Public-key regression | checked-in target and frozen expected findings | whether a protocol revision lost known catches; not new cold recall |
-
-The public `doc-bundle-01` score is regression evidence. The checked-in reviewer output is a
-deterministic primed fixture, not model-performance evidence. The historical `~2.5/6` v1 figure was
-a retrospective structural-ceiling estimate; the historical `5/6` v2 figure was measured before
-that key became public. Future runs on that public key are regression runs.
-
-## Default error-class policy
-
-Policy is versioned as `validity-audit-default-v0.3.0` and is the sole writer of `gate_effect`.
-
-| Reproduced error class | Default gate effect |
+| Error class | Default gate effect |
 |---|---|
 | `correctness` | `fail` |
 | `evidence_tampering` | `fail` |
 | `fabrication` | `fail` |
+| `fitness` | `advisory` |
 | `leakage` | `fail` |
 | `material_requirement_miss` | `fail` |
 | `unauthorized_action` | `fail` |
-| `fitness` | `advisory` |
 | `maintainability` | `advisory` |
-| `other` or an unclassified open slug | `none`; overall result becomes `needs_review` |
 
-A reason-bearing task-contract override can explicitly classify a slug as `fail`, `advisory`, or
-`none`. A non-reproduced fail-class suspicion routes to `needs_review`. A waiver can change an active
-reproduced fail result only when it records issuer, reason, issue time, expiry, and the original
-policy result; it never erases the underlying finding.
-
-## Threat model and honest limits
-
-Validity Audit is designed to expose false or unsupported claims, missed material requirements,
-hidden operational risks, and true-but-unfit outputs. It reduces several failure modes but does not
-eliminate them:
-
-- **Unsigned record:** `signature` is required to be `null`; reviewer and operator labels are
-  descriptive, not authenticated identities or non-repudiation.
-- **Bounded assurance:** one attestation covers one task run and artifact set. Linked run ids do not
-  create a workflow certificate, and a passing run does not certify an agent globally.
-- **Reviewer limits:** a reviewer can still miss defects, share the builder's blind spots, or be
-  contaminated by prior context. Transcript and bundle digests record evidence boundaries but do
-  not prove the reviewer followed them. Reviewer-controlled `finding.title` values are neutralised
-  to literal text in `attestation.md` (inline CommonMark punctuation backslash-escaped; line
-  separators collapsed to a space); they cannot form clickable links, images, or raw HTML.
-- **Operator honesty:** transcript retention makes later comparison possible but cannot prevent an
-  operator from withholding relevant material before it enters the run.
-- **Public-key overfitting:** published keys measure regression and are vulnerable to optimization.
-  Cold-performance claims require never-published material, a defined corpus and scorer, false
-  positives, and contamination controls.
-- **Small deterministic floor:** current probes check artifact readability and relative Markdown
-  links; the injected benchmark deliberately shows 0/5 reasoning-level coverage.
-- **No provider execution:** v0.3 generates and imports review material but does not call a model,
-  manage API keys, sandbox reviewers, or guarantee model-family independence.
-- **No signing or supply-chain identity:** artifact digests detect byte mismatch; they do not attest
-  who created the artifact, who ran the audit, or whether the runner itself was trustworthy.
-- **No multi-file crash transaction:** evidence files are atomic and ledger duplicates are
-  preflighted, but v0.3 does not claim transactional rollback across every output.
+Unknown or unclassified error classes route to `needs_review`. Reproduced fail-class findings may be waived only through an explicit, time-bounded waiver with issuer and reason; the original policy result remains recorded.
 
 ## Audit the auditor
 
-Validity Audit currently uses two shipped feedback mechanisms plus standing v0.4 verifier
-challenges:
+The miss ledger is append-only and records newly discovered misses, severities, sources, and follow-up actions. The public golden case turns accepted misses into regression memory. v0.4 adds standing verifier challenges so selected checkers also have executable positive, negative, and fault controls.
 
-1. **Miss-ledger coevolution:** every verified miss becomes a replayable challenge for the next run.
-2. **Golden-case regression:** after a protocol change, replay frozen public findings and report
-   misses and unexpected findings. Unexpected findings require adjudication; a key change creates a
-   new immutable version.
-3. **Verifier challenges (v0.4 development):** home-grown checks prove that they can pass a
-   known-good input, fail a known-bad input, and fail closed when the checker or its evidence breaks.
-   Standing tests currently exercise the deterministic probes and public-key scorer directly. The
-   contract and current coverage are documented in
-   [`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md).
+The public `old-coder` issue and merged PR linked from [`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md) are a motivating external adoption case for the fail-open pattern, not validation of this project as a whole.
 
-The planted deterministic-floor benchmark makes the current lower boundary explicit:
+## Compatibility
 
-| Class | Caught | False alarms / clean cases |
-|---|---:|---:|
-| Mechanical planted defects | 6/6 | 0/6 |
-| Reasoning-level planted defects | 0/5 | — |
-| Overall deterministic floor | 6/11 | — |
+The historical entry points remain available:
 
-That is a reason to require independent review, not a claim that the evaluator is complete.
+- `protocol/injected_bug_recall.py`
+- `examples/self_contained/run_demo.py`
+- `protocol/ledger.py`
 
-## Compatibility window
+They were guaranteed through all v0.3.x releases, with earliest removal v0.4.0. They remain present in v0.4.0 for migration convenience but are deprecated; new integrations should use the canonical package and benchmark paths.
 
-The canonical v0.3 paths and their legacy launchers are:
+## Scope limits
 
-| Legacy path | Canonical replacement | Support window |
-|---|---|---|
-| `protocol/injected_bug_recall.py` | `benchmarks/injected/run.py` | retained through all v0.3.x releases; earliest removal v0.4.0 |
-| `examples/self_contained/run_demo.py` | `golden_cases/self_contained/doc-bundle-01/run_case.py` | retained through all v0.3.x releases; earliest removal v0.4.0 |
-| `protocol/ledger.py` | `validity-audit-ledger` or `validity_audit/ledger.py` | retained through all v0.3.x releases; earliest removal v0.4.0 |
+Validity Audit is intentionally bounded. It does not currently provide cryptographic signatures, hosted reviewer integrations, API-key management, a global trust score, or certification of an agent/model/organization. Verifier challenges demonstrate that selected checking mechanisms respond correctly to selected controls; they do not prove that the specification measures everything that matters.
 
-Any removal requires a changelog entry and migration note; v0.3 compatibility behavior is tested in
-CI.
+## License
 
-## Repository map
-
-| Path | Purpose |
-|---|---|
-| [`validity_audit/`](validity_audit/) | reference runtime, policy, probes, schemas, digests, and ledger |
-| [`schemas/`](schemas/) | public JSON Schemas, examples, and canonicalization rules |
-| [`domains/`](domains/) | checklist packs and three-tier threat model |
-| [`benchmarks/`](benchmarks/) | injected deterministic floor, public-key scorer, and offline guard |
-| [`golden_cases/`](golden_cases/) | historical public keys and the runnable self-contained case |
-| [`protocol/`](protocol/) | protocol design, coevolution, verifier challenges, meta-audit, and compatibility shims |
-| [`docs/`](docs/) | architecture and worked attestation artifacts |
-
-## Roadmap
-
-v0.3.0 was released on 2026-07-30. `master` now represents v0.4 development rather than an
-unreleased v0.3 release candidate.
-
-The near-term v0.4 direction is to turn verifier challenges from a protocol rule into durable,
-executable evidence where it adds real assurance. The first targets are home-grown checks and
-wrappers whose exit-code handling, skip behavior, or evidence filtering can turn checker failure into
-a false pass. This work must preserve the distinction between **checking the checker** and proving
-that the checked property is the right property for the task.
-
-Other later candidates include:
-
-- signed attestations and verification with explicit identity semantics;
-- provider adapters and user-controlled API-key integrations;
-- pack discovery and compatibility validation;
-- protected never-published cold corpora and contamination controls;
-- cross-case regression reporting without double-counting aliases;
-- stronger transactional and supply-chain guarantees.
-
-No roadmap item is presented as available until it ships and is exercised by CI.
-
-## Origin
-
-The protocol was distilled from audits of quant backtests, generative systems, educational content
-pipelines, deployed prediction systems, and internal rule sets. It first appeared inside
-[relationship-validity-monitor](https://github.com/klmtseng/relationship-validity-monitor) and
-became a standalone project when the failure pattern generalized beyond finance.
-
-See [`protocol/COEVOLUTION.md`](protocol/COEVOLUTION.md) for the miss-ledger design,
-[`protocol/META_AUDIT.md`](protocol/META_AUDIT.md) for the framework's own audit,
-[`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md) for the v0.4 verifier contract,
-and [`golden_cases/README.md`](golden_cases/README.md) for public-key provenance.
-
----
-
-MIT License. This is research and engineering infrastructure, not investment, legal, safety, or
-compliance advice.
+MIT.

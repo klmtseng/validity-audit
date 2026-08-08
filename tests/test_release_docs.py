@@ -40,17 +40,19 @@ def test_readme_quickstart_commands_are_ci_commands() -> None:
         assert command in workflow
 
 
-def test_development_version_and_readme_maturity_agree() -> None:
+def test_release_version_and_readme_maturity_agree() -> None:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert pyproject["project"]["version"] == __version__
-    assert __version__ == "0.4.0.dev0"
-    assert "v0.3.0 is the latest released line" in readme
-    assert "master is v0.4 development" in readme
+    assert __version__ == "0.4.0"
+    assert "v0.4.0" in readme
+    assert "three standing challenge families" in readme
 
 
 def test_verifier_challenge_contract_names_all_three_controls() -> None:
-    protocol = (ROOT / "protocol" / "VERIFIER_CHALLENGES.md").read_text(encoding="utf-8")
+    protocol = (ROOT / "protocol" / "VERIFIER_CHALLENGES.md").read_text(
+        encoding="utf-8"
+    )
     for required in (
         "Positive control",
         "Negative control",
@@ -77,7 +79,7 @@ def test_architecture_svg_is_parseable_and_names_v04_flow_and_challenge_loop() -
         "Standing challenges",
         "Regression memory",
         "Probes + scorer",
-        "Importer / linkage next",
+        "Review import + linkage",
         "One task · one artifact set · one evidence chain · unsigned record",
     ):
         assert required in text
