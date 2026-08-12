@@ -1,10 +1,34 @@
 # Validity Audit
 
-**A self-falsification protocol and reference runtime for bounded, evidence-backed claims about agent-produced work.**
+**A fail-closed audit layer for agent-produced work. It checks the evidence path, challenges selected verifiers, and binds the result to the exact artifact bytes.**
 
 Most evaluation systems ask whether the agent output passes a check. Validity Audit asks a second question too: **has the checker demonstrated that it can fail when it should?** v0.4.0 adds standing positive, negative, and fault controls around representative home-grown verifiers so a green result is less likely to be a silent fail-open.
 
 ![Validity Audit architecture: bounded audit flow plus verifier challenge loop](docs/architecture.svg)
+
+## When would I use this?
+
+Use Validity Audit when a coding agent, workflow, or reviewer is about to say a task is done and you want an evidence-backed record of what was actually checked.
+
+A typical coding-agent workflow looks like this:
+
+```text
+Agent finishes the task
+        ↓
+run normal tests / lint / build
+        ↓
+Validity Audit snapshots the exact artifacts and review evidence
+        ↓
+independent review + verifier challenges
+        ↓
+finalize as pass / needs_review / fail
+        ↓
+write an unsigned attestation bound to those exact bytes
+```
+
+Validity Audit is **not a replacement for pytest, ruff, npm test, CI, or a done-gate**. Those checks answer whether the work satisfies their rules. Validity Audit wraps the evidence around that decision and asks whether selected checking mechanisms can themselves fail closed.
+
+For example, if a custom scorer silently treats a missing population as an empty list, or a probe cannot read an artifact but still reports PASS, Validity Audit treats that as a verifier problem rather than clean evidence.
 
 Validity Audit does not certify an agent, model, organization, or workflow globally. It produces an **unsigned validity attestation for one task run over one digest-bound artifact set**. The record says what was claimed, what evidence was reviewed, what reproduced findings triggered policy, and which exact bytes the result covers.
 
@@ -41,9 +65,9 @@ A checker is not trusted merely because it printed PASS. The v0.4 protocol disti
 
 Three representative standing challenge families exercise the real production paths in tests and CI:
 
-1. **Deterministic probes** — readable artifacts pass; broken Markdown, missing artifacts, and invalid text fail closed.
-2. **Public-key scorer** — missing denominator-bearing fields are errors; explicit empty populations remain valid and distinct.
-3. **Review import / claim linkage** — missing claim coverage, unknown finding links, and refuted claims without linked findings cannot produce a clean attestation.
+1. **Deterministic probes**: readable artifacts pass; broken Markdown, missing artifacts, and invalid text fail closed.
+2. **Public-key scorer**: missing denominator-bearing fields are errors; explicit empty populations remain valid and distinct.
+3. **Review import / claim linkage**: missing claim coverage, unknown finding links, and refuted claims without linked findings cannot produce a clean attestation.
 
 This is deliberately not a claim that every verifier has been proven correct. The full contract, including skip accounting and its limits, is in [`protocol/VERIFIER_CHALLENGES.md`](protocol/VERIFIER_CHALLENGES.md).
 
@@ -62,7 +86,7 @@ validity-audit prepare \
   --operator-id local-operator
 ```
 
-Give the emitted `review_bundle.json`—not the answer key or miss ledger—to an independent reviewer. Retain the raw transcript and collect JSON that validates against [`schemas/reviewer_output.schema.json`](schemas/reviewer_output.schema.json). Then finalize:
+Give the emitted `review_bundle.json`, not the answer key or miss ledger, to an independent reviewer. Retain the raw transcript and collect JSON that validates against [`schemas/reviewer_output.schema.json`](schemas/reviewer_output.schema.json). Then finalize:
 
 ```console
 validity-audit finalize \
@@ -74,9 +98,9 @@ validity-audit finalize \
 
 `prepare` validates the contract, snapshots the exact artifact bytes, computes the digest chain, runs deterministic probes, and emits the provider-neutral review bundle. `finalize` refuses changed evidence, retains the raw transcript, imports findings without trusting reviewer-supplied policy results, applies the versioned policy, and writes:
 
-- `attestation.json` — machine-readable unsigned attestation;
-- `attestation.md` — human-readable report;
-- `run_state.json` — durable lifecycle and evidence digests;
+- `attestation.json`: machine-readable unsigned attestation;
+- `attestation.md`: human-readable report;
+- `run_state.json`: durable lifecycle and evidence digests;
 - an optional canonical receipt in `.validity-audit/attestations.jsonl`.
 
 Every `prepare` requires a new or empty `--run-dir`. Equal inputs, ids, and timestamps produce equal digests in separate fresh directories; an existing evidence directory is never overwritten.
@@ -116,12 +140,12 @@ See the complete, schema-valid [`docs/attestation-example.json`](docs/attestatio
 
 Validity Audit keeps different kinds of evidence separate rather than collapsing them into one score.
 
-1. **Contract** — define the bounded claims, artifact set, domain packs, and policy overrides.
-2. **Evidence** — snapshot exact artifact bytes, compute canonical digests, and run deterministic probes.
-3. **Independent review** — provide a provider-neutral bundle to a human or model reviewer and retain the raw transcript.
-4. **Reproduction and policy** — reproduced findings receive policy effects from versioned code, not from the reviewer.
-5. **Attestation** — emit a machine-readable and human-readable unsigned record bound to the evidence chain.
-6. **Verifier challenges** — exercise representative home-grown checkers with known-good, known-bad, and broken inputs so their own failure semantics are regression-tested.
+1. **Contract**: define the bounded claims, artifact set, domain packs, and policy overrides.
+2. **Evidence**: snapshot exact artifact bytes, compute canonical digests, and run deterministic probes.
+3. **Independent review**: provide a provider-neutral bundle to a human or model reviewer and retain the raw transcript.
+4. **Reproduction and policy**: reproduced findings receive policy effects from versioned code, not from the reviewer.
+5. **Attestation**: emit a machine-readable and human-readable unsigned record bound to the evidence chain.
+6. **Verifier challenges**: exercise representative home-grown checkers with known-good, known-bad, and broken inputs so their own failure semantics are regression-tested.
 
 ## Review contexts and benchmark provenance
 
