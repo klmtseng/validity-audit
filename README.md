@@ -10,7 +10,7 @@ Validity Audit does not certify an agent, model, organization, or workflow globa
 
 The project exists because static evaluators decay. Builders miss their own assumptions; reviewers can hallucinate findings; public benchmarks get optimized against. Validity Audit combines independent review, reproduction gates, an accreting miss ledger, public-key regression tests, and standing verifier challenges so the evaluator can be challenged too.
 
-> **Maturity:** v0.4.0 is the current release. The bounded `prepare` / `finalize` audit path remains compatible with v0.3 records and policy identifiers. v0.4 adds three standing challenge families: deterministic probes, public-key scorer denominator integrity, and review-import / claim-link integrity. Signing, provider adapters, API-key installation, and global agent certification are not available.
+> **Maturity:** v0.5.0 is the current release. It introduces policy `validity-audit-default-v0.5.0`, which validates reviewer fields at landing time and changes some finalize outcomes relative to v0.3/v0.4 records (see `CHANGELOG.md`); existing attestations keep their original `validity-audit-default-v0.3.0` identifier. v0.4 added three standing challenge families: deterministic probes, public-key scorer denominator integrity, and review-import / claim-link integrity. Signing, provider adapters, API-key installation, and global agent certification are not available.
 
 ## Quickstart: reproduce the public golden case
 
@@ -194,7 +194,7 @@ The historical entry points remain available:
 - `examples/self_contained/run_demo.py`
 - `protocol/ledger.py`
 
-They were guaranteed through all v0.3.x releases, with earliest removal v0.4.0. They remain present in v0.4.0 for migration convenience but are deprecated; new integrations should use the canonical package and benchmark paths.
+They were guaranteed through all v0.3.x releases, with earliest removal v0.4.0. They remain present in v0.4.0 and v0.5.0 for migration convenience but are deprecated; new integrations should use the canonical package and benchmark paths.
 
 ## Scope limits
 

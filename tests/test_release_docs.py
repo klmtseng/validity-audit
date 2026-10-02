@@ -44,8 +44,8 @@ def test_release_version_and_readme_maturity_agree() -> None:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert pyproject["project"]["version"] == __version__
-    assert __version__ == "0.4.0"
-    assert "v0.4.0" in readme
+    assert __version__ == "0.5.0"
+    assert "v0.5.0" in readme
     assert "three standing challenge families" in readme
 
 

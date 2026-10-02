@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-10-02
+
 ### Changed (breaking)
 
 - **Policy identifier bumped to `validity-audit-default-v0.5.0`:** the three behaviors
@@ -17,8 +19,9 @@ All notable changes to this project will be documented in this file.
   disposition (exit code `3`, attestation emitted). They now raise a `PolicyError` naming
   the offending finding ids and the full legal class set; `finalize` emits no attestation
   at all and the CLI exits `1`.
-- **Waiver issuers now require contract authorization:** a new optional task-contract
-  field, `waiver_issuers`, is the sole source of truth for who may issue a waiver. A
+- **Waiver issuer labels must be declared in the contract:** a new optional task-contract
+  field, `waiver_issuers`, lists the issuer labels a waiver may carry. This restricts
+  accepted labels; it does not authenticate issuer identity (attestations remain unsigned). A
   waiver request against a contract that omits `waiver_issuers`, or whose issuer is not
   listed, is rejected fail-closed (`PolicyError`, exit code `1`, no attestation) instead of
   accepting whatever issuer string the reviewer output supplied.
