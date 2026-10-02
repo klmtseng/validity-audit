@@ -1,66 +1,63 @@
-# Validity Audit v0.4.0
+# Validity Audit v0.5.0
 
-Validity Audit v0.4.0 adds one question to the bounded audit path introduced in v0.3:
+Validity Audit v0.5.0 closes a gap in its own landing path:
 
-> **Has the checker demonstrated that it can fail when it should?**
+> **Can a reviewer-supplied field silently change the verdict, or silently escape it?**
 
-The release keeps the same bounded assurance model: one task run, one contract, one digest-bound artifact set, and one explicitly unsigned validity attestation. It does not certify an agent, model, workflow, or organization globally.
+Before this release, several fields in `reviewer_output.json` were accepted as long as they were well-formed, even when the policy engine had no rule for the value supplied. The verdict was still computed, but some findings were never actually judged. v0.5.0 rejects those values when the reviewer output is imported, or routes them to review, instead of letting them pass through.
+
+The release keeps the same bounded assurance model: one task run, one contract, one digest-bound artifact set, and one explicitly unsigned validity attestation.
+
+## Why this release exists
+
+An audit of our own historical reviewer outputs found 119 distinct findings across 16 runs. 68 of them used an `error_class` slug the policy did not recognize. Every one of those 68, including 17 marked high severity, landed with `gate_effect: "none"`: the run reported `needs_review`, but the policy had never decided anything about those findings. The same pattern appeared in two consecutive review rounds of one project before anyone noticed.
 
 ## What changed
 
-v0.4 introduces a verifier-challenge contract for home-grown checks and wrappers. A representative verifier should be exercised with:
+This release changes verdicts, so it ships under a new policy identifier, **`validity-audit-default-v0.5.0`**. v0.4.0 promised that `validity-audit-default-v0.3.0` would keep its meaning, and it still does. Attestations already issued keep the old identifier, and new attestations carry the new one.
 
-- a **positive control** that must pass;
-- a **negative control** containing the defect it claims to detect and therefore must fail;
-- a **fault control** where broken, missing, malformed, or unreadable input must hard-fail rather than turn into a clean pass;
-- explicit accounting when in-scope inputs are skipped.
+### 1. `error_class` is validated at landing
 
-Three standing challenge families now exercise real production paths in tests and CI.
+`finding.error_class` must be one of the eight built-in classes (`correctness`, `evidence_tampering`, `fabrication`, `leakage`, `material_requirement_miss`, `unauthorized_action`, `fitness`, `maintainability`) or a class the task contract maps in `policy_overrides`. Any other value makes `finalize` fail with an error listing the offending finding ids and the full legal set. No attestation is written.
 
-### 1. Deterministic probes
+**Exit code changes from `3` (needs_review attestation) to `1` (operational error).** CI jobs that treated exit 3 as "a human should look" will now see exit 1 for this case.
 
-The artifact/Markdown probe path no longer reports readability before it has actually read the artifact. Standing controls cover a clean artifact, a broken Markdown reference, a missing non-Markdown artifact, and invalid UTF-8 Markdown. Broken inputs fail closed instead of disappearing behind a green result.
+### 2. Waiver issuer labels must be declared
 
-### 2. Public-key scorer denominator integrity
+The task contract gains an optional `waiver_issuers` array. If the reviewer output contains any waiver request, the contract must declare `waiver_issuers` and every waiver's `issuer` must appear in it, matched exactly. Otherwise `finalize` fails with exit `1`.
 
-The frozen-key scorer previously used empty-list defaults for some denominator-bearing fields. That made a missing population indistinguishable from an explicit declaration of zero observations in direct scorer use.
+This **restricts which issuer labels are accepted. It does not authenticate who issued the waiver.** Attestations are still unsigned, and anyone who can write the reviewer output can type a listed label.
 
-v0.4 requires `expected_findings`, reviewer `findings`, and `claim_results` to be present lists. Explicit `[]` remains valid and distinct; omission is malformed evidence and raises a scoring error.
+### 3. High-severity, unreproduced findings go to review
 
-### 3. Review import and claim linkage
+A finding with `severity: "high"` whose reproduction status is `unreproduced`, `not_reproducible`, or `not_attempted` now forces `needs_review` whatever its error class is. This includes advisory classes such as `fitness`, and classes overridden to `none`. Previously such a finding under an advisory class let the run `pass`. The attestation summary states which rule triggered.
 
-The runtime already enforced important import/linkage invariants. v0.4 turns them into standing regression challenges against the real `finalize_run` path:
+Findings below high severity behave as before.
 
-- complete claim coverage can finalize;
-- missing claim coverage cannot produce an attestation;
-- a claim cannot link to a finding that was never imported;
-- a refuted claim cannot finalize without a linked finding.
+## Migrating
 
-These controls protect evidence-link integrity without changing the v0.3 policy semantics.
+**Contracts that use waivers:** add the issuer labels you accept.
 
-## Architecture
+```json
+{
+  "waiver_issuers": ["release-owner"]
+}
+```
 
-The README architecture now shows two connected paths: the normal bounded audit pipeline and a verifier-challenge feedback loop. The latter feeds known controls, coverage accounting, standing challenges, and regression memory back into the mechanisms that produce green checks.
+**Reviewer prompts and tooling:** give reviewers the eight legal `error_class` values, or declare any custom class in the contract's `policy_overrides`. A reviewer who invents a descriptive slug now stops the run instead of producing a hollow `needs_review`.
 
-## External motivating case
-
-The verifier-challenge framing was sharpened by a public contribution to `AmazingAng/old-coder`. Its maintainer confirmed a fail-open checker class, adopted explicit fail-closed rules, and merged a follow-up regression test covering a forbidden match, a clean input, and a broken scan.
-
-This is an external adoption case for the failure pattern. It is not evidence that Validity Audit as a whole has been scientifically validated.
+**Consumers of attestations:** branch on `overall_result.policy_id` if you compare outcomes across releases.
 
 ## Compatibility and boundaries
 
-v0.4.0 keeps the v0.3 attestation schema version and `validity-audit-default-v0.3.0` policy identifier. The release hardens verifier behavior and adds regression controls; it does not silently reinterpret existing v0.3 records.
-
-The historical compatibility entry points remain present for migration convenience, although v0.4.0 was the earliest documented removal point. New integrations should use the canonical package and benchmark paths.
+The attestation schema version is unchanged. The task-contract schema gains one optional field. Historical compatibility entry points remain present.
 
 Still out of scope:
 
-- cryptographic signing;
+- cryptographic signing and issuer authentication;
 - hosted provider adapters or API-key installation;
 - global trust scores;
-- certification of an agent, model, organization, or workflow;
-- a claim that every verifier in the repository has been proven correct.
+- certification of an agent, model, organization, or workflow.
 
 ## Reproduce it
 
@@ -68,5 +65,3 @@ Still out of scope:
 python -m pip install -e .
 python golden_cases/self_contained/doc-bundle-01/run_case.py
 ```
-
-The golden case is intentionally a regression fixture. Its expected audit result is a blocking `fail` because the artifact contains a planted defect; the benchmark passes when that expected finding is reproduced. CI also runs this path with common API-key variables removed and outbound Python socket access blocked.
