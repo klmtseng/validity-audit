@@ -91,6 +91,10 @@ Every `prepare` requires a new or empty `--run-dir`. Equal inputs, ids, and time
 | `3` | finalize emitted a `needs_review` attestation |
 | `4` | digest or provenance mismatch; no attestation emitted |
 
+An unclassified `error_class` at finalize time -- and, independently, an unauthorized or
+unresolved waiver target -- raises a policy error instead of landing an attestation: both
+surface as exit code `1` with no attestation emitted, not as a `needs_review` disposition.
+
 ## What the output looks like
 
 The human-readable report is deliberately short:
@@ -100,7 +104,7 @@ The human-readable report is deliberately short:
 
 - Task: `golden-doc-bundle-01`
 - Status: **fail**
-- Policy: `validity-audit-default-v0.3.0`
+- Policy: `validity-audit-default-v0.5.0`
 
 ## Findings
 
@@ -133,6 +137,14 @@ Unexpected findings in public-key scoring are sent to adjudication rather than a
 
 The versioned `validity-audit-default-v0.3.0` policy remains the authority for v0.4 attestations; the release does not silently change v0.3 record semantics.
 
+Starting with `validity-audit-default-v0.5.0`, several landing-time behaviors changed: see the
+"Changed (breaking)" entry in [`CHANGELOG.md`](CHANGELOG.md) for the full list. The current
+policy identifier and the table below describe v0.5.0 behavior.
+
+The current policy recognizes exactly these eight built-in error classes by default; any other
+slug is an open slug and requires an explicit task-contract `policy_overrides` entry before a
+reviewer can use it:
+
 | Error class | Default gate effect |
 |---|---|
 | `correctness` | `fail` |
@@ -153,12 +165,20 @@ fail-class suspicion routes to `needs_review`. Independently of error class, a *
 finding that was never reproduced (`unreproduced`, `not_reproducible`, `not_attempted`) also routes
 to `needs_review` even under an `advisory` class — a high-severity unknown must not pass through
 silently as advisory. Lower-severity unreproduced advisory findings are unaffected and remain
-`advisory`.
+`advisory`. A contract `policy_overrides` entry that explicitly classifies an open slug as
+`gate_effect: "none"` does not exempt it from this rule either — a high-severity, unreproduced
+finding still forces `needs_review` even under an explicit `none` override.
 
 A waiver can change an active reproduced fail result only when it records issuer, reason, issue
-time, expiry, and the original policy result; it never erases the underlying finding. A waiver is
-also rejected unless its issuer appears in the task contract's `waiver_issuers` array — any waiver
-request against a contract that declares no `waiver_issuers` is rejected fail-closed.
+time, expiry, and the original policy result; it never erases the underlying finding. A waiver
+that names a `finding_id` this run never imported is rejected before issuer authorization runs.
+A waiver's `issuer` label restricts which declared strings this version accepts — it is also
+rejected unless that label appears in the task contract's `waiver_issuers` array, and any waiver
+request against a contract that declares no `waiver_issuers` is rejected fail-closed. This
+version does not authenticate issuer identity: attestations are unsigned, so `waiver_issuers`
+is an allowlist of accepted labels, not a verified-credential check. Each of these waiver
+rejections, like the unclassified-`error_class` rejection above, voids the entire `finalize`
+run rather than only the one offending waiver or finding.
 
 ## Audit the auditor
 

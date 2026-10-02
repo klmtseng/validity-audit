@@ -77,7 +77,7 @@ def claims(outcome: str = "supported") -> list[dict]:
 
 
 def test_policy_id_is_versioned() -> None:
-    assert POLICY_ID == "validity-audit-default-v0.3.0"
+    assert POLICY_ID == "validity-audit-default-v0.5.0"
 
 
 @pytest.mark.parametrize(
@@ -401,3 +401,141 @@ def test_unresolved_claim_needs_review() -> None:
         issued_at="2026-07-29T00:00:00Z",
     )
     assert result.status == "needs_review"
+
+
+def test_waiver_issuers_non_list_type_is_rejected() -> None:
+    bad_contract = contract()
+    bad_contract["waiver_issuers"] = "owner"
+    with pytest.raises(PolicyError, match="must be an array of issuer strings"):
+        evaluate_policy(
+            contract=bad_contract,
+            findings=[finding()],
+            claim_results=claims(),
+            waiver_requests=[
+                {
+                    "finding_id": "finding-1",
+                    "issuer": "owner",
+                    "reason": "Non-list waiver_issuers must not silently iterate characters.",
+                    "issued_at": "2026-07-28T00:00:00Z",
+                    "expires_at": "2026-07-30T00:00:00Z",
+                }
+            ],
+            issued_at="2026-07-29T00:00:00Z",
+        )
+
+
+def test_waiver_unknown_target_is_reported_before_issuer_check() -> None:
+    # The waiver's issuer is also not in the contract's allowlist, but the
+    # unknown-finding problem must surface first: fixing the issuer alone
+    # would not make this waiver valid, so that error must not be the one
+    # the caller sees.
+    with pytest.raises(PolicyError, match="unknown findings") as excinfo:
+        evaluate_policy(
+            contract=contract(waiver_issuers=["owner"]),
+            findings=[finding(finding_id="finding-1")],
+            claim_results=claims(),
+            waiver_requests=[
+                {
+                    "finding_id": "finding-that-was-not-imported",
+                    "issuer": "impostor",
+                    "reason": "Targets a finding this run never imported.",
+                    "issued_at": "2026-07-28T00:00:00Z",
+                    "expires_at": "2026-07-30T00:00:00Z",
+                }
+            ],
+            issued_at="2026-07-29T00:00:00Z",
+        )
+    message = str(excinfo.value)
+    assert "finding-that-was-not-imported" in message
+    assert "impostor" not in message
+
+
+@pytest.mark.parametrize("reproduction", ["unreproduced", "not_reproducible", "not_attempted"])
+def test_high_severity_unreproduced_explicit_none_override_still_needs_review(
+    reproduction: str,
+) -> None:
+    # A reason-bearing contract override that explicitly classifies an open
+    # slug as gate_effect "none" must not exempt a high-severity,
+    # unreproduced finding from the severity-based needs_review rule.
+    result = evaluate_policy(
+        contract=contract(
+            [
+                {
+                    "error_class": "novel_error_class",
+                    "gate_effect": "none",
+                    "reason": "The owner explicitly classified this slug as non-blocking.",
+                }
+            ]
+        ),
+        findings=[
+            finding(
+                error_class="novel_error_class",
+                reproduction=reproduction,
+                severity="high",
+            )
+        ],
+        claim_results=claims("inconclusive"),
+        waiver_requests=[],
+        issued_at="2026-07-29T00:00:00Z",
+    )
+    assert result.status == "needs_review"
+    assert result.findings[0]["gate_effect"] == "none"
+    assert "high-severity finding lacks completed reproduction" in result.summary
+
+
+@pytest.mark.parametrize("severity", ["high", "med", "low"])
+def test_refuted_advisory_class_finding_fails_regardless_of_severity(severity: str) -> None:
+    # Documents the current behavior of the refutation path for item 6g:
+    # a refuted claim forces its linked finding's configured effect to
+    # "fail" unconditionally; severity plays no role once a claim is
+    # refuted, unlike the unreproduced/advisory interaction above.
+    claim_results = claims("refuted")
+    claim_results[0]["finding_ids"] = ["finding-1"]
+    result = evaluate_policy(
+        contract=contract(),
+        findings=[finding(error_class="fitness", severity=severity)],
+        claim_results=claim_results,
+        waiver_requests=[],
+        issued_at="2026-07-29T00:00:00Z",
+    )
+    assert result.status == "fail"
+    assert result.findings[0]["gate_effect"] == "fail"
+
+
+def test_summary_distinguishes_blocking_class_and_high_severity_causes() -> None:
+    result = evaluate_policy(
+        contract=contract(),
+        findings=[
+            finding(
+                finding_id="finding-1",
+                error_class="correctness",
+                reproduction="unreproduced",
+                severity="med",
+            ),
+            finding(
+                finding_id="finding-2",
+                error_class="fitness",
+                reproduction="unreproduced",
+                severity="high",
+            ),
+        ],
+        claim_results=claims(),
+        waiver_requests=[],
+        issued_at="2026-07-29T00:00:00Z",
+    )
+    assert result.status == "needs_review"
+    assert "blocking-class finding lacks completed reproduction" in result.summary
+    assert "high-severity finding lacks completed reproduction" in result.summary
+
+
+def test_summary_names_only_the_blocking_class_cause_when_alone() -> None:
+    result = evaluate_policy(
+        contract=contract(),
+        findings=[finding(reproduction="unreproduced", severity="med")],
+        claim_results=claims(),
+        waiver_requests=[],
+        issued_at="2026-07-29T00:00:00Z",
+    )
+    assert result.status == "needs_review"
+    assert "blocking-class finding lacks completed reproduction" in result.summary
+    assert "high-severity finding" not in result.summary

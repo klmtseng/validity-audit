@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-POLICY_ID = "validity-audit-default-v0.3.0"
+POLICY_ID = "validity-audit-default-v0.5.0"
 ERROR_CLASS_EFFECTS = {
     "correctness": "fail",
     "evidence_tampering": "fail",
@@ -75,6 +75,34 @@ def _validate_error_classes(
     )
 
 
+def _validate_waiver_targets(
+    findings: list[dict[str, Any]],
+    waiver_requests: list[dict[str, Any]],
+) -> None:
+    """Reject a waiver that names a finding_id this run never imported.
+
+    This runs before issuer authorization. A waiver aimed at a finding that
+    was never imported is a target problem, not an issuer problem -- the two
+    are independent failure modes, and reporting unknown targets first means
+    a contract author who fixes the wrong one first is not misled by which
+    error happened to surface.
+    """
+    if not waiver_requests:
+        return
+    known = {finding["finding_id"] for finding in findings}
+    missing = sorted(
+        {
+            waiver["finding_id"]
+            for waiver in waiver_requests
+            if waiver["finding_id"] not in known
+        }
+    )
+    if missing:
+        raise PolicyError(
+            f"waiver requests reference unknown findings: {', '.join(missing)}"
+        )
+
+
 def _validate_waiver_issuers(
     contract: dict[str, Any],
     waiver_requests: list[dict[str, Any]],
@@ -90,6 +118,11 @@ def _validate_waiver_issuers(
     if not waiver_requests:
         return
     declared = contract.get("waiver_issuers") or []
+    if not isinstance(declared, list):
+        raise PolicyError(
+            "task contract waiver_issuers must be an array of issuer strings, "
+            f"got {type(declared).__name__}"
+        )
     allowed = set(declared)
     if not allowed:
         raise PolicyError(
@@ -124,6 +157,7 @@ def evaluate_policy(
     """Assign every gate effect and derive the bounded run disposition."""
     effects = _effects(contract)
     _validate_error_classes(findings, effects)
+    _validate_waiver_targets(findings, waiver_requests)
     _validate_waiver_issuers(contract, waiver_requests)
     refuted_finding_ids = {
         finding_id
@@ -139,7 +173,8 @@ def evaluate_policy(
         waiver_by_finding[finding_id] = waiver
 
     evaluated: list[dict[str, Any]] = []
-    pending_blocking = False
+    pending_blocking_class = False
+    pending_high_severity_unreproduced = False
     for raw_finding in findings:
         finding = copy.deepcopy(raw_finding)
         if "gate_effect" in finding or "waiver" in finding:
@@ -187,10 +222,10 @@ def evaluate_policy(
             }
         elif original_effect == "none" and configured_effect == "fail":
             finding["gate_effect"] = original_effect
-            pending_blocking = True
+            pending_blocking_class = True
         elif high_severity_unreproduced and configured_effect != "fail":
             finding["gate_effect"] = "none"
-            pending_blocking = True
+            pending_high_severity_unreproduced = True
         else:
             finding["gate_effect"] = original_effect
         evaluated.append(finding)
@@ -206,12 +241,19 @@ def evaluate_policy(
     if "fail" in gate_effects:
         status = "fail"
         summary = "One or more reproduced findings triggered a fail-class policy gate."
-    elif pending_blocking or unresolved_claim:
+    elif pending_blocking_class or pending_high_severity_unreproduced or unresolved_claim:
         status = "needs_review"
-        summary = (
-            "A blocking-class finding lacks completed reproduction or a claim "
-            "remains unresolved."
-        )
+        sentences = []
+        if pending_blocking_class:
+            sentences.append("A blocking-class finding lacks completed reproduction.")
+        if pending_high_severity_unreproduced:
+            sentences.append(
+                "A high-severity finding lacks completed reproduction regardless of "
+                "its error class's default gate effect."
+            )
+        if unresolved_claim:
+            sentences.append("A claim remains unresolved.")
+        summary = " ".join(sentences)
     elif "waiver" in gate_effects:
         status = "pass_with_waiver"
         summary = "No unwaived fail gate remains; one or more active waivers are recorded."
