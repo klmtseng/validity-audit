@@ -144,7 +144,21 @@ The versioned `validity-audit-default-v0.3.0` policy remains the authority for v
 | `unauthorized_action` | `fail` |
 | `maintainability` | `advisory` |
 
-Unknown or unclassified error classes route to `needs_review`. Reproduced fail-class findings may be waived only through an explicit, time-bounded waiver with issuer and reason; the original policy result remains recorded.
+`other` or any other open slug not covered by `ERROR_CLASS_EFFECTS` or a contract
+`policy_overrides` entry is rejected outright at finalize time: the run raises a policy error
+listing the offending finding ids and the full legal class set, rather than silently landing as
+`gate_effect: "none"`. A reason-bearing task-contract override can explicitly classify a slug as
+`fail`, `advisory`, or `none`, which is how an open slug becomes acceptable. A non-reproduced
+fail-class suspicion routes to `needs_review`. Independently of error class, a **high-severity**
+finding that was never reproduced (`unreproduced`, `not_reproducible`, `not_attempted`) also routes
+to `needs_review` even under an `advisory` class — a high-severity unknown must not pass through
+silently as advisory. Lower-severity unreproduced advisory findings are unaffected and remain
+`advisory`.
+
+A waiver can change an active reproduced fail result only when it records issuer, reason, issue
+time, expiry, and the original policy result; it never erases the underlying finding. A waiver is
+also rejected unless its issuer appears in the task contract's `waiver_issuers` array — any waiver
+request against a contract that declares no `waiver_issuers` is rejected fail-closed.
 
 ## Audit the auditor
 

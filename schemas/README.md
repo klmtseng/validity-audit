@@ -30,7 +30,10 @@ The contract intentionally contains only:
 - one or more explicit claims;
 - repository-relative artifact paths;
 - one or more domain-pack identifiers;
-- optional, reason-bearing policy overrides.
+- optional, reason-bearing policy overrides;
+- an optional `waiver_issuers` array naming who may issue a waiver on this run. Any waiver
+  request against a contract that omits this array, or whose issuer is not in it, is
+  rejected fail-closed by the policy engine.
 
 Absolute paths and parent-directory traversal are rejected. Pack names remain open slugs:
 pack discovery and compatibility validation are not part of PR 2.
@@ -145,13 +148,19 @@ The default policy is error-class based:
 |---|---|
 | `correctness`, `evidence_tampering`, `fabrication`, `leakage`, `material_requirement_miss`, `unauthorized_action` | `fail` |
 | `fitness`, `maintainability` | `advisory` |
-| `other` or any unclassified open slug | `none`; overall `needs_review` |
 
-Reason-bearing task-contract overrides can replace an error class with `fail`,
-`advisory`, or `none`, which is how an open slug becomes explicitly classified. A
-non-reproduced fail-class finding routes the overall result to `needs_review`; an active
-owner waiver records the original `fail` result and produces `pass_with_waiver` only when
-no unwaived fail remains. Unclassified findings cannot be waived.
+`other` or any other open slug not mapped by the default table or a contract
+`policy_overrides` entry is rejected: `finalize` raises a policy error naming the offending
+finding ids, their declared error classes, and the full legal set, instead of landing the
+finding with `gate_effect: "none"`. Reason-bearing task-contract overrides can replace an
+error class with `fail`, `advisory`, or `none`, which is how an open slug becomes explicitly
+classified and accepted. A non-reproduced fail-class finding routes the overall result to
+`needs_review`; so does any **high-severity** finding that was never reproduced, even under
+an `advisory` error class — severity, not just error class, can force `needs_review`. An
+active owner waiver records the original `fail` result and produces `pass_with_waiver` only
+when no unwaived fail remains. Unclassified findings cannot be waived (they are rejected
+before waiver evaluation runs). A waiver is also rejected if its issuer is not listed in the
+contract's `waiver_issuers`, or if the contract declares no `waiver_issuers` at all.
 
 `prepare` requires a fresh or empty run directory and never overwrites existing evidence.
 With fixed ids and timestamps, equal inputs produce equal digests across separate fresh

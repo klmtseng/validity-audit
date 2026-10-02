@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Landing-validation gaps in the policy engine (fail-closed):** `finding.error_class`
+  values outside `ERROR_CLASS_EFFECTS` or a contract `policy_overrides` entry now raise a
+  `PolicyError` naming the offending finding ids and the full legal class set, instead of
+  silently landing as `gate_effect: "none"` with a `needs_review` disposition. A new
+  optional task-contract field, `waiver_issuers`, is the sole source of truth for who may
+  issue a waiver; any waiver request against a contract that omits it, or whose issuer is
+  not listed, is rejected fail-closed. A **high-severity** finding that was never
+  reproduced now forces `needs_review` regardless of its error class's default gate
+  effect (including `advisory` classes); lower-severity unreproduced advisory findings are
+  unchanged.
+
 ## [0.4.0] — 2026-08-08
 
 ### Added
