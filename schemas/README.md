@@ -30,7 +30,12 @@ The contract intentionally contains only:
 - one or more explicit claims;
 - repository-relative artifact paths;
 - one or more domain-pack identifiers;
-- optional, reason-bearing policy overrides.
+- optional, reason-bearing policy overrides;
+- an optional `waiver_issuers` array that restricts the accepted issuer labels for a
+  waiver on this run. Any waiver request against a contract that omits this array, or
+  whose issuer is not in it, is rejected fail-closed by the policy engine. This version
+  does not authenticate issuer identity -- attestations are unsigned, so an issuer label
+  is a declared string, not a verified credential.
 
 Absolute paths and parent-directory traversal are rejected. Pack names remain open slugs:
 pack discovery and compatibility validation are not part of PR 2.
@@ -64,7 +69,7 @@ The finding taxonomy stores four separate axes:
 All fixed machine-readable enum values use `snake_case`. `gate_effect` represents policy
 output. The reviewer-output schema deliberately cannot express it. `finalize` is its sole
 writer and binds `overall_result.policy_id` to
-`validity-audit-default-v0.3.0`.
+`validity-audit-default-v0.5.0`.
 
 Overall dispositions are `pass`, `fail`, `pass_with_waiver`, and `needs_review`.
 `not_attempted` is distinct from an attempted reproduction that failed, and—like every
@@ -145,13 +150,22 @@ The default policy is error-class based:
 |---|---|
 | `correctness`, `evidence_tampering`, `fabrication`, `leakage`, `material_requirement_miss`, `unauthorized_action` | `fail` |
 | `fitness`, `maintainability` | `advisory` |
-| `other` or any unclassified open slug | `none`; overall `needs_review` |
 
-Reason-bearing task-contract overrides can replace an error class with `fail`,
-`advisory`, or `none`, which is how an open slug becomes explicitly classified. A
-non-reproduced fail-class finding routes the overall result to `needs_review`; an active
-owner waiver records the original `fail` result and produces `pass_with_waiver` only when
-no unwaived fail remains. Unclassified findings cannot be waived.
+`other` or any other open slug not mapped by the default table or a contract
+`policy_overrides` entry is rejected: `finalize` raises a policy error naming the offending
+finding ids, their declared error classes, and the full legal set, instead of landing the
+finding with `gate_effect: "none"`. Reason-bearing task-contract overrides can replace an
+error class with `fail`, `advisory`, or `none`, which is how an open slug becomes explicitly
+classified and accepted. A non-reproduced fail-class finding routes the overall result to
+`needs_review`; so does any **high-severity** finding that was never reproduced, even under
+an `advisory` error class — severity, not just error class, can force `needs_review`. An
+active owner waiver records the original `fail` result and produces `pass_with_waiver` only
+when no unwaived fail remains. Unclassified findings cannot be waived (they are rejected
+before waiver evaluation runs). A waiver that names a `finding_id` this run never imported,
+a waiver whose issuer is not listed in the contract's `waiver_issuers`, or any waiver at all
+when the contract declares no `waiver_issuers`, is rejected -- in every case this rejects the
+entire `finalize` run with a `PolicyError` (exit code `1`, no attestation emitted), not just
+the one offending waiver or finding.
 
 `prepare` requires a fresh or empty run directory and never overwrites existing evidence.
 With fixed ids and timestamps, equal inputs produce equal digests across separate fresh
@@ -166,3 +180,8 @@ directories. This content determinism is the v0.3 idempotence guarantee.
 | `2` | blocking `fail` attestation emitted |
 | `3` | `needs_review` attestation emitted |
 | `4` | digest/provenance mismatch; no attestation emitted |
+
+An unclassified `error_class`, an unresolved or unauthorized waiver target, or a malformed
+`waiver_issuers` value raises a `PolicyError` at finalize time, which surfaces as exit code
+`1` with no attestation emitted -- that is an operational error, not a `needs_review`
+disposition.

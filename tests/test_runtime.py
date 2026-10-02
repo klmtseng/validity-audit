@@ -251,7 +251,7 @@ def test_finalize_retains_transcript_and_validates_attestation(tmp_path: Path) -
         run_dir / "evidence/reviewer_transcript.txt"
     )
     assert attestation["signature"] is None
-    assert attestation["overall_result"]["policy_id"] == "validity-audit-default-v0.3.0"
+    assert attestation["overall_result"]["policy_id"] == "validity-audit-default-v0.5.0"
     assert state["state"] == "completed"
     assert [event["state"] for event in state["state_history"]] == [
         "preparing",
@@ -317,23 +317,18 @@ def test_not_attempted_blocking_finding_needs_review(tmp_path: Path) -> None:
     assert result["state"] == "needs_review"
 
 
-def test_unclassified_reviewer_finding_needs_review(tmp_path: Path) -> None:
+def test_unclassified_reviewer_finding_is_rejected(tmp_path: Path) -> None:
     workspace = make_workspace(tmp_path)
     prepare(workspace)
-    result = finalize(
-        workspace,
-        reviewer_output(
-            outcome="supported",
-            findings=[review_finding(error_class="other")],
-        ),
-        append_ledger=False,
-    )
-    attestation = json.loads(
-        (workspace / result["attestation"]).read_text(encoding="utf-8")
-    )
-    assert result["status"] == "needs_review"
-    assert result["state"] == "needs_review"
-    assert attestation["findings"][0]["gate_effect"] == "none"
+    with pytest.raises(AuditRuntimeError, match="unclassified error_class"):
+        finalize(
+            workspace,
+            reviewer_output(
+                outcome="supported",
+                findings=[review_finding(error_class="other")],
+            ),
+            append_ledger=False,
+        )
 
 
 def test_broken_link_probe_is_policy_gated(tmp_path: Path) -> None:

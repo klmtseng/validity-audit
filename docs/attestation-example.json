@@ -79,7 +79,7 @@
   ],
   "issued_at": "2026-07-29T00:06:00Z",
   "overall_result": {
-    "policy_id": "validity-audit-default-v0.3.0",
+    "policy_id": "validity-audit-default-v0.5.0",
     "status": "fail",
     "summary": "One or more reproduced findings triggered a fail-class policy gate."
   },

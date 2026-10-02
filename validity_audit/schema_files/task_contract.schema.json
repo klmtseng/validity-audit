@@ -54,6 +54,18 @@
       "items": {
         "$ref": "#/$defs/policyOverride"
       }
+    },
+    "waiver_issuers": {
+      "description": "Restricts the accepted waiver issuer labels for this bounded run; any waiver request whose issuer is not in this list, or any waiver request at all when this is absent, is rejected. This version does not authenticate issuer identity -- attestations are unsigned, so an issuer label is a declared string, not a verified credential.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255,
+        "pattern": "\\S"
+      }
     }
   },
   "$defs": {

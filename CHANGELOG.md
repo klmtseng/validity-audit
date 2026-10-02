@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed (breaking)
+
+- **Policy identifier bumped to `validity-audit-default-v0.5.0`:** the three behaviors
+  below change landing-time semantics relative to every prior `validity-audit-default-v0.3.0`
+  record, so the policy now carries a new identifier instead of silently reinterpreting
+  v0.3 records under the old one. `overall_result.policy_id` on every new attestation is
+  `validity-audit-default-v0.5.0`.
+- **Unclassified `error_class` now a hard operational error, not a `needs_review`
+  attestation:** `finding.error_class` values outside `ERROR_CLASS_EFFECTS` or a contract
+  `policy_overrides` entry used to land as `gate_effect: "none"` with a `needs_review`
+  disposition (exit code `3`, attestation emitted). They now raise a `PolicyError` naming
+  the offending finding ids and the full legal class set; `finalize` emits no attestation
+  at all and the CLI exits `1`.
+- **Waiver issuers now require contract authorization:** a new optional task-contract
+  field, `waiver_issuers`, is the sole source of truth for who may issue a waiver. A
+  waiver request against a contract that omits `waiver_issuers`, or whose issuer is not
+  listed, is rejected fail-closed (`PolicyError`, exit code `1`, no attestation) instead of
+  accepting whatever issuer string the reviewer output supplied.
+- **High-severity unreproduced findings now force `needs_review` regardless of error
+  class:** a high-severity finding that was never reproduced used to land as plain
+  `advisory` (and the run could `pass`) whenever its error class defaulted to advisory
+  (e.g. `fitness`). It now forces `needs_review` regardless of error class, including
+  under an explicit `policy_overrides` entry of `gate_effect: "none"`. Lower-severity
+  unreproduced advisory findings are unaffected.
+
 ## [0.4.0] — 2026-08-08
 
 ### Added
