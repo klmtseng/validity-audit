@@ -188,6 +188,26 @@ def test_high_severity_unreproduced_advisory_class_needs_review(reproduction: st
     assert result.findings[0]["gate_effect"] == "none"
 
 
+@pytest.mark.parametrize("reproduction", ["unreproduced", "not_reproducible", "not_attempted"])
+def test_high_severity_unreproduced_alone_forces_needs_review(reproduction: str) -> None:
+    # The test above also passes an inconclusive claim, which reaches
+    # needs_review on its own and hides whether the severity rule fired.
+    # With every claim resolved, the high-severity unreproduced finding is the
+    # only reason left for needs_review instead of pass.
+    result = evaluate_policy(
+        contract=contract(),
+        findings=[
+            finding(error_class="fitness", reproduction=reproduction, severity="high")
+        ],
+        claim_results=claims(),
+        waiver_requests=[],
+        issued_at="2026-07-29T00:00:00Z",
+    )
+    assert result.status == "needs_review"
+    assert result.findings[0]["gate_effect"] == "none"
+    assert "high-severity finding lacks completed reproduction" in result.summary
+
+
 @pytest.mark.parametrize("severity", ["med", "low"])
 def test_non_high_severity_unreproduced_advisory_class_stays_advisory(severity: str) -> None:
     result = evaluate_policy(
