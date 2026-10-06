@@ -4,6 +4,49 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-10-05
+
+### Added
+
+- **Deterministic fail-before / pass-after probe (FBPA):** an optional task-contract field,
+  `fail_before_pass_after`, lets a contract claim that a specific test fails at a `base` commit and
+  passes at a `head` commit. The probe checks this by running the claimed test against both
+  commits under `git worktree` + pytest + JUnit XML; it never calls an LLM. `intent: "fixes"` claims
+  must fail at `base` and pass at `head`; `intent: "characterizes"` claims only need to pass at
+  `head`. A required runtime module-origin audit (spec §2, amendment 6) catches an editable install
+  of a different checkout serving a submodule the probed worktree itself lacks. See
+  `docs/specs/probe-fail-before-pass-after.md` and the README section "Deterministic fail-before /
+  pass-after probe (FBPA)".
+- Add the FBPA probe's own standing positive, negative, and fault controls
+  (`tests/test_fbpa_probe.py`, spec §6), including a per-item coverage self-check that compares
+  (`==`, never `in`) the exact verdict and finding-type set each control triggers against its
+  expected set, and a dedicated control for the editable-install-finder failure mode found during
+  validation.
+- Add the S2 historical validation of FBPA: `docs/specs/fbpa-history-v0.5.0.md` (generated, over all
+  21 merged PRs in this repository) and `docs/specs/fbpa-history-adjudication-v0.5.0.md` (hand
+  adjudication of every row). Result: 135 claims, 34 demonstrated, 24 base_passes, 35 absence_only,
+  42 inconclusive, 0 faults; 2 weak tests found (PR #10, PR #1); PR #23 has a policy change
+  (high-severity-and-unreproduced forcing `needs_review`) that no test guards, shown by a mutation
+  that left the full suite green.
+
+### Changed (breaking)
+
+- **Policy identifier bumped to `validity-audit-default-v0.6.0`:** `ERROR_CLASS_EFFECTS` itself is
+  unchanged, but the new `fail_before_pass_after` field can turn a previously accepted contract into
+  a `fail`, which is a change in verdict semantics — the same reason the policy identifier changed
+  for v0.5.0 above — so the policy carries a new identifier instead of silently reinterpreting
+  existing records under the old one.
+- **Contract `schema_version` now also accepts `0.6.0`:** `0.3.0` contracts keep rejecting
+  `fail_before_pass_after` (an `if`/`then`/`false` schema branch); `0.6.0` contracts may declare it.
+  An older tool reading a `0.6.0` contract rejects it explicitly instead of silently skipping the
+  probe.
+- **`probe_version` bumped to `0.6.0`:** this moves the probe-report digest embedded in golden
+  fixtures. Every fixture embedding the old `policy_id` or `probe_version` string was grepped before
+  being changed: `golden_cases`' `expected_attestation.json` and `docs/attestation-example.json` each
+  needed two field updates — `policy_id`, and `review.bundle_sha256` (the review bundle embeds
+  `probe_report`, whose digest moved with `probe_version`). Both new values were produced by
+  actually re-running `prepare_run` / `finalize_run` against the golden case, not computed by hand.
+
 ## [0.5.0] — 2026-10-02
 
 ### Changed (breaking)

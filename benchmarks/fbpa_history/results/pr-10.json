@@ -1,0 +1,596 @@
+{
+  "contract": {
+    "auto_discover": true,
+    "base": "f69464908ceee1abe3d61c5aabf9dea737081403^",
+    "head": "f69464908ceee1abe3d61c5aabf9dea737081403",
+    "limits": {
+      "memory_max": "2G",
+      "repeats": 2,
+      "timeout_s": 300
+    },
+    "runner": "pytest"
+  },
+  "environment": {
+    "packages": {
+      "jsonschema": "4.26.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "pytest": "8.4.2",
+      "scipy": "1.17.1"
+    },
+    "python": "3.12.3",
+    "user_site_enabled": false,
+    "venv": true
+  },
+  "fbpa_result": {
+    "checks": [
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_injected_floor_baseline_is_preserved",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "base_verdict": "B_PASS",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved",
+        "components": [
+          "base_passes"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_injected_floor_baseline_is_preserved",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved",
+        "status": "advisory",
+        "verdict": "base_passes",
+        "verdicts": [
+          "base_passes"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_legacy_injected_shim_matches_canonical_output",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "base_verdict": "B_PASS",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output",
+        "components": [
+          "base_passes"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_legacy_injected_shim_matches_canonical_output",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output",
+        "status": "advisory",
+        "verdict": "base_passes",
+        "verdicts": [
+          "base_passes"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": "AssertionError",
+            "first_failure_line": "AssertionError: Title '![x](http://evil.com/a.png)': unescaped link syntax ](http found in attestation.md:",
+            "name": "test_inline_injection_vectors_rendered_as_literal_text[![x](http://evil.com/a.png)]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "AssertionError",
+            "first_failure_line": "AssertionError: Title '<!-- hidden -->': HTML comment opener <!-- found in attestation.md:",
+            "name": "test_inline_injection_vectors_rendered_as_literal_text[<!-- hidden -->]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "AssertionError",
+            "first_failure_line": "AssertionError: Title '<script>alert(1)</script>': unescaped <script found at index 706 in attestation.md:",
+            "name": "test_inline_injection_vectors_rendered_as_literal_text[<script>alert(1)</script>]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "AssertionError",
+            "first_failure_line": "AssertionError: Title '[click](http://evil.com)': unescaped link syntax ](http found in attestation.md:",
+            "name": "test_inline_injection_vectors_rendered_as_literal_text[[click](http://evil.com)]",
+            "outcome": "failure",
+            "phase": "call"
+          }
+        ],
+        "base_verdict": "B_FAIL_ASSERT",
+        "check_id": "fbpa:tests/test_markdown_injection.py::test_inline_injection_vectors_rendered_as_literal_text",
+        "components": [
+          "demonstrated"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_inline_injection_vectors_rendered_as_literal_text[![x](http://evil.com/a.png)]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_inline_injection_vectors_rendered_as_literal_text[<!-- hidden -->]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_inline_injection_vectors_rendered_as_literal_text[<script>alert(1)</script>]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_inline_injection_vectors_rendered_as_literal_text[[click](http://evil.com)]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_markdown_injection.py::test_inline_injection_vectors_rendered_as_literal_text",
+        "status": "pass",
+        "verdict": "demonstrated",
+        "verdicts": [
+          "demonstrated"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[# SIGNATURE VERIFIED]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[## fake heading]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[- injected bullet]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[> injected blockquote]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[`code span injection`]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[| col1 | col2 |]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "base_verdict": "B_PASS",
+        "check_id": "fbpa:tests/test_markdown_injection.py::test_single_line_md_title_does_not_produce_heading_outside_template",
+        "components": [
+          "base_passes"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[# SIGNATURE VERIFIED]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[## fake heading]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[- injected bullet]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[> injected blockquote]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[`code span injection`]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_single_line_md_title_does_not_produce_heading_outside_template[| col1 | col2 |]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_markdown_injection.py::test_single_line_md_title_does_not_produce_heading_outside_template",
+        "status": "advisory",
+        "verdict": "base_passes",
+        "verdicts": [
+          "base_passes"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": "Failed",
+            "first_failure_line": "Failed: DID NOT RAISE any of (<class 'validity_audit.schemas.SchemaValidationError'>, <class 'validity_audit.runtime.AuditRuntimeError'>)",
+            "name": "test_title_with_newline_is_rejected_by_schema[Normal start\\n# SIGNATURE VERIFIED]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "Failed",
+            "first_failure_line": "Failed: DID NOT RAISE any of (<class 'validity_audit.schemas.SchemaValidationError'>, <class 'validity_audit.runtime.AuditRuntimeError'>)",
+            "name": "test_title_with_newline_is_rejected_by_schema[embedded\\nnewline]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "Failed",
+            "first_failure_line": "Failed: DID NOT RAISE any of (<class 'validity_audit.schemas.SchemaValidationError'>, <class 'validity_audit.runtime.AuditRuntimeError'>)",
+            "name": "test_title_with_newline_is_rejected_by_schema[line one\\r\\nline two]",
+            "outcome": "failure",
+            "phase": "call"
+          }
+        ],
+        "base_verdict": "B_FAIL_ASSERT",
+        "check_id": "fbpa:tests/test_markdown_injection.py::test_title_with_newline_is_rejected_by_schema",
+        "components": [
+          "demonstrated"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_title_with_newline_is_rejected_by_schema[Normal start\\n# SIGNATURE VERIFIED]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_title_with_newline_is_rejected_by_schema[embedded\\nnewline]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_title_with_newline_is_rejected_by_schema[line one\\r\\nline two]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_markdown_injection.py::test_title_with_newline_is_rejected_by_schema",
+        "status": "pass",
+        "verdict": "demonstrated",
+        "verdicts": [
+          "demonstrated"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": "Failed",
+            "first_failure_line": "Failed: DID NOT RAISE any of (<class 'validity_audit.schemas.SchemaValidationError'>, <class 'validity_audit.runtime.AuditRuntimeError'>)",
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\u2028# after]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "Failed",
+            "first_failure_line": "Failed: DID NOT RAISE any of (<class 'validity_audit.schemas.SchemaValidationError'>, <class 'validity_audit.runtime.AuditRuntimeError'>)",
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\u2029# after]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "Failed",
+            "first_failure_line": "Failed: DID NOT RAISE any of (<class 'validity_audit.schemas.SchemaValidationError'>, <class 'validity_audit.runtime.AuditRuntimeError'>)",
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\x0b# after]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "Failed",
+            "first_failure_line": "Failed: DID NOT RAISE any of (<class 'validity_audit.schemas.SchemaValidationError'>, <class 'validity_audit.runtime.AuditRuntimeError'>)",
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\x0c# after]",
+            "outcome": "failure",
+            "phase": "call"
+          },
+          {
+            "exc_type": "Failed",
+            "first_failure_line": "Failed: DID NOT RAISE any of (<class 'validity_audit.schemas.SchemaValidationError'>, <class 'validity_audit.runtime.AuditRuntimeError'>)",
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\x85# after]",
+            "outcome": "failure",
+            "phase": "call"
+          }
+        ],
+        "base_verdict": "B_FAIL_ASSERT",
+        "check_id": "fbpa:tests/test_markdown_injection.py::test_unicode_line_separators_rejected_by_schema",
+        "components": [
+          "demonstrated"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\u2028# after]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\u2029# after]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\x0b# after]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\x0c# after]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unicode_line_separators_rejected_by_schema[safe\\x85# after]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_markdown_injection.py::test_unicode_line_separators_rejected_by_schema",
+        "status": "pass",
+        "verdict": "demonstrated",
+        "verdicts": [
+          "demonstrated"
+        ]
+      }
+    ],
+    "fbpa": {
+      "auto_advisory": 3,
+      "counts": {
+        "base_passes": 3,
+        "demonstrated": 3
+      },
+      "import_canary": {
+        "base": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        },
+        "head": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        }
+      },
+      "in_scope": 6,
+      "judged": 6,
+      "limiter_backend": "systemd-run",
+      "non_test_diff_count": 8,
+      "overlay_files": [
+        "tests/test_benchmarks.py",
+        "tests/test_cli.py",
+        "tests/test_golden_cases.py",
+        "tests/test_ledger.py",
+        "tests/test_markdown_injection.py",
+        "tests/test_markdown_links.py",
+        "tests/test_policy.py",
+        "tests/test_release_docs.py",
+        "tests/test_runtime.py",
+        "tests/test_schema_resources.py",
+        "tests/test_schemas.py"
+      ],
+      "resolved": {
+        "base": "fa055647358e8f3ee2e0f9b73f8ff1b0c6fd4a60",
+        "head": "f69464908ceee1abe3d61c5aabf9dea737081403"
+      },
+      "skipped": [],
+      "verdict_counts": {
+        "B_FAIL_ASSERT": 3,
+        "B_PASS": 3,
+        "H_PASS": 6
+      }
+    },
+    "findings": [
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved is claimed to fix a bug (intent=fixes), but it already passes with head's implementation removed (base_passes). This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-1",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved"
+          }
+        ],
+        "finding_id": "fbpa-1",
+        "finding_type": "fbpa-base-passes",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claimed test already passes before the fix"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output is claimed to fix a bug (intent=fixes), but it already passes with head's implementation removed (base_passes). This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-2",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output"
+          }
+        ],
+        "finding_id": "fbpa-2",
+        "finding_type": "fbpa-base-passes",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claimed test already passes before the fix"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_markdown_injection.py::test_single_line_md_title_does_not_produce_heading_outside_template is claimed to fix a bug (intent=fixes), but it already passes with head's implementation removed (base_passes). This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-3",
+            "kind": "file_line",
+            "locator": "tests/test_markdown_injection.py::test_single_line_md_title_does_not_produce_heading_outside_template"
+          }
+        ],
+        "finding_id": "fbpa-3",
+        "finding_type": "fbpa-base-passes",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claimed test already passes before the fix"
+      }
+    ]
+  },
+  "pr": 10,
+  "sha": "f69464908ceee1abe3d61c5aabf9dea737081403"
+}

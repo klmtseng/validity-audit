@@ -1,0 +1,108 @@
+{
+  "contract": {
+    "auto_discover": true,
+    "base": "683d631c0024ab10858471fec59d176bd4f5d0a6^",
+    "head": "683d631c0024ab10858471fec59d176bd4f5d0a6",
+    "limits": {
+      "memory_max": "2G",
+      "repeats": 2,
+      "timeout_s": 300
+    },
+    "runner": "pytest"
+  },
+  "environment": {
+    "packages": {
+      "jsonschema": "4.26.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "pytest": "8.4.2",
+      "scipy": "1.17.1"
+    },
+    "python": "3.12.3",
+    "user_site_enabled": false,
+    "venv": true
+  },
+  "fbpa_result": {
+    "checks": [],
+    "fbpa": {
+      "auto_advisory": 0,
+      "counts": {},
+      "import_canary": {
+        "base": {
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        },
+        "head": {
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        }
+      },
+      "in_scope": 0,
+      "judged": 0,
+      "limiter_backend": "systemd-run",
+      "non_test_diff_count": 2,
+      "overlay_files": [
+        "tests/test_golden_cases.py",
+        "tests/test_ledger.py",
+        "tests/test_markdown_links.py",
+        "tests/test_schemas.py"
+      ],
+      "resolved": {
+        "base": "39d0d3b7334a155ba7d03352c2714601106dc991",
+        "head": "683d631c0024ab10858471fec59d176bd4f5d0a6"
+      },
+      "skipped": [],
+      "verdict_counts": {}
+    },
+    "findings": [
+      {
+        "confidence": "high",
+        "description": "fail_before_pass_after is present but no claim was in scope (no declared claims and no auto-discovered tests under test_paths); nothing was judged.",
+        "error_class": "material_requirement_miss",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-no-claims",
+            "kind": "file_line",
+            "locator": "fail_before_pass_after"
+          }
+        ],
+        "finding_id": "fbpa-no-claims",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "No claim reached a verdict; check the claims list, test_paths and the skipped entries. Rerunning cannot change this without a change.",
+        "severity": "high",
+        "source": "deterministic_probe",
+        "title": "FBPA: nothing was judged"
+      }
+    ]
+  },
+  "pr": 4,
+  "sha": "683d631c0024ab10858471fec59d176bd4f5d0a6"
+}

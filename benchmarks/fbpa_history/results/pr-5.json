@@ -1,0 +1,2034 @@
+{
+  "contract": {
+    "auto_discover": true,
+    "base": "683d631c0024ab10858471fec59d176bd4f5d0a6",
+    "head": "74172ab934bbc8163d8015a1a939ed3005ebd073",
+    "limits": {
+      "memory_max": "2G",
+      "repeats": 2,
+      "timeout_s": 300
+    },
+    "runner": "pytest"
+  },
+  "environment": {
+    "packages": {
+      "jsonschema": "4.26.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "pytest": "8.4.2",
+      "scipy": "1.17.1"
+    },
+    "python": "3.12.3",
+    "user_site_enabled": false,
+    "venv": true
+  },
+  "fbpa_result": {
+    "checks": [
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.cli",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_cli.py::test_argument_error_exits_one",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_argument_error_exits_one",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_cli.py::test_argument_error_exits_one",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.cli",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_cli.py::test_evidence_mismatch_exits_four",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_evidence_mismatch_exits_four",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_cli.py::test_evidence_mismatch_exits_four",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.cli",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_cli.py::test_finalize_status_exit_contract",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finalize_status_exit_contract[fail-2]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finalize_status_exit_contract[needs_review-3]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finalize_status_exit_contract[pass-0]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finalize_status_exit_contract[pass_with_waiver-0]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_cli.py::test_finalize_status_exit_contract",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.cli",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_cli.py::test_operational_error_exits_one",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_operational_error_exits_one",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_cli.py::test_operational_error_exits_one",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.cli",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_cli.py::test_prepare_success_exits_zero",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_prepare_success_exits_zero",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_cli.py::test_prepare_success_exits_zero",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_active_waiver_preserves_original_policy_result",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_active_waiver_preserves_original_policy_result",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_active_waiver_preserves_original_policy_result",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_contract_override_can_explicitly_classify_unknown_as_advisory",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_contract_override_can_explicitly_classify_unknown_as_advisory",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_contract_override_can_explicitly_classify_unknown_as_advisory",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_contract_override_changes_error_class_gate",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_contract_override_changes_error_class_gate",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_contract_override_changes_error_class_gate",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_expired_waiver_is_rejected",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_expired_waiver_is_rejected",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_expired_waiver_is_rejected",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_explicit_advisory_error_class_passes",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_explicit_advisory_error_class_passes",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_explicit_advisory_error_class_passes",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_finder_cannot_set_policy_outputs",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finder_cannot_set_policy_outputs",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_finder_cannot_set_policy_outputs",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_policy_id_is_versioned",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_policy_id_is_versioned",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_policy_id_is_versioned",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_refuted_claim_forces_unknown_error_class_to_fail",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_refuted_claim_forces_unknown_error_class_to_fail",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_refuted_claim_forces_unknown_error_class_to_fail",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_reproduced_approved_blocking_classes_fail",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_reproduced_approved_blocking_classes_fail[correctness]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_reproduced_approved_blocking_classes_fail[evidence_tampering]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_reproduced_approved_blocking_classes_fail[fabrication]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_reproduced_approved_blocking_classes_fail[leakage]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_reproduced_approved_blocking_classes_fail[material_requirement_miss]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_reproduced_approved_blocking_classes_fail[unauthorized_action]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_reproduced_approved_blocking_classes_fail",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_unclassified_error_class_cannot_be_waived",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unclassified_error_class_cannot_be_waived",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_unclassified_error_class_cannot_be_waived",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_unclassified_error_class_needs_review",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unclassified_error_class_needs_review[broken-reference]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unclassified_error_class_needs_review[novel_error_class]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unclassified_error_class_needs_review[other]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_unclassified_error_class_needs_review",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_unresolved_blocking_class_needs_review",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unresolved_blocking_class_needs_review[not_attempted]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unresolved_blocking_class_needs_review[not_reproducible]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unresolved_blocking_class_needs_review[unreproduced]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_unresolved_blocking_class_needs_review",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_unresolved_claim_needs_review",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unresolved_claim_needs_review",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_unresolved_claim_needs_review",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.policy",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_policy.py::test_waiver_cannot_turn_unattempted_blocker_into_pass",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_waiver_cannot_turn_unattempted_blocker_into_pass",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_policy.py::test_waiver_cannot_turn_unattempted_blocker_into_pass",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_artifact_change_voids_prepared_run",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_artifact_change_voids_prepared_run",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_artifact_change_voids_prepared_run",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_blocking_reviewer_finding_fails",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_blocking_reviewer_finding_fails",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_blocking_reviewer_finding_fails",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_broken_link_probe_is_policy_gated",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_broken_link_probe_is_policy_gated",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_broken_link_probe_is_policy_gated",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_finalize_cannot_run_twice",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finalize_cannot_run_twice",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_finalize_cannot_run_twice",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_finalize_rejects_review_identity_mismatch",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finalize_rejects_review_identity_mismatch",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_finalize_rejects_review_identity_mismatch",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.digests",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_runtime.py::test_finalize_retains_transcript_and_validates_attestation",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finalize_retains_transcript_and_validates_attestation",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_finalize_retains_transcript_and_validates_attestation",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_ledger_duplicate_is_rejected_before_final_outputs",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_ledger_duplicate_is_rejected_before_final_outputs",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_ledger_duplicate_is_rejected_before_final_outputs",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_link_escaping_workspace_is_policy_gated",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_link_escaping_workspace_is_policy_gated",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_link_escaping_workspace_is_policy_gated",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_not_attempted_blocking_finding_needs_review",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_not_attempted_blocking_finding_needs_review",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_not_attempted_blocking_finding_needs_review",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_policy_engine_is_sole_gate_effect_writer",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_policy_engine_is_sole_gate_effect_writer",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_policy_engine_is_sole_gate_effect_writer",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.digests",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_runtime.py::test_prepare_emits_digest_bound_bundle_and_state",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_prepare_emits_digest_bound_bundle_and_state",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_prepare_emits_digest_bound_bundle_and_state",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_prepare_primed_bundle_records_sources",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_prepare_primed_bundle_records_sources",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_prepare_primed_bundle_records_sources",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_prepare_rejects_cold_priming",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_prepare_rejects_cold_priming",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_prepare_rejects_cold_priming",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_prepare_rejects_non_rfc3339_timestamp",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_prepare_rejects_non_rfc3339_timestamp",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_prepare_rejects_non_rfc3339_timestamp",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_prepare_rejects_symlinked_artifact",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_prepare_rejects_symlinked_artifact",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_prepare_rejects_symlinked_artifact",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_runtime.py::test_unclassified_reviewer_finding_needs_review",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unclassified_reviewer_finding_needs_review",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_runtime.py::test_unclassified_reviewer_finding_needs_review",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.schemas",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_schema_resources.py::test_packaged_schema_is_valid_draft_2020_12",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_packaged_schema_is_valid_draft_2020_12[attestation]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_packaged_schema_is_valid_draft_2020_12[reviewer_output]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_packaged_schema_is_valid_draft_2020_12[task_contract]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schema_resources.py::test_packaged_schema_is_valid_draft_2020_12",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "validity_audit.schemas",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_schema_resources.py::test_packaged_schema_matches_repository_contract",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_packaged_schema_matches_repository_contract[attestation]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_packaged_schema_matches_repository_contract[reviewer_output]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_packaged_schema_matches_repository_contract[task_contract]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schema_resources.py::test_packaged_schema_matches_repository_contract",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      }
+    ],
+    "fbpa": {
+      "auto_advisory": 37,
+      "counts": {
+        "absence_only": 23,
+        "inconclusive": 14
+      },
+      "import_canary": {
+        "base": {
+          "examples": {
+            "not_found": true
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        },
+        "head": {
+          "examples": {
+            "path": "examples"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        }
+      },
+      "in_scope": 37,
+      "judged": 23,
+      "limiter_backend": "systemd-run",
+      "non_test_diff_count": 27,
+      "overlay_files": [
+        "tests/test_cli.py",
+        "tests/test_golden_cases.py",
+        "tests/test_ledger.py",
+        "tests/test_markdown_links.py",
+        "tests/test_policy.py",
+        "tests/test_runtime.py",
+        "tests/test_schema_resources.py",
+        "tests/test_schemas.py"
+      ],
+      "resolved": {
+        "base": "683d631c0024ab10858471fec59d176bd4f5d0a6",
+        "head": "74172ab934bbc8163d8015a1a939ed3005ebd073"
+      },
+      "skipped": [
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_artifact_change_voids_prepared_run"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_blocking_reviewer_finding_fails"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_broken_link_probe_is_policy_gated"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_finalize_cannot_run_twice"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_finalize_rejects_review_identity_mismatch"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_ledger_duplicate_is_rejected_before_final_outputs"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_link_escaping_workspace_is_policy_gated"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_not_attempted_blocking_finding_needs_review"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_policy_engine_is_sole_gate_effect_writer"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_prepare_primed_bundle_records_sources"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_prepare_rejects_cold_priming"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_prepare_rejects_non_rfc3339_timestamp"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_prepare_rejects_symlinked_artifact"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_runtime.py::test_unclassified_reviewer_finding_needs_review"
+        }
+      ],
+      "verdict_counts": {
+        "B_ABSENT": 23,
+        "B_COLLATERAL": 14,
+        "H_PASS": 37
+      }
+    },
+    "findings": [
+      {
+        "confidence": "high",
+        "description": "tests/test_cli.py::test_argument_error_exits_one fails at base only because a head-only symbol ('validity_audit.cli') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-1",
+            "kind": "file_line",
+            "locator": "tests/test_cli.py::test_argument_error_exits_one"
+          }
+        ],
+        "finding_id": "fbpa-1",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_cli.py::test_evidence_mismatch_exits_four fails at base only because a head-only symbol ('validity_audit.cli') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-2",
+            "kind": "file_line",
+            "locator": "tests/test_cli.py::test_evidence_mismatch_exits_four"
+          }
+        ],
+        "finding_id": "fbpa-2",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_cli.py::test_finalize_status_exit_contract fails at base only because a head-only symbol ('validity_audit.cli') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-3",
+            "kind": "file_line",
+            "locator": "tests/test_cli.py::test_finalize_status_exit_contract"
+          }
+        ],
+        "finding_id": "fbpa-3",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_cli.py::test_operational_error_exits_one fails at base only because a head-only symbol ('validity_audit.cli') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-4",
+            "kind": "file_line",
+            "locator": "tests/test_cli.py::test_operational_error_exits_one"
+          }
+        ],
+        "finding_id": "fbpa-4",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_cli.py::test_prepare_success_exits_zero fails at base only because a head-only symbol ('validity_audit.cli') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-5",
+            "kind": "file_line",
+            "locator": "tests/test_cli.py::test_prepare_success_exits_zero"
+          }
+        ],
+        "finding_id": "fbpa-5",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_active_waiver_preserves_original_policy_result fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-6",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_active_waiver_preserves_original_policy_result"
+          }
+        ],
+        "finding_id": "fbpa-6",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_contract_override_can_explicitly_classify_unknown_as_advisory fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-7",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_contract_override_can_explicitly_classify_unknown_as_advisory"
+          }
+        ],
+        "finding_id": "fbpa-7",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_contract_override_changes_error_class_gate fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-8",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_contract_override_changes_error_class_gate"
+          }
+        ],
+        "finding_id": "fbpa-8",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_expired_waiver_is_rejected fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-9",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_expired_waiver_is_rejected"
+          }
+        ],
+        "finding_id": "fbpa-9",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_explicit_advisory_error_class_passes fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-10",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_explicit_advisory_error_class_passes"
+          }
+        ],
+        "finding_id": "fbpa-10",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_finder_cannot_set_policy_outputs fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-11",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_finder_cannot_set_policy_outputs"
+          }
+        ],
+        "finding_id": "fbpa-11",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_policy_id_is_versioned fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-12",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_policy_id_is_versioned"
+          }
+        ],
+        "finding_id": "fbpa-12",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_refuted_claim_forces_unknown_error_class_to_fail fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-13",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_refuted_claim_forces_unknown_error_class_to_fail"
+          }
+        ],
+        "finding_id": "fbpa-13",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_reproduced_approved_blocking_classes_fail fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-14",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_reproduced_approved_blocking_classes_fail"
+          }
+        ],
+        "finding_id": "fbpa-14",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_unclassified_error_class_cannot_be_waived fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-15",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_unclassified_error_class_cannot_be_waived"
+          }
+        ],
+        "finding_id": "fbpa-15",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_unclassified_error_class_needs_review fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-16",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_unclassified_error_class_needs_review"
+          }
+        ],
+        "finding_id": "fbpa-16",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_unresolved_blocking_class_needs_review fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-17",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_unresolved_blocking_class_needs_review"
+          }
+        ],
+        "finding_id": "fbpa-17",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_unresolved_claim_needs_review fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-18",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_unresolved_claim_needs_review"
+          }
+        ],
+        "finding_id": "fbpa-18",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_policy.py::test_waiver_cannot_turn_unattempted_blocker_into_pass fails at base only because a head-only symbol ('validity_audit.policy') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-19",
+            "kind": "file_line",
+            "locator": "tests/test_policy.py::test_waiver_cannot_turn_unattempted_blocker_into_pass"
+          }
+        ],
+        "finding_id": "fbpa-19",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_artifact_change_voids_prepared_run landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-20",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_artifact_change_voids_prepared_run"
+          }
+        ],
+        "finding_id": "fbpa-20",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_blocking_reviewer_finding_fails landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-21",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_blocking_reviewer_finding_fails"
+          }
+        ],
+        "finding_id": "fbpa-21",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_broken_link_probe_is_policy_gated landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-22",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_broken_link_probe_is_policy_gated"
+          }
+        ],
+        "finding_id": "fbpa-22",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_finalize_cannot_run_twice landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-23",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_finalize_cannot_run_twice"
+          }
+        ],
+        "finding_id": "fbpa-23",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_finalize_rejects_review_identity_mismatch landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-24",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_finalize_rejects_review_identity_mismatch"
+          }
+        ],
+        "finding_id": "fbpa-24",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_finalize_retains_transcript_and_validates_attestation fails at base only because a head-only symbol ('validity_audit.digests') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-25",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_finalize_retains_transcript_and_validates_attestation"
+          }
+        ],
+        "finding_id": "fbpa-25",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_ledger_duplicate_is_rejected_before_final_outputs landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-26",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_ledger_duplicate_is_rejected_before_final_outputs"
+          }
+        ],
+        "finding_id": "fbpa-26",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_link_escaping_workspace_is_policy_gated landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-27",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_link_escaping_workspace_is_policy_gated"
+          }
+        ],
+        "finding_id": "fbpa-27",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_not_attempted_blocking_finding_needs_review landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-28",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_not_attempted_blocking_finding_needs_review"
+          }
+        ],
+        "finding_id": "fbpa-28",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_policy_engine_is_sole_gate_effect_writer landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-29",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_policy_engine_is_sole_gate_effect_writer"
+          }
+        ],
+        "finding_id": "fbpa-29",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_prepare_emits_digest_bound_bundle_and_state fails at base only because a head-only symbol ('validity_audit.digests') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-30",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_prepare_emits_digest_bound_bundle_and_state"
+          }
+        ],
+        "finding_id": "fbpa-30",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_prepare_primed_bundle_records_sources landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-31",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_prepare_primed_bundle_records_sources"
+          }
+        ],
+        "finding_id": "fbpa-31",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_prepare_rejects_cold_priming landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-32",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_prepare_rejects_cold_priming"
+          }
+        ],
+        "finding_id": "fbpa-32",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_prepare_rejects_non_rfc3339_timestamp landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-33",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_prepare_rejects_non_rfc3339_timestamp"
+          }
+        ],
+        "finding_id": "fbpa-33",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_prepare_rejects_symlinked_artifact landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-34",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_prepare_rejects_symlinked_artifact"
+          }
+        ],
+        "finding_id": "fbpa-34",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_runtime.py::test_unclassified_reviewer_finding_needs_review landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-35",
+            "kind": "file_line",
+            "locator": "tests/test_runtime.py::test_unclassified_reviewer_finding_needs_review"
+          }
+        ],
+        "finding_id": "fbpa-35",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schema_resources.py::test_packaged_schema_is_valid_draft_2020_12 fails at base only because a head-only symbol ('validity_audit.schemas') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-36",
+            "kind": "file_line",
+            "locator": "tests/test_schema_resources.py::test_packaged_schema_is_valid_draft_2020_12"
+          }
+        ],
+        "finding_id": "fbpa-36",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schema_resources.py::test_packaged_schema_matches_repository_contract fails at base only because a head-only symbol ('validity_audit.schemas') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-37",
+            "kind": "file_line",
+            "locator": "tests/test_schema_resources.py::test_packaged_schema_matches_repository_contract"
+          }
+        ],
+        "finding_id": "fbpa-37",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      }
+    ]
+  },
+  "pr": 5,
+  "sha": "74172ab934bbc8163d8015a1a939ed3005ebd073"
+}

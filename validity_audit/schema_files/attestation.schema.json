@@ -605,6 +605,10 @@
         "finding_id": {
           "$ref": "#/$defs/identifier"
         },
+        "finding_type": {
+          "description": "Optional grouping key set by deterministic probes (for example fbpa-base-passes); finding_id is a sequence number and must not be used for grouping.",
+          "$ref": "#/$defs/slug"
+        },
         "title": {
           "type": "string",
           "minLength": 1,

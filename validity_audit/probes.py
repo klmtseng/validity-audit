@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote
 
+from validity_audit.fbpa import PROBE_VERSION, run_fbpa
+
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 
 
@@ -52,8 +54,18 @@ def _probe_failure(
     }
 
 
-def run_probes(workspace: Path, artifact_paths: list[str]) -> dict[str, Any]:
-    """Run deterministic checks and return a canonical probe report."""
+def run_probes(
+    workspace: Path,
+    artifact_paths: list[str],
+    contract: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Run deterministic checks and return a canonical probe report.
+
+    ``contract`` is the full task contract, consulted only for its optional
+    ``fail_before_pass_after`` field (see ``validity_audit.fbpa``). If the field
+    is absent, the probe report is unchanged apart from ``probe_version``
+    (spec section 1.1).
+    """
     checks: list[dict[str, Any]] = []
     findings: list[dict[str, Any]] = []
 
@@ -162,8 +174,17 @@ def run_probes(workspace: Path, artifact_paths: list[str]) -> dict[str, Any]:
                 }
             )
 
-    return {
-        "probe_version": "0.3.0",
+    report: dict[str, Any] = {
+        "probe_version": PROBE_VERSION,
         "checks": checks,
         "findings": findings,
     }
+
+    fbpa_contract = (contract or {}).get("fail_before_pass_after")
+    if fbpa_contract:
+        fbpa_result = run_fbpa(workspace, fbpa_contract)
+        report["checks"] = checks + fbpa_result["checks"]
+        report["findings"] = findings + fbpa_result["findings"]
+        report["fbpa"] = fbpa_result["fbpa"]
+
+    return report

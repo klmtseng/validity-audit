@@ -1,62 +1,62 @@
-# Validity Audit v0.5.0
+# Validity Audit v0.6.0
 
-Validity Audit v0.5.0 closes a gap in its own landing path:
+Validity Audit v0.6.0 adds one check to its own evidence chain:
 
-> **Can a reviewer-supplied field silently change the verdict, or silently escape it?**
+> If the fix is removed, does the test that is claimed to prove it actually fail?
 
-Before this release, several fields in `reviewer_output.json` were accepted as long as they were well-formed, even when the policy engine had no rule for the value supplied. The verdict was still computed, but some findings were never actually judged. v0.5.0 rejects those values when the reviewer output is imported, or routes them to review, instead of letting them pass through.
+A test can assert something that was already true before the fix, or that stays true after the fix is reverted. This is a common way for AI-written tests to go wrong. Such a test always passes and proves nothing, but in a pass/fail report it looks exactly like a real regression guard. v0.6.0 adds a deterministic probe, FBPA (fail-before / pass-after), that checks this directly: it runs the claimed test against the commit before the change and the commit after it, under `git worktree` and pytest. It never calls an LLM.
 
 The release keeps the same bounded assurance model: one task run, one contract, one digest-bound artifact set, and one explicitly unsigned validity attestation.
 
 ## Why this release exists
 
-An audit of our own historical reviewer outputs found 119 distinct findings across 16 runs. 68 of them used an `error_class` slug the policy did not recognize. Every one of those 68, including 17 marked high severity, landed with `gate_effect: "none"`: the run reported `needs_review`, but the policy had never decided anything about those findings. The same pattern appeared in two consecutive review rounds of one project before anyone noticed.
+We ran FBPA, with `auto_discover: true`, against all 21 merged pull requests in this repository's own history: 135 claims. 34 were `demonstrated` (fails before, passes after), 24 `base_passes` (the test already passed before the change), 35 `absence_only` (the only before-failure was a missing symbol), 42 inconclusive, 0 faults.
+
+Hand adjudication of every `demonstrated` and `base_passes` row found two tests that pass regardless of the bug they are supposed to guard: PR #10's single-line Markdown-title check, and PR #1's duplicate-key check. It also found one real gap: PR #23 changed the policy so a high-severity, unreproduced finding forces `needs_review`, but no test in the suite guards that specific change. A mutation that deleted the condition from the policy code left the full suite at 174 passed. A separate pull request adds the missing test.
+
+These numbers describe one repository with 21 PRs. They show FBPA found two weak tests and one real coverage gap here. They are not a rate claim about other repositories, and they are not mutation testing: mutation testing asks whether any test in the suite catches a given change, and FBPA only compares one claimed test against one claimed fix.
 
 ## What changed
 
-This release changes verdicts, so it ships under a new policy identifier, **`validity-audit-default-v0.5.0`**. v0.4.0 promised that `validity-audit-default-v0.3.0` would keep its meaning, and it still does. Attestations already issued keep the old identifier, and new attestations carry the new one.
+### 1. The `fail_before_pass_after` contract field
 
-### 1. `error_class` is validated at landing
+An optional field on the task contract names a `base` commit, a `head` commit, and a list of claims, each a test node id and an intent. `intent: "fixes"` must fail at `base` and pass at `head`. `intent: "characterizes"` only has to pass at `head`; passing at `base` too is expected for a test-only change and produces no finding. Verdicts feed the existing policy pipeline; no new error class was added. See `docs/specs/probe-fail-before-pass-after.md`.
 
-`finding.error_class` must be one of the eight built-in classes (`correctness`, `evidence_tampering`, `fabrication`, `leakage`, `material_requirement_miss`, `unauthorized_action`, `fitness`, `maintainability`) or a class the task contract maps in `policy_overrides`. Any other value makes `finalize` fail with an error listing the offending finding ids and the full legal set. No attestation is written.
+### 2. New policy identifier
 
-**Exit code changes from `3` (needs_review attestation) to `1` (operational error).** CI jobs that treated exit 3 as "a human should look" will now see exit 1 for this case.
+This release can change verdicts, so it ships under a new policy identifier, **`validity-audit-default-v0.6.0`**. v0.5.0 promised that `validity-audit-default-v0.3.0` would keep its meaning, and it still does; `validity-audit-default-v0.5.0` keeps its meaning too. Attestations already issued keep their original identifiers. New attestations carry the new identifier, whether or not their contract declares `fail_before_pass_after`.
 
-### 2. Waiver issuer labels must be declared
+### 3. Contract `schema_version` 0.6.0 is opt-in
 
-The task contract gains an optional `waiver_issuers` array. If the reviewer output contains any waiver request, the contract must declare `waiver_issuers` and every waiver's `issuer` must appear in it, matched exactly. Otherwise `finalize` fails with exit `1`.
+`0.3.0` contracts are unchanged: the schema keeps rejecting `fail_before_pass_after` on a `0.3.0` contract. A contract that wants the field declares `schema_version: "0.6.0"`. An older tool reading a `0.6.0` contract rejects it explicitly instead of silently skipping the probe.
 
-This **restricts which issuer labels are accepted. It does not authenticate who issued the waiver.** Attestations are still unsigned, and anyone who can write the reviewer output can type a listed label.
+### 4. Environment requirement
 
-### 3. High-severity, unreproduced findings go to review
+Run the probe from an environment where this project is not importable from anywhere else. Checking the package name is not enough: an editable install of a different checkout can serve a submodule the probed worktree itself lacks, under the same name. This happened during this release's own validation, not in a hypothetical. A runtime module-origin audit now records every project module whose origin lies outside the run's worktree and faults the affected claim, but a clean environment is still the cheaper fix.
 
-A finding with `severity: "high"` whose reproduction status is `unreproduced`, `not_reproducible`, or `not_attempted` now forces `needs_review` whatever its error class is. This includes advisory classes such as `fitness`, and classes overridden to `none`. Previously such a finding under an advisory class let the run `pass`. The attestation summary states which rule triggered.
+## What this does not prove
 
-Findings below high severity behave as before.
+FBPA shows that one claimed test depends on one claimed fix. It does not show the test catches every bug of that kind, and it does not show the test targets the property a user actually cares about; that remains a fitness question. It is not mutation testing.
+
+## Known limitations
+
+See `docs/specs/probe-fail-before-pass-after.md` §9 for the full list. In short: `test_paths` decides what counts as the fix, so a fix placed inside the test directory is treated as test code; a test that only asserts a constant (a version string, for example) is `demonstrated` when the constant changes, which is technically correct and weak evidence; and existence checks are recognised only in the forms the spec lists, so one written through `__all__` or `inspect.getmembers` still counts as `demonstrated`.
 
 ## Migrating
 
-**Contracts that use waivers:** add the issuer labels you accept.
+**Contracts that want FBPA:** declare `schema_version: "0.6.0"` and add `fail_before_pass_after` with a `base`, a `head`, and at least one claim.
 
-```json
-{
-  "waiver_issuers": ["release-owner"]
-}
-```
-
-**Reviewer prompts and tooling:** give reviewers the eight legal `error_class` values, or declare any custom class in the contract's `policy_overrides`. A reviewer who invents a descriptive slug now stops the run instead of producing a hollow `needs_review`.
-
-**Consumers of attestations:** branch on `overall_result.policy_id` if you compare outcomes across releases.
+**Everyone else:** nothing changes in the field sense, and `0.3.0` contracts keep working. The policy identifier on new attestations changes regardless, because the identifier describes the policy code, not whether a given contract used the new field.
 
 ## Compatibility and boundaries
 
-The attestation schema version is unchanged. The task-contract schema gains one optional field. Historical compatibility entry points remain present.
+The attestation schema version is unchanged. `probe_version` moves to `0.6.0`, which moves the probe-report digest embedded in golden fixtures; every fixture that embedded the old `policy_id` or `probe_version` string was updated by re-running `prepare_run` / `finalize_run` against the golden case, not computed by hand. The task-contract schema gains one optional field and one new accepted `schema_version` value. Historical compatibility entry points remain present.
 
 Still out of scope:
 
+- mutation testing;
 - cryptographic signing and issuer authentication;
 - hosted provider adapters or API-key installation;
-- global trust scores;
 - certification of an agent, model, organization, or workflow.
 
 ## Reproduce it
