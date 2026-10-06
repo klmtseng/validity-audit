@@ -77,7 +77,7 @@ def claims(outcome: str = "supported") -> list[dict]:
 
 
 def test_policy_id_is_versioned() -> None:
-    assert POLICY_ID == "validity-audit-default-v0.5.0"
+    assert POLICY_ID == "validity-audit-default-v0.6.0"
 
 
 @pytest.mark.parametrize(

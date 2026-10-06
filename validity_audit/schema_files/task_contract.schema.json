@@ -18,7 +18,7 @@
       "format": "uri-reference"
     },
     "schema_version": {
-      "const": "0.3.0"
+      "enum": ["0.3.0", "0.6.0"]
     },
     "task_id": {
       "$ref": "#/$defs/identifier"
@@ -66,8 +66,28 @@
         "maxLength": 255,
         "pattern": "\\S"
       }
+    },
+    "fail_before_pass_after": {
+      "$ref": "#/$defs/failBeforePassAfter"
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "0.3.0"
+          }
+        },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "fail_before_pass_after": false
+        }
+      }
+    }
+  ],
   "$defs": {
     "identifier": {
       "type": "string",
@@ -139,6 +159,111 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 2000
+        }
+      }
+    },
+    "failBeforePassAfter": {
+      "description": "Deterministic fail-before/pass-after (FBPA) probe input; see docs/specs/probe-fail-before-pass-after.md.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base",
+        "head",
+        "runner"
+      ],
+      "properties": {
+        "base": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^[^-]"
+        },
+        "head": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^[^-]"
+        },
+        "runner": {
+          "const": "pytest"
+        },
+        "test_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        },
+        "claims": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/fbpaClaim"
+          }
+        },
+        "auto_discover": {
+          "type": "boolean",
+          "default": false
+        },
+        "import_canary": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+          }
+        },
+        "limits": {
+          "$ref": "#/$defs/fbpaLimits"
+        }
+      }
+    },
+    "fbpaClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "test",
+        "intent"
+      ],
+      "properties": {
+        "test": {
+          "description": "A pytest node id: <file>::[<Class>::]<function>[<params>].",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^:-][^:]*::.+$"
+        },
+        "intent": {
+          "enum": [
+            "fixes",
+            "characterizes"
+          ]
+        }
+      }
+    },
+    "fbpaLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "memory_max": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*[KMGT]?$"
+        },
+        "timeout_s": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "repeats": {
+          "description": "Runs per side; at least 2, since a single run cannot detect a flaky test (spec §9).",
+          "type": "integer",
+          "minimum": 2
         }
       }
     }

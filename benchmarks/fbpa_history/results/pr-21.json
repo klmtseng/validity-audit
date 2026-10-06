@@ -1,0 +1,140 @@
+{
+  "contract": {
+    "auto_discover": true,
+    "base": "86c35861f9788b3711b925207fac4464abb2c7e0^",
+    "head": "86c35861f9788b3711b925207fac4464abb2c7e0",
+    "limits": {
+      "memory_max": "2G",
+      "repeats": 2,
+      "timeout_s": 300
+    },
+    "runner": "pytest"
+  },
+  "environment": {
+    "packages": {
+      "jsonschema": "4.26.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "pytest": "8.4.2",
+      "scipy": "1.17.1"
+    },
+    "python": "3.12.3",
+    "user_site_enabled": false,
+    "venv": true
+  },
+  "fbpa_result": {
+    "checks": [],
+    "fbpa": {
+      "auto_advisory": 0,
+      "counts": {},
+      "import_canary": {
+        "base": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        },
+        "head": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        }
+      },
+      "in_scope": 0,
+      "judged": 0,
+      "limiter_backend": "systemd-run",
+      "non_test_diff_count": 1,
+      "overlay_files": [
+        "tests/test_benchmarks.py",
+        "tests/test_cli.py",
+        "tests/test_golden_cases.py",
+        "tests/test_ledger.py",
+        "tests/test_markdown_injection.py",
+        "tests/test_markdown_links.py",
+        "tests/test_policy.py",
+        "tests/test_probe_challenges.py",
+        "tests/test_release_docs.py",
+        "tests/test_runtime.py",
+        "tests/test_schema_resources.py",
+        "tests/test_schemas.py"
+      ],
+      "resolved": {
+        "base": "a313e514bf451f84eaea6af0360669f2383a76d7",
+        "head": "86c35861f9788b3711b925207fac4464abb2c7e0"
+      },
+      "skipped": [],
+      "verdict_counts": {}
+    },
+    "findings": [
+      {
+        "confidence": "high",
+        "description": "fail_before_pass_after is present but no claim was in scope (no declared claims and no auto-discovered tests under test_paths); nothing was judged.",
+        "error_class": "material_requirement_miss",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-no-claims",
+            "kind": "file_line",
+            "locator": "fail_before_pass_after"
+          }
+        ],
+        "finding_id": "fbpa-no-claims",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "No claim reached a verdict; check the claims list, test_paths and the skipped entries. Rerunning cannot change this without a change.",
+        "severity": "high",
+        "source": "deterministic_probe",
+        "title": "FBPA: nothing was judged"
+      }
+    ]
+  },
+  "pr": 21,
+  "sha": "86c35861f9788b3711b925207fac4464abb2c7e0"
+}

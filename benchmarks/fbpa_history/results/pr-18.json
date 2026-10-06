@@ -1,0 +1,197 @@
+{
+  "contract": {
+    "auto_discover": true,
+    "base": "8bd30304dc878ed86fb656ed8d04612f493f9762^",
+    "head": "8bd30304dc878ed86fb656ed8d04612f493f9762",
+    "limits": {
+      "memory_max": "2G",
+      "repeats": 2,
+      "timeout_s": 300
+    },
+    "runner": "pytest"
+  },
+  "environment": {
+    "packages": {
+      "jsonschema": "4.26.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "pytest": "8.4.2",
+      "scipy": "1.17.1"
+    },
+    "python": "3.12.3",
+    "user_site_enabled": false,
+    "venv": true
+  },
+  "fbpa_result": {
+    "checks": [
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": "AssertionError",
+            "first_failure_line": "AssertionError: assert 'Review import + linkage' in 'Validity Audit architecture with verifier challenge loop A bounded task and artifact set move through evidence captur...rtifact set \u00b7 one evidence chain \u00b7 unsigned record. Verifier challenges test checker behavior, not global correctness.'",
+            "name": "test_architecture_svg_is_parseable_and_names_v04_flow_and_challenge_loop",
+            "outcome": "failure",
+            "phase": "call"
+          }
+        ],
+        "base_verdict": "B_FAIL_ASSERT",
+        "check_id": "fbpa:tests/test_release_docs.py::test_architecture_svg_is_parseable_and_names_v04_flow_and_challenge_loop",
+        "components": [
+          "demonstrated"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_architecture_svg_is_parseable_and_names_v04_flow_and_challenge_loop",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_release_docs.py::test_architecture_svg_is_parseable_and_names_v04_flow_and_challenge_loop",
+        "status": "pass",
+        "verdict": "demonstrated",
+        "verdicts": [
+          "demonstrated"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": "AssertionError",
+            "first_failure_line": "AssertionError: assert '0.4.0.dev0' == '0.4.0'",
+            "name": "test_release_version_and_readme_maturity_agree",
+            "outcome": "failure",
+            "phase": "call"
+          }
+        ],
+        "base_verdict": "B_FAIL_ASSERT",
+        "check_id": "fbpa:tests/test_release_docs.py::test_release_version_and_readme_maturity_agree",
+        "components": [
+          "demonstrated"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_release_version_and_readme_maturity_agree",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_release_docs.py::test_release_version_and_readme_maturity_agree",
+        "status": "pass",
+        "verdict": "demonstrated",
+        "verdicts": [
+          "demonstrated"
+        ]
+      }
+    ],
+    "fbpa": {
+      "auto_advisory": 0,
+      "counts": {
+        "demonstrated": 2
+      },
+      "import_canary": {
+        "base": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        },
+        "head": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        }
+      },
+      "in_scope": 2,
+      "judged": 2,
+      "limiter_backend": "systemd-run",
+      "non_test_diff_count": 6,
+      "overlay_files": [
+        "tests/test_benchmarks.py",
+        "tests/test_cli.py",
+        "tests/test_golden_cases.py",
+        "tests/test_ledger.py",
+        "tests/test_markdown_injection.py",
+        "tests/test_markdown_links.py",
+        "tests/test_policy.py",
+        "tests/test_probe_challenges.py",
+        "tests/test_release_docs.py",
+        "tests/test_runtime.py",
+        "tests/test_schema_resources.py",
+        "tests/test_schemas.py"
+      ],
+      "resolved": {
+        "base": "b72d62c335e7eae31964a48ff1267ed03575a092",
+        "head": "8bd30304dc878ed86fb656ed8d04612f493f9762"
+      },
+      "skipped": [],
+      "verdict_counts": {
+        "B_FAIL_ASSERT": 2,
+        "H_PASS": 2
+      }
+    },
+    "findings": []
+  },
+  "pr": 18,
+  "sha": "8bd30304dc878ed86fb656ed8d04612f493f9762"
+}

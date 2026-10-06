@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-POLICY_ID = "validity-audit-default-v0.5.0"
+POLICY_ID = "validity-audit-default-v0.6.0"
 ERROR_CLASS_EFFECTS = {
     "correctness": "fail",
     "evidence_tampering": "fail",

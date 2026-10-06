@@ -1,0 +1,161 @@
+{
+  "contract": {
+    "auto_discover": true,
+    "base": "aee302e484e9e5074d1a1b22727a8b4064f6e56f^",
+    "head": "aee302e484e9e5074d1a1b22727a8b4064f6e56f",
+    "limits": {
+      "memory_max": "2G",
+      "repeats": 2,
+      "timeout_s": 300
+    },
+    "runner": "pytest"
+  },
+  "environment": {
+    "packages": {
+      "jsonschema": "4.26.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "pytest": "8.4.2",
+      "scipy": "1.17.1"
+    },
+    "python": "3.12.3",
+    "user_site_enabled": false,
+    "venv": true
+  },
+  "fbpa_result": {
+    "checks": [
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": "AssertionError",
+            "first_failure_line": "AssertionError: assert '0.4.0' == '0.5.0'",
+            "name": "test_release_version_and_readme_maturity_agree",
+            "outcome": "failure",
+            "phase": "call"
+          }
+        ],
+        "base_verdict": "B_FAIL_ASSERT",
+        "check_id": "fbpa:tests/test_release_docs.py::test_release_version_and_readme_maturity_agree",
+        "components": [
+          "demonstrated"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_release_version_and_readme_maturity_agree",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_release_docs.py::test_release_version_and_readme_maturity_agree",
+        "status": "pass",
+        "verdict": "demonstrated",
+        "verdicts": [
+          "demonstrated"
+        ]
+      }
+    ],
+    "fbpa": {
+      "auto_advisory": 0,
+      "counts": {
+        "demonstrated": 1
+      },
+      "import_canary": {
+        "base": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        },
+        "head": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        }
+      },
+      "in_scope": 1,
+      "judged": 1,
+      "limiter_backend": "systemd-run",
+      "non_test_diff_count": 5,
+      "overlay_files": [
+        "tests/test_benchmarks.py",
+        "tests/test_cli.py",
+        "tests/test_golden_cases.py",
+        "tests/test_ledger.py",
+        "tests/test_markdown_injection.py",
+        "tests/test_markdown_links.py",
+        "tests/test_policy.py",
+        "tests/test_probe_challenges.py",
+        "tests/test_release_docs.py",
+        "tests/test_runtime.py",
+        "tests/test_schema_resources.py",
+        "tests/test_schemas.py"
+      ],
+      "resolved": {
+        "base": "3e2ddda9c1154323d1b5b8471083a3b5208391f8",
+        "head": "aee302e484e9e5074d1a1b22727a8b4064f6e56f"
+      },
+      "skipped": [],
+      "verdict_counts": {
+        "B_FAIL_ASSERT": 1,
+        "H_PASS": 1
+      }
+    },
+    "findings": []
+  },
+  "pr": 24,
+  "sha": "aee302e484e9e5074d1a1b22727a8b4064f6e56f"
+}

@@ -19,6 +19,7 @@ from validity_audit.digests import (
     sha256_file,
     write_json_atomic,
 )
+from validity_audit.fbpa import FbpaError
 from validity_audit.policy import POLICY_ID, PolicyError, evaluate_policy
 from validity_audit.probes import run_probes
 from validity_audit.schemas import (
@@ -264,7 +265,13 @@ def prepare_run(
         priming_sources=list(priming_sources or []),
     )
     manifest = _artifact_manifest(root, contract["artifact_paths"])
-    probe_report = run_probes(root, contract["artifact_paths"])
+    try:
+        probe_report = run_probes(root, contract["artifact_paths"], contract=contract)
+    except FbpaError as exc:
+        # A contract/environment problem the FBPA probe cannot attribute to one
+        # claim (e.g. the base commit does not exist): an operational error, so
+        # the CLI's exit-code contract holds instead of a raw traceback.
+        raise AuditRuntimeError(f"fail_before_pass_after probe could not run: {exc}") from exc
     output_dir = _run_directory(root, run_dir, create=True)
     probe_path = output_dir / PROBE_FILENAME
     write_json_atomic(probe_path, probe_report)
@@ -405,11 +412,25 @@ def _verify_prepared_evidence(
         )
     stored_probes = _load_json_object(probe_path, "probe report")
     try:
-        current_probes = run_probes(workspace, contract["artifact_paths"])
-    except (OSError, UnicodeError) as exc:
+        current_probes = run_probes(workspace, contract["artifact_paths"], contract=contract)
+    except (OSError, UnicodeError, FbpaError) as exc:
+        # FbpaError here means the FBPA rerun itself cannot run any more (for
+        # example the base commit was garbage-collected after prepare): the
+        # prepared evidence cannot be reproduced.
         raise EvidenceMismatchError(
             "deterministic probes cannot reproduce the prepared evidence"
         ) from exc
+    # The FBPA limiter backend is part of the report (spec §2). A prepare on a
+    # systemd machine and a finalize on an rlimit-only machine (or vice versa)
+    # cannot be compared, so say that explicitly instead of a generic mismatch.
+    stored_backend = (stored_probes.get("fbpa") or {}).get("limiter_backend")
+    current_backend = (current_probes.get("fbpa") or {}).get("limiter_backend")
+    if stored_backend != current_backend:
+        raise EvidenceMismatchError(
+            "FBPA limiter backend changed between prepare "
+            f"({stored_backend}) and finalize ({current_backend}); finalize on a machine "
+            "with the same backend"
+        )
     if current_probes != stored_probes:
         raise EvidenceMismatchError(
             "deterministic probe results changed after prepare"

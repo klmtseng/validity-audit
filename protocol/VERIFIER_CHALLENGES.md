@@ -79,6 +79,22 @@ claim set must import successfully, while incomplete claim coverage, links to fi
 imported, and a refuted claim with no linked finding must fail before an attestation is emitted. This
 keeps review evidence from becoming a clean record after linkage information is missing or invalid.
 
+`tests/test_fbpa_probe.py` challenges the deterministic fail-before / pass-after probe itself
+(`validity_audit.fbpa`), which claims that a cited test fails before a fix and passes after it. Its
+standing controls (spec §6) cover: a positive control (a real off-by-one bug, fixed at head, the
+claimed test fails before and passes after); four negative controls (the test already passes at
+base; the test only imports a new head symbol and asserts something always true; head does not
+actually fix the implementation; and a `characterizes` test that is expected to pass at base); and
+six fault controls (a syntax error at head, a claimed node id that does not exist, an infinite loop,
+excessive memory use, the package imported from outside the worktree, and a nondeterministic test).
+A per-item coverage self-check compares, with `==` rather than `in`, the exact set of verdict
+components and finding types each control triggers against its expected set, so a control cannot
+silently stop discriminating between cases while still appearing to run. A dedicated editable-finder
+control (`test_editable_finder_submodule_from_other_checkout_is_env_import`) reproduces the real
+failure mode found during this probe's own S2 historical validation: an editable install's import
+finder served a submodule the worktree package itself lacked, from a different checkout. That
+control requires the fault `F_ENV_IMPORT` rather than a silent pass against someone else's code.
+
 These controls are intentionally narrow. They do not imply that every verifier in the repository has
 standing challenges yet.
 

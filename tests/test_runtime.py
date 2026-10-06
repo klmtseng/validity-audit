@@ -251,7 +251,7 @@ def test_finalize_retains_transcript_and_validates_attestation(tmp_path: Path) -
         run_dir / "evidence/reviewer_transcript.txt"
     )
     assert attestation["signature"] is None
-    assert attestation["overall_result"]["policy_id"] == "validity-audit-default-v0.5.0"
+    assert attestation["overall_result"]["policy_id"] == "validity-audit-default-v0.6.0"
     assert state["state"] == "completed"
     assert [event["state"] for event in state["state_history"]] == [
         "preparing",

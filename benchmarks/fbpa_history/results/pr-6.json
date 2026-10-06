@@ -1,0 +1,632 @@
+{
+  "contract": {
+    "auto_discover": true,
+    "base": "fa30df920fefc383d548aab5b8a28e5c608b808b^",
+    "head": "fa30df920fefc383d548aab5b8a28e5c608b808b",
+    "limits": {
+      "memory_max": "2G",
+      "repeats": 2,
+      "timeout_s": 300
+    },
+    "runner": "pytest"
+  },
+  "environment": {
+    "packages": {
+      "jsonschema": "4.26.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "pytest": "8.4.2",
+      "scipy": "1.17.1"
+    },
+    "python": "3.12.3",
+    "user_site_enabled": false,
+    "venv": true
+  },
+  "fbpa_result": {
+    "checks": [
+      {
+        "auto_discovered": true,
+        "base_absent_target": "benchmarks",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_duplicate_finding_ids_are_rejected",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_duplicate_finding_ids_are_rejected",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_duplicate_finding_ids_are_rejected",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "benchmarks",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_frozen_reviewer_output_matches_expected_score",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_frozen_reviewer_output_matches_expected_score",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_frozen_reviewer_output_matches_expected_score",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_injected_floor_baseline_is_preserved",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_legacy_injected_shim_matches_canonical_output",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "benchmarks",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_mismatched_taxonomy_fails_regression",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_mismatched_taxonomy_fails_regression",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_mismatched_taxonomy_fails_regression",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "benchmarks",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_missing_expected_finding_fails_regression",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_missing_expected_finding_fails_regression",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_missing_expected_finding_fails_regression",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": "benchmarks",
+        "base_cases": [],
+        "base_verdict": "B_ABSENT",
+        "check_id": "fbpa:tests/test_benchmarks.py::test_unexpected_finding_requires_adjudication",
+        "components": [
+          "absence_only"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_unexpected_finding_requires_adjudication",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_benchmarks.py::test_unexpected_finding_requires_adjudication",
+        "status": "advisory",
+        "verdict": "absence_only",
+        "verdicts": [
+          "absence_only"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_canonical_answer_keys_are_not_duplicated",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "base_verdict": "B_PASS",
+        "check_id": "fbpa:tests/test_golden_cases.py::test_canonical_answer_keys_are_not_duplicated",
+        "components": [
+          "base_passes"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_canonical_answer_keys_are_not_duplicated",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_golden_cases.py::test_canonical_answer_keys_are_not_duplicated",
+        "status": "advisory",
+        "verdict": "base_passes",
+        "verdicts": [
+          "base_passes"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_external_keys_are_frozen_versioned_and_digest_pinned",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "base_verdict": "B_PASS",
+        "check_id": "fbpa:tests/test_golden_cases.py::test_external_keys_are_frozen_versioned_and_digest_pinned",
+        "components": [
+          "base_passes"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_external_keys_are_frozen_versioned_and_digest_pinned",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_golden_cases.py::test_external_keys_are_frozen_versioned_and_digest_pinned",
+        "status": "advisory",
+        "verdict": "base_passes",
+        "verdicts": [
+          "base_passes"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_findings_use_canonical_severity",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "base_verdict": "B_PASS",
+        "check_id": "fbpa:tests/test_golden_cases.py::test_findings_use_canonical_severity",
+        "components": [
+          "base_passes"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_findings_use_canonical_severity",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_golden_cases.py::test_findings_use_canonical_severity",
+        "status": "advisory",
+        "verdict": "base_passes",
+        "verdicts": [
+          "base_passes"
+        ]
+      }
+    ],
+    "fbpa": {
+      "auto_advisory": 10,
+      "counts": {
+        "absence_only": 5,
+        "base_passes": 3,
+        "inconclusive": 2
+      },
+      "import_canary": {
+        "base": {
+          "benchmarks": {
+            "not_found": true
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        },
+        "head": {
+          "benchmarks": {
+            "path": "benchmarks/__init__.py"
+          },
+          "examples": {
+            "path": "examples"
+          },
+          "golden_cases": {
+            "path": "golden_cases"
+          },
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "self_contained": {
+            "not_found": true
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        }
+      },
+      "in_scope": 10,
+      "judged": 8,
+      "limiter_backend": "systemd-run",
+      "non_test_diff_count": 29,
+      "overlay_files": [
+        "tests/test_benchmarks.py",
+        "tests/test_cli.py",
+        "tests/test_golden_cases.py",
+        "tests/test_ledger.py",
+        "tests/test_markdown_links.py",
+        "tests/test_policy.py",
+        "tests/test_runtime.py",
+        "tests/test_schema_resources.py",
+        "tests/test_schemas.py"
+      ],
+      "resolved": {
+        "base": "74172ab934bbc8163d8015a1a939ed3005ebd073",
+        "head": "fa30df920fefc383d548aab5b8a28e5c608b808b"
+      },
+      "skipped": [
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output"
+        }
+      ],
+      "verdict_counts": {
+        "B_ABSENT": 5,
+        "B_COLLATERAL": 2,
+        "B_PASS": 3,
+        "H_PASS": 10
+      }
+    },
+    "findings": [
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_duplicate_finding_ids_are_rejected fails at base only because a head-only symbol ('benchmarks') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-1",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_duplicate_finding_ids_are_rejected"
+          }
+        ],
+        "finding_id": "fbpa-1",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_frozen_reviewer_output_matches_expected_score fails at base only because a head-only symbol ('benchmarks') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-2",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_frozen_reviewer_output_matches_expected_score"
+          }
+        ],
+        "finding_id": "fbpa-2",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-3",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_injected_floor_baseline_is_preserved"
+          }
+        ],
+        "finding_id": "fbpa-3",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-4",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_legacy_injected_shim_matches_canonical_output"
+          }
+        ],
+        "finding_id": "fbpa-4",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_mismatched_taxonomy_fails_regression fails at base only because a head-only symbol ('benchmarks') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-5",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_mismatched_taxonomy_fails_regression"
+          }
+        ],
+        "finding_id": "fbpa-5",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_missing_expected_finding_fails_regression fails at base only because a head-only symbol ('benchmarks') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-6",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_missing_expected_finding_fails_regression"
+          }
+        ],
+        "finding_id": "fbpa-6",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_benchmarks.py::test_unexpected_finding_requires_adjudication fails at base only because a head-only symbol ('benchmarks') does not exist yet (absence_only). This does not show the test catches a behavioural fault. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-7",
+            "kind": "file_line",
+            "locator": "tests/test_benchmarks.py::test_unexpected_finding_requires_adjudication"
+          }
+        ],
+        "finding_id": "fbpa-7",
+        "finding_type": "fbpa-absence-only",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the test fails before only because a symbol is missing"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_golden_cases.py::test_canonical_answer_keys_are_not_duplicated is claimed to fix a bug (intent=fixes), but it already passes with head's implementation removed (base_passes). This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-8",
+            "kind": "file_line",
+            "locator": "tests/test_golden_cases.py::test_canonical_answer_keys_are_not_duplicated"
+          }
+        ],
+        "finding_id": "fbpa-8",
+        "finding_type": "fbpa-base-passes",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claimed test already passes before the fix"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_golden_cases.py::test_external_keys_are_frozen_versioned_and_digest_pinned is claimed to fix a bug (intent=fixes), but it already passes with head's implementation removed (base_passes). This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-9",
+            "kind": "file_line",
+            "locator": "tests/test_golden_cases.py::test_external_keys_are_frozen_versioned_and_digest_pinned"
+          }
+        ],
+        "finding_id": "fbpa-9",
+        "finding_type": "fbpa-base-passes",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claimed test already passes before the fix"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_golden_cases.py::test_findings_use_canonical_severity is claimed to fix a bug (intent=fixes), but it already passes with head's implementation removed (base_passes). This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-10",
+            "kind": "file_line",
+            "locator": "tests/test_golden_cases.py::test_findings_use_canonical_severity"
+          }
+        ],
+        "finding_id": "fbpa-10",
+        "finding_type": "fbpa-base-passes",
+        "reproduction": "reproduced",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claimed test already passes before the fix"
+      }
+    ]
+  },
+  "pr": 6,
+  "sha": "fa30df920fefc383d548aab5b8a28e5c608b808b"
+}

@@ -69,7 +69,7 @@ The finding taxonomy stores four separate axes:
 All fixed machine-readable enum values use `snake_case`. `gate_effect` represents policy
 output. The reviewer-output schema deliberately cannot express it. `finalize` is its sole
 writer and binds `overall_result.policy_id` to
-`validity-audit-default-v0.5.0`.
+`validity-audit-default-v0.6.0`.
 
 Overall dispositions are `pass`, `fail`, `pass_with_waiver`, and `needs_review`.
 `not_attempted` is distinct from an attempted reproduction that failed, and—like every

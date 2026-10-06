@@ -1,0 +1,1336 @@
+{
+  "contract": {
+    "auto_discover": true,
+    "base": "39d0d3b7334a155ba7d03352c2714601106dc991^",
+    "head": "39d0d3b7334a155ba7d03352c2714601106dc991",
+    "limits": {
+      "memory_max": "2G",
+      "repeats": 2,
+      "timeout_s": 300
+    },
+    "runner": "pytest"
+  },
+  "environment": {
+    "packages": {
+      "jsonschema": "4.26.0",
+      "numpy": "2.4.2",
+      "pandas": "2.3.3",
+      "pytest": "8.4.2",
+      "scipy": "1.17.1"
+    },
+    "python": "3.12.3",
+    "user_site_enabled": false,
+    "venv": true
+  },
+  "fbpa_result": {
+    "checks": [
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_attestation_rejects_invalid_date_time",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_attestation_rejects_invalid_date_time",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_attestation_rejects_invalid_date_time",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_complete_waiver_is_valid",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_complete_waiver_is_valid",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_complete_waiver_is_valid",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_date_time_format_checker_is_registered",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_date_time_format_checker_is_registered",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_date_time_format_checker_is_registered",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_example_digests_bind_to_real_files",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_example_digests_bind_to_real_files",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_example_digests_bind_to_real_files",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_example_timestamps_are_chronological",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_example_timestamps_are_chronological",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_example_timestamps_are_chronological",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_examples_have_unique_ids_and_complete_references",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_examples_have_unique_ids_and_complete_references",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_examples_have_unique_ids_and_complete_references",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_examples_validate",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_examples_validate",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_examples_validate",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_fail_status_requires_a_failing_finding",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_fail_status_requires_a_failing_finding",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_fail_status_requires_a_failing_finding",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_finding_taxonomy_is_canonical",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finding_taxonomy_is_canonical[confidence-certain]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finding_taxonomy_is_canonical[gate_effect-ignore]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finding_taxonomy_is_canonical[reproduction-probably]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_finding_taxonomy_is_canonical[severity-P1]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_finding_taxonomy_is_canonical",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_needs_review_represents_not_attempted_reproduction",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_needs_review_represents_not_attempted_reproduction",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_needs_review_represents_not_attempted_reproduction",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_nonreproduced_finding_requires_notes",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_nonreproduced_finding_requires_notes[not_attempted]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_nonreproduced_finding_requires_notes[not_reproducible]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_nonreproduced_finding_requires_notes[unreproduced]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_nonreproduced_finding_requires_notes",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_nonwaiver_finding_cannot_carry_waiver_metadata",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_nonwaiver_finding_cannot_carry_waiver_metadata",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_nonwaiver_finding_cannot_carry_waiver_metadata",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_pass_cannot_hide_fail_or_waiver_gate_effects",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_pass_cannot_hide_fail_or_waiver_gate_effects",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_pass_cannot_hide_fail_or_waiver_gate_effects",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_pass_with_waiver_cannot_hide_a_failing_finding",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_pass_with_waiver_cannot_hide_a_failing_finding",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_pass_with_waiver_cannot_hide_a_failing_finding",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_policy_override_requires_a_reason",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_policy_override_requires_a_reason",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_policy_override_requires_a_reason",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_primed_review_requires_sources_and_cold_review_forbids_them",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_primed_review_requires_sources_and_cold_review_forbids_them",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_primed_review_requires_sources_and_cold_review_forbids_them",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_schema_rejects_global_agent_certification_claim",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_schema_rejects_global_agent_certification_claim",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_schema_rejects_global_agent_certification_claim",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_schemas_are_valid_draft_2020_12",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_schemas_are_valid_draft_2020_12",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_schemas_are_valid_draft_2020_12",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_task_contract_rejects_unbounded_artifact_paths",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_task_contract_rejects_unbounded_artifact_paths[../secret.txt]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_task_contract_rejects_unbounded_artifact_paths[/etc/passwd]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_task_contract_rejects_unbounded_artifact_paths[docs/../../secret.txt]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_task_contract_rejects_unbounded_artifact_paths",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_v03_attestation_cannot_claim_a_signature",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_v03_attestation_cannot_claim_a_signature",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_v03_attestation_cannot_claim_a_signature",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_waiver_cannot_override_another_waiver",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_waiver_cannot_override_another_waiver",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_waiver_cannot_override_another_waiver",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      },
+      {
+        "auto_discovered": true,
+        "base_absent_target": null,
+        "base_cases": [],
+        "base_verdict": "B_COLLATERAL",
+        "check_id": "fbpa:tests/test_schemas.py::test_waiver_requires_a_complete_audit_trail",
+        "components": [
+          "inconclusive:b_collateral"
+        ],
+        "head_cases": [
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_waiver_requires_a_complete_audit_trail[expires_at]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_waiver_requires_a_complete_audit_trail[issued_at]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_waiver_requires_a_complete_audit_trail[issuer]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_waiver_requires_a_complete_audit_trail[original_policy_result]",
+            "outcome": "pass",
+            "phase": null
+          },
+          {
+            "exc_type": null,
+            "first_failure_line": null,
+            "name": "test_waiver_requires_a_complete_audit_trail[reason]",
+            "outcome": "pass",
+            "phase": null
+          }
+        ],
+        "head_verdict": "H_PASS",
+        "kind": "fbpa_claim",
+        "outside_modules": [],
+        "path": "tests/test_schemas.py::test_waiver_requires_a_complete_audit_trail",
+        "status": "advisory",
+        "verdict": "inconclusive",
+        "verdicts": [
+          "inconclusive"
+        ]
+      }
+    ],
+    "fbpa": {
+      "auto_advisory": 22,
+      "counts": {
+        "inconclusive": 22
+      },
+      "import_canary": {
+        "base": {
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        },
+        "head": {
+          "injected_bug_recall": {
+            "not_found": true
+          },
+          "leak_audit_template": {
+            "not_found": true
+          },
+          "ledger": {
+            "not_found": true
+          },
+          "protocol": {
+            "path": "protocol"
+          },
+          "validity_audit": {
+            "path": "validity_audit/__init__.py"
+          }
+        }
+      },
+      "in_scope": 22,
+      "judged": 0,
+      "limiter_backend": "systemd-run",
+      "non_test_diff_count": 10,
+      "overlay_files": [
+        "tests/test_golden_cases.py",
+        "tests/test_ledger.py",
+        "tests/test_markdown_links.py",
+        "tests/test_schemas.py"
+      ],
+      "resolved": {
+        "base": "e8f7c80316b7c59ab8c4642ce90158db9cee9972",
+        "head": "39d0d3b7334a155ba7d03352c2714601106dc991"
+      },
+      "skipped": [
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_attestation_rejects_invalid_date_time"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_complete_waiver_is_valid"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_date_time_format_checker_is_registered"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_example_digests_bind_to_real_files"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_example_timestamps_are_chronological"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_examples_have_unique_ids_and_complete_references"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_examples_validate"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_fail_status_requires_a_failing_finding"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_finding_taxonomy_is_canonical"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_needs_review_represents_not_attempted_reproduction"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_nonreproduced_finding_requires_notes"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_nonwaiver_finding_cannot_carry_waiver_metadata"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_pass_cannot_hide_fail_or_waiver_gate_effects"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_pass_with_waiver_cannot_hide_a_failing_finding"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_policy_override_requires_a_reason"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_primed_review_requires_sources_and_cold_review_forbids_them"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_schema_rejects_global_agent_certification_claim"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_schemas_are_valid_draft_2020_12"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_task_contract_rejects_unbounded_artifact_paths"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_v03_attestation_cannot_claim_a_signature"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_waiver_cannot_override_another_waiver"
+        },
+        {
+          "reason": "inconclusive: b_collateral",
+          "test": "tests/test_schemas.py::test_waiver_requires_a_complete_audit_trail"
+        }
+      ],
+      "verdict_counts": {
+        "B_COLLATERAL": 22,
+        "H_PASS": 22
+      }
+    },
+    "findings": [
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_attestation_rejects_invalid_date_time landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-1",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_attestation_rejects_invalid_date_time"
+          }
+        ],
+        "finding_id": "fbpa-1",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_complete_waiver_is_valid landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-2",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_complete_waiver_is_valid"
+          }
+        ],
+        "finding_id": "fbpa-2",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_date_time_format_checker_is_registered landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-3",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_date_time_format_checker_is_registered"
+          }
+        ],
+        "finding_id": "fbpa-3",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_example_digests_bind_to_real_files landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-4",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_example_digests_bind_to_real_files"
+          }
+        ],
+        "finding_id": "fbpa-4",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_example_timestamps_are_chronological landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-5",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_example_timestamps_are_chronological"
+          }
+        ],
+        "finding_id": "fbpa-5",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_examples_have_unique_ids_and_complete_references landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-6",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_examples_have_unique_ids_and_complete_references"
+          }
+        ],
+        "finding_id": "fbpa-6",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_examples_validate landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-7",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_examples_validate"
+          }
+        ],
+        "finding_id": "fbpa-7",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_fail_status_requires_a_failing_finding landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-8",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_fail_status_requires_a_failing_finding"
+          }
+        ],
+        "finding_id": "fbpa-8",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_finding_taxonomy_is_canonical landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-9",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_finding_taxonomy_is_canonical"
+          }
+        ],
+        "finding_id": "fbpa-9",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_needs_review_represents_not_attempted_reproduction landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-10",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_needs_review_represents_not_attempted_reproduction"
+          }
+        ],
+        "finding_id": "fbpa-10",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_nonreproduced_finding_requires_notes landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-11",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_nonreproduced_finding_requires_notes"
+          }
+        ],
+        "finding_id": "fbpa-11",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_nonwaiver_finding_cannot_carry_waiver_metadata landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-12",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_nonwaiver_finding_cannot_carry_waiver_metadata"
+          }
+        ],
+        "finding_id": "fbpa-12",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_pass_cannot_hide_fail_or_waiver_gate_effects landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-13",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_pass_cannot_hide_fail_or_waiver_gate_effects"
+          }
+        ],
+        "finding_id": "fbpa-13",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_pass_with_waiver_cannot_hide_a_failing_finding landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-14",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_pass_with_waiver_cannot_hide_a_failing_finding"
+          }
+        ],
+        "finding_id": "fbpa-14",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_policy_override_requires_a_reason landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-15",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_policy_override_requires_a_reason"
+          }
+        ],
+        "finding_id": "fbpa-15",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_primed_review_requires_sources_and_cold_review_forbids_them landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-16",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_primed_review_requires_sources_and_cold_review_forbids_them"
+          }
+        ],
+        "finding_id": "fbpa-16",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_schema_rejects_global_agent_certification_claim landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-17",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_schema_rejects_global_agent_certification_claim"
+          }
+        ],
+        "finding_id": "fbpa-17",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_schemas_are_valid_draft_2020_12 landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-18",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_schemas_are_valid_draft_2020_12"
+          }
+        ],
+        "finding_id": "fbpa-18",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_task_contract_rejects_unbounded_artifact_paths landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-19",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_task_contract_rejects_unbounded_artifact_paths"
+          }
+        ],
+        "finding_id": "fbpa-19",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_v03_attestation_cannot_claim_a_signature landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-20",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_v03_attestation_cannot_claim_a_signature"
+          }
+        ],
+        "finding_id": "fbpa-20",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_waiver_cannot_override_another_waiver landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-21",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_waiver_cannot_override_another_waiver"
+          }
+        ],
+        "finding_id": "fbpa-21",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "tests/test_schemas.py::test_waiver_requires_a_complete_audit_trail landed in an inconclusive base-side state (b_collateral); the probe cannot tell whether it fails before the fix. This test was auto-discovered, not claimed by the author, so the result is advisory.",
+        "error_class": "fitness",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-22",
+            "kind": "file_line",
+            "locator": "tests/test_schemas.py::test_waiver_requires_a_complete_audit_trail"
+          }
+        ],
+        "finding_id": "fbpa-22",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "Base landed in an inconclusive state (b_collateral); rerunning the probe cannot turn this into a pass or fail without a code change.",
+        "severity": "med",
+        "source": "deterministic_probe",
+        "title": "FBPA: the claim could not be judged"
+      },
+      {
+        "confidence": "high",
+        "description": "fail_before_pass_after had 22 claim(s) in scope but none could be judged; see skipped.",
+        "error_class": "material_requirement_miss",
+        "evidence": [
+          {
+            "description": "Produced by the fail-before/pass-after (FBPA) probe.",
+            "evidence_id": "evidence-fbpa-none-judged",
+            "kind": "file_line",
+            "locator": "fail_before_pass_after"
+          }
+        ],
+        "finding_id": "fbpa-none-judged",
+        "finding_type": "fbpa-inconclusive",
+        "reproduction": "not_reproducible",
+        "reproduction_notes": "No claim reached a verdict; check the claims list, test_paths and the skipped entries. Rerunning cannot change this without a change.",
+        "severity": "high",
+        "source": "deterministic_probe",
+        "title": "FBPA: nothing was judged"
+      }
+    ]
+  },
+  "pr": 2,
+  "sha": "39d0d3b7334a155ba7d03352c2714601106dc991"
+}
