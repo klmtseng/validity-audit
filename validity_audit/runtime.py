@@ -20,6 +20,8 @@ from validity_audit.digests import (
     write_json_atomic,
 )
 from validity_audit.evidence import (
+    EVIDENCE_DISCIPLINE_INSTRUCTIONS,
+    EVIDENCE_DISCIPLINE_VERSION,
     EvidenceDisciplineError,
     binding_enforced,
     check_evidence_consistency,
@@ -316,6 +318,8 @@ def prepare_run(
             ),
         },
     }
+    if contract["schema_version"] == EVIDENCE_DISCIPLINE_VERSION:
+        bundle["instructions"]["evidence_discipline"] = EVIDENCE_DISCIPLINE_INSTRUCTIONS
     if review["context"] == "cold":
         bundle["excluded_context"] = ["answer keys", "miss ledger", "builder hint list"]
     else:
@@ -643,8 +647,13 @@ def _render_attestation(attestation: dict[str, Any]) -> str:
         lines.append("No findings.")
     else:
         for finding in attestation["findings"]:
+            marker = (
+                " (absence coverage unproven)"
+                if finding.get("absence_coverage") == "unproven"
+                else ""
+            )
             lines.append(
-                f"- `{finding['finding_id']}` — **{finding['gate_effect']}** — "
+                f"- `{finding['finding_id']}` — **{finding['gate_effect']}**{marker} — "
                 f"{_sanitize_md_title(finding['title'])}"
             )
     lines.extend(

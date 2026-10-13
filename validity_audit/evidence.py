@@ -29,8 +29,13 @@ from typing import Any
 
 EVIDENCE_DISCIPLINE_VERSION = "0.7.0"
 
-# required kind -> evidence kinds accepted for it. Read as "a claim that
-# requires K may be supported by any kind in EVIDENCE_KIND_SATISFIES[K]".
+# Substitution table, read from the evidence side (same wording as the README):
+#   command   satisfies command, file_line, note
+#   file_line satisfies file_line, note
+#   digest    satisfies digest, note
+#   note      satisfies note
+# Stored keyed by the required kind for lookup: evidence of kind E satisfies a
+# requirement K iff E in EVIDENCE_KIND_SATISFIES[K].
 # command (an executed check whose output was observed) is the strongest
 # general kind; file_line (a located citation in an artifact) is next; note
 # (a reviewer remark or second-hand account) is weakest. digest (a content
@@ -41,6 +46,37 @@ EVIDENCE_KIND_SATISFIES: dict[str, frozenset[str]] = {
     "file_line": frozenset({"command", "file_line"}),
     "digest": frozenset({"digest"}),
     "note": frozenset({"command", "file_line", "digest", "note"}),
+}
+
+# Embedded in the review bundle of a schema 0.7.0 contract only; legacy bundles
+# are unchanged.
+EVIDENCE_DISCIPLINE_INSTRUCTIONS: dict[str, str] = {
+    "schema_version": (
+        "This contract uses schema_version 0.7.0. Return reviewer output with "
+        "schema_version 0.7.0; a 0.3.0 reviewer output is rejected at finalize."
+    ),
+    "claim_binding": (
+        "Every evidence item inside a claim result must name that claim in "
+        "covers_claim_ids. Evidence that does not name the claim does not count toward it, "
+        "and a supported outcome with no claim-bound evidence is downgraded to inconclusive. "
+        "An evidence_id denotes one item: reuse it only with identical content, and only "
+        "name claim ids that exist in the contract."
+    ),
+    "required_evidence_kind": (
+        "A claim with required_evidence_kind can be supported only by claim-bound evidence "
+        "whose kind satisfies it: command satisfies command, file_line, note; file_line "
+        "satisfies file_line, note; digest satisfies digest, note; note satisfies note. "
+        "Otherwise the supported outcome is downgraded to inconclusive."
+    ),
+    "absence": (
+        "A claim or finding with assertion 'absence' concludes that something does not "
+        "exist. Support it with evidence carrying coverage {scope, status, truncated, "
+        "omitted_count}; only status complete, truncated false and omitted_count 0 proves "
+        "absence. For an absence claim that also has required_evidence_kind, one and the "
+        "same evidence item must both satisfy the kind and carry the complete coverage. "
+        "Without proof an absence claim is not supported and an absence finding is gated "
+        "as unreproduced."
+    ),
 }
 
 MAX_RATIONALE = 4000
@@ -169,18 +205,29 @@ def gate_claim_result(
                 ),
             }
         )
-    if claim.get("assertion") == "absence" and not any(
-        coverage_proves_absence(item) for item in counted
-    ):
-        reasons.append(
-            {
-                "code": "absence_coverage_unproven",
-                "detail": (
-                    "Absence claim lacks claim-bound evidence with a complete coverage proof "
-                    "(status complete, truncated false, omitted_count 0)."
-                ),
-            }
-        )
+    if claim.get("assertion") == "absence":
+        # The coverage proof must come from evidence that also meets the kind
+        # requirement: a complete-looking coverage block on a note plus a
+        # separate uncovered command must not add up to proof.
+        if required is None:
+            proving = [item for item in counted if coverage_proves_absence(item)]
+            detail = (
+                "Absence claim lacks claim-bound evidence with a complete coverage proof "
+                "(status complete, truncated false, omitted_count 0)."
+            )
+        else:
+            proving = [
+                item
+                for item in counted
+                if coverage_proves_absence(item) and kind_satisfies(item["kind"], required)
+            ]
+            detail = (
+                "Absence claim lacks a single claim-bound evidence item that both satisfies "
+                f"the {required!r} kind requirement and carries a complete coverage proof "
+                "(status complete, truncated false, omitted_count 0)."
+            )
+        if not proving:
+            reasons.append({"code": "absence_coverage_unproven", "detail": detail})
     if not reasons:
         return result
 

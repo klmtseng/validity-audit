@@ -432,3 +432,97 @@ def test_p6_legacy_reviewer_output_rejects_absence_fields() -> None:
     coverage_only["findings"][0]["evidence"][0]["coverage"] = COMPLETE
     with pytest.raises(SchemaValidationError):
         validate_document(coverage_only, "reviewer_output")
+
+
+# ------------------------------------------- review fixes (B2b, B11, B12, P2-4)
+
+
+ABSENCE_COMMAND_CLAIM = {**ABSENCE_CLAIM, "required_evidence_kind": "command"}
+
+
+def test_p6_negative_kind_and_coverage_split_across_two_items_is_not_proof(
+    tmp_path: Path,
+) -> None:
+    # B2b: coverage hung on a note plus a separate uncovered command used to pass.
+    gated = run(
+        tmp_path,
+        contract("0.7.0", [ABSENCE_COMMAND_CLAIM]),
+        reviewer("0.7.0", [claim_result("c1", [
+            evidence("n", "note", ["c1"], COMPLETE),
+            evidence("cmd", "command", ["c1"]),
+        ])]),
+    )
+    assert gated["overall_result"]["status"] == "needs_review"
+    assert gate_codes(gated, "c1") == ["absence_coverage_unproven"]
+    result = gated["claim_results"][0]
+    assert "single claim-bound evidence item" in result["evidence_gate"]["reasons"][0]["detail"]
+
+
+def test_p6_positive_one_command_item_with_complete_coverage_supports(tmp_path: Path) -> None:
+    attestation = run(
+        tmp_path,
+        contract("0.7.0", [ABSENCE_COMMAND_CLAIM]),
+        reviewer("0.7.0", [claim_result("c1", [evidence("cmd", "command", ["c1"], COMPLETE)])]),
+    )
+    assert attestation["overall_result"]["status"] == "pass"
+    assert attestation["claim_results"][0]["outcome"] == "supported"
+
+
+def test_p6_unproven_advisory_absence_finding_is_surfaced_on_pass(tmp_path: Path) -> None:
+    # B11: an advisory low-severity absence finding does not block, but the pass
+    # summary and the Markdown report must still show the unproven coverage.
+    advisory = finding("f1", [evidence("e2", "note")], absence=True, error_class="fitness")
+    advisory["severity"] = "low"
+    attestation = run(
+        tmp_path,
+        contract("0.7.0", [{"claim_id": "c1", "statement": "s"}]),
+        reviewer("0.7.0", [claim_result("c1", [evidence("e1", "note", ["c1"])])], [advisory]),
+    )
+    assert attestation["overall_result"]["status"] == "pass"
+    assert attestation["findings"][0]["absence_coverage"] == "unproven"
+    assert "absence_coverage: unproven" in attestation["overall_result"]["summary"]
+    report = (tmp_path / "workspace/.validity-audit/runs/test-run/attestation.md").read_text()
+    assert "(absence coverage unproven)" in report
+
+
+def test_p6_reproduced_absence_finding_without_coverage_moves_fail_to_needs_review(
+    tmp_path: Path,
+) -> None:
+    # B12: documented, intentional. Marking a reproduced fail-class finding as an
+    # absence without coverage gates it toward review, not toward pass.
+    plain = finding("f1", [evidence("g", "file_line")], error_class="correctness")
+    claim = [{"claim_id": "c1", "statement": "s"}]
+    ok = [claim_result("c1", [evidence("e", "note", ["c1"])])]
+    baseline = run(tmp_path / "a", contract("0.7.0", claim), reviewer("0.7.0", ok, [plain]))
+    assert baseline["overall_result"]["status"] == "fail"
+    marked = run(tmp_path / "b", contract("0.7.0", claim),
+                 reviewer("0.7.0", ok, [{**plain, "assertion": "absence"}]))
+    assert marked["overall_result"]["status"] == "needs_review"
+    assert marked["findings"][0]["gate_effect"] == "none"
+
+
+def bundle_instructions(tmp_path: Path, version: str) -> dict:
+    workspace = tmp_path / "workspace"
+    (workspace / "docs").mkdir(parents=True)
+    (workspace / "docs" / "README.md").write_text("# Demo\n", encoding="utf-8")
+    write_json(workspace / "task.json", contract(version, [{"claim_id": "c1", "statement": "s"}]))
+    prepare_run(
+        workspace=workspace, contract_path="task.json", run_dir=".validity-audit/runs/r",
+        review_context="cold", reviewer_kind="model", reviewer_label="r", operator_id="o",
+        priming_sources=[], run_id="run-bundle", started_at=STARTED,
+    )
+    bundle = json.loads((workspace / ".validity-audit/runs/r/review_bundle.json").read_text())
+    return bundle["instructions"]
+
+
+def test_bundle_carries_evidence_discipline_instructions_only_for_0_7_0(
+    tmp_path: Path,
+) -> None:
+    new = bundle_instructions(tmp_path / "new", "0.7.0")["evidence_discipline"]
+    assert set(new) == {"schema_version", "claim_binding", "required_evidence_kind", "absence"}
+    assert "schema_version 0.7.0" in new["schema_version"]
+    assert "covers_claim_ids" in new["claim_binding"]
+    assert "one and the same evidence item" in new["absence"]
+    for version in ("0.3.0", "0.6.0"):
+        legacy = bundle_instructions(tmp_path / version, version)
+        assert set(legacy) == {"task", "policy_boundary", "transcript"}

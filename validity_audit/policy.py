@@ -270,8 +270,6 @@ def evaluate_policy(
                 "A supported outcome was downgraded because its claim-bound evidence did "
                 "not meet the contract's evidence requirements."
             )
-        if any(finding.get("absence_coverage") == "unproven" for finding in evaluated):
-            sentences.append("An absence finding lacks a complete search-coverage proof.")
         summary = " ".join(sentences)
     elif "waiver" in gate_effects:
         status = "pass_with_waiver"
@@ -279,5 +277,14 @@ def evaluate_policy(
     else:
         status = "pass"
         summary = "No finding triggered a fail gate and every claim received a final outcome."
+
+    # Surface an uncovered absence conclusion under every disposition, including
+    # pass: an advisory-class absence finding never blocks, but a reader must
+    # still see that its "nothing exists" conclusion rests on an unproven search.
+    if any(finding.get("absence_coverage") == "unproven" for finding in evaluated):
+        summary += (
+            " An absence finding lacks a complete search-coverage proof "
+            "(absence_coverage: unproven)."
+        )
 
     return PolicyEvaluation(findings=evaluated, status=status, summary=summary)

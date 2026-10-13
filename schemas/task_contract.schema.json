@@ -157,7 +157,7 @@
           "maxLength": 4000
         },
         "required_evidence_kind": {
-          "description": "Schema 0.7.0+. The weakest evidence kind that may support this claim. A supported outcome counts only claim-bound evidence whose kind satisfies this requirement under the fixed substitution table in validity_audit/evidence.py (command satisfies command/file_line/note; file_line satisfies file_line/note; digest satisfies digest/note; note satisfies note).",
+          "description": "The minimum evidence kind required (see substitution table).",
           "enum": [
             "command",
             "file_line",
