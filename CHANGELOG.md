@@ -10,13 +10,20 @@ All notable changes to this project will be documented in this file.
   (`validity_audit/evidence.py`):
   - *Required evidence kind:* contract claims may declare `required_evidence_kind`; a `supported`
     outcome counts only evidence whose kind satisfies it under a fixed substitution table
-    (`command` > `file_line` > `note`; `digest` stands alone).
+    (`command` satisfies `command`, `file_line`, `note`; `file_line` satisfies `file_line`, `note`;
+    `digest` satisfies only `digest` and `note`; `note` satisfies only `note`).
   - *Claim binding:* 0.7.0 reviewer-output evidence carries `covers_claim_ids`; evidence counts
     toward a claim only when it names that claim. Unknown claim ids and divergent reuse of one
     evidence id are rejected.
   - *Absence coverage:* claims and findings may declare `assertion: "absence"`; evidence carries a
     `coverage` proof (`scope`, `status`, `truncated`, `omitted_count`). Without a complete proof an
-    absence claim cannot be `supported` and an absence finding is gated as unreproduced.
+    absence claim cannot be `supported` and an absence finding is gated as unreproduced. An absence
+    claim that also declares `required_evidence_kind` needs one evidence item that satisfies the kind
+    and carries the complete coverage. An unproven absence finding is named in the summary and the
+    Markdown report under every disposition, including `pass`. A reproduced fail-class finding
+    marked as an absence without coverage moves from `fail` to `needs_review` (intended).
+  - 0.7.0 review bundles carry `instructions.evidence_discipline`, explaining these requirements
+    to the reviewer; bundles for 0.3.0/0.6.0 contracts are unchanged.
 - Attestation schema records the new policy outputs: `reviewer_outcome` + `evidence_gate` on a
   downgraded claim result, `absence_coverage` on an absence finding, and the new evidence fields.
 - `tests/test_evidence_discipline.py`: per primitive, a negative control that the previous behavior

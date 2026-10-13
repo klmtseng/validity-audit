@@ -46,6 +46,16 @@ schema records the policy outputs `reviewer_outcome` + `evidence_gate` on a down
 result and `absence_coverage` on an absence finding. See "Evidence discipline" in the
 top-level README.
 
+Version map for the unreleased evidence-discipline change:
+
+| Item | Version |
+|---|---|
+| Task contract `schema_version` | `0.3.0`, `0.6.0`, `0.7.0` (claim `required_evidence_kind` / `assertion` only in `0.7.0`) |
+| Reviewer output `schema_version` | `0.3.0`, `0.7.0` (`covers_claim_ids`, `coverage`, finding `assertion` only in `0.7.0`) |
+| Attestation `schema_version` | still `0.3.0`; the new fields are optional |
+| Policy id | `validity-audit-default-v0.7.0` |
+| Package version | `0.6.0` (bump deferred to release) |
+
 Absolute paths and parent-directory traversal are rejected. Pack names remain open slugs:
 pack discovery and compatibility validation are not part of PR 2.
 

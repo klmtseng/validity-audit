@@ -237,8 +237,9 @@ mutation testing, and this repository does not run mutation testing as a standin
 
 A reviewer note used to be enough to mark any claim `supported`, one "the whole suite is green" item
 could be pasted into every claim result, and "nothing like X exists" needed no proof that the search
-was complete. Schema 0.7.0 adds three opt-in, fail-closed checks (logic in
-`validity_audit/evidence.py`):
+was complete. Schema 0.7.0 adds three fail-closed checks (logic in `validity_audit/evidence.py`).
+The evidence-kind requirement and the absence assertion are opt-in per claim (or finding); claim
+binding is not opt-in: whenever the reviewer output is schema 0.7.0, it applies to every claim.
 
 - **Required evidence kind (contract claim `required_evidence_kind`).** A `supported` outcome counts
   only claim-bound evidence whose `kind` satisfies the requirement under a fixed table: `command`
@@ -251,7 +252,11 @@ was complete. Schema 0.7.0 adds three opt-in, fail-closed checks (logic in
   universal-negative conclusion needs evidence with `coverage.status == "complete"`,
   `truncated == false`, and `omitted_count == 0`. An absence claim without it is not `supported`; an
   absence finding without it is gated as unreproduced (recorded as `absence_coverage: "unproven"`),
-  so it can yield `needs_review` but cannot decide a `fail`.
+  so it can yield `needs_review` but cannot decide a `fail`. When an absence claim also declares
+  `required_evidence_kind`, one and the same evidence item must both satisfy the kind and carry the
+  complete coverage; a coverage block on a `note` plus a separate uncovered `command` is not proof.
+  An unproven absence finding is named in the summary and the Markdown report under every
+  disposition, including `pass` (an advisory-class one does not block, but it stays visible).
 
 An unmet requirement never rejects the run and never edits the reviewer's own fields: the attestation
 keeps the reviewer's evidence, records `reviewer_outcome: "supported"` plus an `evidence_gate` with
@@ -259,10 +264,26 @@ reason codes (`no_claim_bound_evidence`, `evidence_kind_insufficient`, `absence_
 and sets `outcome` to `inconclusive`. Only `supported` outcomes are downgraded; downgrading a `refuted`
 outcome could only weaken a `fail`. A 0.7.0 contract must be reviewed by a 0.7.0 reviewer output; a
 0.7.0 reviewer output may also review a 0.3.0/0.6.0 contract, in which case claim binding and absence
-coverage for findings apply. Limits: `coverage` and `assertion` on findings are reviewer
-declarations, not verified searches, and a reviewer can avoid the absence check on a finding by not
-marking it; the discipline makes the requirement explicit and auditable, it does not detect free-text
-absence reasoning.
+coverage for findings apply.
+
+Intentional consequence: a reproduced fail-class finding that the reviewer marks
+`assertion: "absence"` without a complete `coverage` moves from `fail` to `needs_review` (its
+gate effect becomes `none`). This is kept on purpose: the gate moves toward review, never toward
+`pass`, and the attestation records `absence_coverage: "unproven"`.
+
+Limits:
+
+- Evidence `kind` and `coverage` are reviewer declarations, not verified executions or searches.
+  Until the evidence must be shown to have actually been delivered during the run (REA primitive
+  P1, not implemented), the evidence-kind requirement forces the reviewer to *declare* `command`
+  evidence; it does not prove a command was run.
+- Contract authors may leave the claim-level requirements off; a 0.7.0 claim without
+  `required_evidence_kind` or `assertion` gets only claim binding.
+- Claim binding forces evidence to name the claims it covers; it cannot stop one evidence item
+  from naming every claim at once. It makes that blanket coverage explicit and auditable, not
+  impossible.
+- A reviewer can avoid the absence check on a finding by not marking it; the discipline does not
+  detect free-text absence reasoning.
 
 ## Assurance layers
 
