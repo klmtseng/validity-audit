@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Evidence discipline (schema 0.7.0), adapted from three REA (morluto/rea) evidence primitives**
+  (`validity_audit/evidence.py`):
+  - *Required evidence kind:* contract claims may declare `required_evidence_kind`; a `supported`
+    outcome counts only evidence whose kind satisfies it under a fixed substitution table
+    (`command` > `file_line` > `note`; `digest` stands alone).
+  - *Claim binding:* 0.7.0 reviewer-output evidence carries `covers_claim_ids`; evidence counts
+    toward a claim only when it names that claim. Unknown claim ids and divergent reuse of one
+    evidence id are rejected.
+  - *Absence coverage:* claims and findings may declare `assertion: "absence"`; evidence carries a
+    `coverage` proof (`scope`, `status`, `truncated`, `omitted_count`). Without a complete proof an
+    absence claim cannot be `supported` and an absence finding is gated as unreproduced.
+- Attestation schema records the new policy outputs: `reviewer_outcome` + `evidence_gate` on a
+  downgraded claim result, `absence_coverage` on an absence finding, and the new evidence fields.
+- `tests/test_evidence_discipline.py`: per primitive, a negative control that the previous behavior
+  accepts (or fails on an unproven absence) and the new behavior blocks, plus positive controls.
+
+### Changed (breaking)
+
+- **Policy identifier bumped to `validity-audit-default-v0.7.0`:** a 0.7.0 contract or reviewer
+  output can now turn a reviewer-`supported` claim into `inconclusive` (run `needs_review`) and keep an
+  uncovered absence finding from deciding `fail`. `ERROR_CLASS_EFFECTS` is unchanged, and 0.3.0/0.6.0
+  contracts reviewed by 0.3.0 reviewer outputs produce the same dispositions as before.
+- Contract `schema_version` accepts `0.7.0`; reviewer-output `schema_version` accepts `0.7.0`. A 0.7.0
+  contract requires a 0.7.0 reviewer output. The attestation `schema_version` stays `0.3.0`, with the
+  new fields optional (same approach as FBPA's `finding_type`).
+- The review bundle embeds the reviewer-output schema, so its digest changed; the golden
+  `expected_attestation.json` and `docs/attestation-example.json` were updated for the new
+  `bundle_sha256` and `policy_id` only.
+
 ## [0.6.0] — 2026-10-05
 
 ### Added

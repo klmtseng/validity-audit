@@ -37,6 +37,15 @@ The contract intentionally contains only:
   does not authenticate issuer identity -- attestations are unsigned, so an issuer label
   is a declared string, not a verified credential.
 
+Schema 0.7.0 contracts may additionally mark each claim with `required_evidence_kind`
+(`command`, `file_line`, `digest`, or `note`) and `assertion: "absence"`; 0.3.0 and 0.6.0
+contracts reject both. Schema 0.7.0 reviewer outputs may carry `covers_claim_ids` and
+`coverage` (`scope`, `status`, `truncated`, `omitted_count`) on evidence and
+`assertion: "absence"` on findings; 0.3.0 reviewer outputs reject all three. The attestation
+schema records the policy outputs `reviewer_outcome` + `evidence_gate` on a downgraded claim
+result and `absence_coverage` on an absence finding. See "Evidence discipline" in the
+top-level README.
+
 Absolute paths and parent-directory traversal are rejected. Pack names remain open slugs:
 pack discovery and compatibility validation are not part of PR 2.
 
@@ -69,7 +78,7 @@ The finding taxonomy stores four separate axes:
 All fixed machine-readable enum values use `snake_case`. `gate_effect` represents policy
 output. The reviewer-output schema deliberately cannot express it. `finalize` is its sole
 writer and binds `overall_result.policy_id` to
-`validity-audit-default-v0.6.0`.
+`validity-audit-default-v0.7.0`.
 
 Overall dispositions are `pass`, `fail`, `pass_with_waiver`, and `needs_review`.
 `not_attempted` is distinct from an attempted reproduction that failed, and—like every

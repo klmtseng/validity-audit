@@ -104,7 +104,7 @@ The human-readable report is deliberately short:
 
 - Task: `golden-doc-bundle-01`
 - Status: **fail**
-- Policy: `validity-audit-default-v0.6.0`
+- Policy: `validity-audit-default-v0.7.0`
 
 ## Findings
 
@@ -233,6 +233,37 @@ logic left the full suite at 174 passed. **That mutation check is not FBPA.** FB
 commit to another along a claimed test; finding "which line, if deleted, leaves the suite green" is
 mutation testing, and this repository does not run mutation testing as a standing check (spec §8, §9).
 
+## Evidence discipline (schema 0.7.0, unreleased)
+
+A reviewer note used to be enough to mark any claim `supported`, one "the whole suite is green" item
+could be pasted into every claim result, and "nothing like X exists" needed no proof that the search
+was complete. Schema 0.7.0 adds three opt-in, fail-closed checks (logic in
+`validity_audit/evidence.py`):
+
+- **Required evidence kind (contract claim `required_evidence_kind`).** A `supported` outcome counts
+  only claim-bound evidence whose `kind` satisfies the requirement under a fixed table: `command`
+  satisfies `command`, `file_line`, `note`; `file_line` satisfies `file_line`, `note`; `digest`
+  satisfies `digest`, `note`; `note` satisfies only `note`. A contract cannot widen the table.
+- **Claim binding (reviewer evidence `covers_claim_ids`).** Under a 0.7.0 reviewer output, evidence
+  inside a claim result counts toward that claim only if it names the claim. One evidence id must
+  denote one item: reusing an id with different content, or naming an unknown claim id, is rejected.
+- **Absence coverage (claim or finding `assertion: "absence"`, evidence `coverage`).** A
+  universal-negative conclusion needs evidence with `coverage.status == "complete"`,
+  `truncated == false`, and `omitted_count == 0`. An absence claim without it is not `supported`; an
+  absence finding without it is gated as unreproduced (recorded as `absence_coverage: "unproven"`),
+  so it can yield `needs_review` but cannot decide a `fail`.
+
+An unmet requirement never rejects the run and never edits the reviewer's own fields: the attestation
+keeps the reviewer's evidence, records `reviewer_outcome: "supported"` plus an `evidence_gate` with
+reason codes (`no_claim_bound_evidence`, `evidence_kind_insufficient`, `absence_coverage_unproven`),
+and sets `outcome` to `inconclusive`. Only `supported` outcomes are downgraded; downgrading a `refuted`
+outcome could only weaken a `fail`. A 0.7.0 contract must be reviewed by a 0.7.0 reviewer output; a
+0.7.0 reviewer output may also review a 0.3.0/0.6.0 contract, in which case claim binding and absence
+coverage for findings apply. Limits: `coverage` and `assertion` on findings are reviewer
+declarations, not verified searches, and a reviewer can avoid the absence check on a finding by not
+marking it; the discipline makes the requirement explicit and auditable, it does not detect free-text
+absence reasoning.
+
 ## Assurance layers
 
 Validity Audit keeps different kinds of evidence separate rather than collapsing them into one score.
@@ -259,9 +290,14 @@ Starting with `validity-audit-default-v0.5.0`, several landing-time behaviors ch
 
 Starting with `validity-audit-default-v0.6.0`, the optional FBPA probe (see "Deterministic
 fail-before / pass-after probe (FBPA)" above) can turn a previously accepted contract into a `fail`;
-see the `[0.6.0]` "Changed (breaking)" entry in [`CHANGELOG.md`](CHANGELOG.md). The current
-policy identifier in code is `validity-audit-default-v0.6.0`; `ERROR_CLASS_EFFECTS` itself (the table
-below) is unchanged by this bump.
+see the `[0.6.0]` "Changed (breaking)" entry in [`CHANGELOG.md`](CHANGELOG.md).
+
+Starting with `validity-audit-default-v0.7.0` (unreleased), schema 0.7.0 contracts and reviewer
+outputs carry an evidence discipline (see "Evidence discipline" below) that can downgrade a reviewer's
+`supported` outcome to `inconclusive` (so the run becomes `needs_review`) and can stop an uncovered
+absence finding from deciding a `fail`. The current policy identifier in code is
+`validity-audit-default-v0.7.0`; `ERROR_CLASS_EFFECTS` itself (the table below) is unchanged by this
+bump, and 0.3.0/0.6.0 contracts reviewed by 0.3.0 reviewer outputs keep their previous verdicts.
 
 The current policy recognizes exactly these eight built-in error classes by default; any other
 slug is an open slug and requires an explicit task-contract `policy_overrides` entry before a
