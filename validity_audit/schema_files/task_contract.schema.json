@@ -18,7 +18,7 @@
       "format": "uri-reference"
     },
     "schema_version": {
-      "enum": ["0.3.0", "0.6.0"]
+      "enum": ["0.3.0", "0.6.0", "0.7.0"]
     },
     "task_id": {
       "$ref": "#/$defs/identifier"
@@ -86,6 +86,28 @@
           "fail_before_pass_after": false
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "enum": ["0.3.0", "0.6.0"]
+          }
+        },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "claims": {
+            "items": {
+              "properties": {
+                "required_evidence_kind": false,
+                "assertion": false
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {
@@ -133,6 +155,21 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4000
+        },
+        "required_evidence_kind": {
+          "description": "Schema 0.7.0+. The weakest evidence kind that may support this claim. A supported outcome counts only claim-bound evidence whose kind satisfies this requirement under the fixed substitution table in validity_audit/evidence.py (command satisfies command/file_line/note; file_line satisfies file_line/note; digest satisfies digest/note; note satisfies note).",
+          "enum": [
+            "command",
+            "file_line",
+            "digest",
+            "note"
+          ]
+        },
+        "assertion": {
+          "description": "Schema 0.7.0+. 'absence' marks a universal-negative claim (nothing of a kind exists, nothing was missed). A supported outcome then needs claim-bound evidence carrying a complete coverage proof.",
+          "enum": [
+            "absence"
+          ]
         }
       }
     },

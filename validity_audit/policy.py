@@ -7,7 +7,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-POLICY_ID = "validity-audit-default-v0.6.0"
+from validity_audit.evidence import absence_finding_proven
+
+POLICY_ID = "validity-audit-default-v0.7.0"
 ERROR_CLASS_EFFECTS = {
     "correctness": "fail",
     "evidence_tampering": "fail",
@@ -177,13 +179,23 @@ def evaluate_policy(
     pending_high_severity_unreproduced = False
     for raw_finding in findings:
         finding = copy.deepcopy(raw_finding)
-        if "gate_effect" in finding or "waiver" in finding:
-            raise PolicyError("gate_effect and waiver are policy outputs, not finder inputs")
+        if "gate_effect" in finding or "waiver" in finding or "absence_coverage" in finding:
+            raise PolicyError(
+                "gate_effect, waiver, and absence_coverage are policy outputs, not finder inputs"
+            )
 
         configured_effect = effects[finding["error_class"]]
         if finding["finding_id"] in refuted_finding_ids:
             configured_effect = "fail"
         reproduction = finding["reproduction"]
+        # An absence conclusion ("no source exists", "nothing else calls X")
+        # is only as good as the search behind it. Without a complete coverage
+        # proof, the finding is gated as unreproduced whatever the finder said.
+        if finding.get("assertion") == "absence":
+            proven = absence_finding_proven(finding)
+            finding["absence_coverage"] = "proven" if proven else "unproven"
+            if not proven:
+                reproduction = "unreproduced"
         waiver_request = waiver_by_finding.pop(finding["finding_id"], None)
 
         original_effect = (
@@ -253,6 +265,13 @@ def evaluate_policy(
             )
         if unresolved_claim:
             sentences.append("A claim remains unresolved.")
+        if any("evidence_gate" in result for result in claim_results):
+            sentences.append(
+                "A supported outcome was downgraded because its claim-bound evidence did "
+                "not meet the contract's evidence requirements."
+            )
+        if any(finding.get("absence_coverage") == "unproven" for finding in evaluated):
+            sentences.append("An absence finding lacks a complete search-coverage proof.")
         summary = " ".join(sentences)
     elif "waiver" in gate_effects:
         status = "pass_with_waiver"

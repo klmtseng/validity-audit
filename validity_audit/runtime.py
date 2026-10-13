@@ -19,6 +19,13 @@ from validity_audit.digests import (
     sha256_file,
     write_json_atomic,
 )
+from validity_audit.evidence import (
+    EvidenceDisciplineError,
+    binding_enforced,
+    check_evidence_consistency,
+    check_versions,
+    gate_claim_result,
+)
 from validity_audit.fbpa import FbpaError
 from validity_audit.policy import POLICY_ID, PolicyError, evaluate_policy
 from validity_audit.probes import run_probes
@@ -487,6 +494,13 @@ def _claim_results(
     finding_ids: set[str],
 ) -> list[dict[str, Any]]:
     claims = {claim["claim_id"]: claim for claim in contract["claims"]}
+    enforce_binding = binding_enforced(reviewer_output)
+    try:
+        check_versions(contract, reviewer_output)
+        if enforce_binding:
+            check_evidence_consistency(contract, reviewer_output)
+    except EvidenceDisciplineError as exc:
+        raise AuditRuntimeError(str(exc)) from exc
     raw_results = reviewer_output["claim_results"]
     result_ids = [result["claim_id"] for result in raw_results]
     _assert_unique(result_ids, "reviewer claim-result ids")
@@ -509,7 +523,11 @@ def _claim_results(
             raise AuditRuntimeError(
                 f"refuted claim {raw_result['claim_id']!r} must reference a finding"
             )
-        result = copy.deepcopy(raw_result)
+        result = gate_claim_result(
+            claims[raw_result["claim_id"]],
+            copy.deepcopy(raw_result),
+            enforce_binding=enforce_binding,
+        )
         result["statement"] = claims[result["claim_id"]]["statement"]
         results.append(result)
     return results

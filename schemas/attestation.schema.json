@@ -467,6 +467,92 @@
         },
         "sha256": {
           "$ref": "#/$defs/sha256"
+        },
+        "covers_claim_ids": {
+          "description": "Claim ids this evidence item names as covered (reviewer output schema 0.7.0+).",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        }
+      }
+    },
+    "coverage": {
+      "description": "Search-coverage proof for an absence conclusion (reviewer output schema 0.7.0+).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "status",
+        "truncated",
+        "omitted_count"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000,
+          "pattern": "\\S"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "omitted_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "evidenceGate": {
+      "description": "Policy output recorded when a reviewer's supported outcome was downgraded because its claim-bound evidence did not meet the contract's evidence discipline.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reasons"
+      ],
+      "properties": {
+        "status": {
+          "const": "insufficient"
+        },
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "detail"
+            ],
+            "properties": {
+              "code": {
+                "enum": [
+                  "no_claim_bound_evidence",
+                  "evidence_kind_insufficient",
+                  "absence_coverage_unproven"
+                ]
+              },
+              "detail": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              }
+            }
+          }
         }
       }
     },
@@ -515,7 +601,22 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4000
+        },
+        "reviewer_outcome": {
+          "description": "The reviewer's original outcome, present only when the policy downgraded it (see evidence_gate).",
+          "const": "supported"
+        },
+        "evidence_gate": {
+          "$ref": "#/$defs/evidenceGate"
         }
+      },
+      "dependentRequired": {
+        "reviewer_outcome": [
+          "evidence_gate"
+        ],
+        "evidence_gate": [
+          "reviewer_outcome"
+        ]
       },
       "allOf": [
         {
@@ -543,6 +644,20 @@
             "required": [
               "rationale"
             ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "evidence_gate"
+            ]
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "const": "inconclusive"
+              }
+            }
           }
         }
       ]
@@ -657,6 +772,19 @@
           "minLength": 1,
           "maxLength": 4000
         },
+        "assertion": {
+          "description": "'absence' marks a finding whose conclusion is that something does not exist (reviewer output schema 0.7.0+).",
+          "enum": [
+            "absence"
+          ]
+        },
+        "absence_coverage": {
+          "description": "Recorded policy output for an absence finding: proven when its evidence carries a complete coverage proof; unproven findings are gated as unreproduced.",
+          "enum": [
+            "proven",
+            "unproven"
+          ]
+        },
         "gate_effect": {
           "description": "Recorded policy output. PR 3 makes the policy engine its sole writer.",
           "enum": [
@@ -677,6 +805,14 @@
         "waiver": {
           "$ref": "#/$defs/waiver"
         }
+      },
+      "dependentRequired": {
+        "assertion": [
+          "absence_coverage"
+        ],
+        "absence_coverage": [
+          "assertion"
+        ]
       },
       "allOf": [
         {
