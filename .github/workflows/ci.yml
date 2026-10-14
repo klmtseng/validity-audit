@@ -27,13 +27,16 @@ jobs:
         run: python -m pip install -e ".[dev,quant]"
 
       - name: Lint
-        run: python -m ruff check validity_audit benchmarks tests protocol/ledger.py protocol/injected_bug_recall.py examples/self_contained/run_demo.py
+        run: python -m ruff check validity_audit benchmarks tests protocol/ledger.py protocol/injected_bug_recall.py protocol/matrix_mutants.py examples/self_contained/run_demo.py
 
       - name: Compile
         run: python -m compileall -q validity_audit protocol
 
       - name: Test
         run: python -m pytest -q
+
+      - name: Matrix mutation regression
+        run: python protocol/matrix_mutants.py
 
       - name: Console entry point
         run: validity-audit-ledger --ledger /tmp/validity-audit-ci-ledger.jsonl challenges
