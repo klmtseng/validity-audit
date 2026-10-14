@@ -279,10 +279,21 @@ downgraded for lacking claim-bound evidence) does not reject the run: it is kept
 `unapplied_waiver` with `not_applied_because` (`absence_coverage_unproven` or
 `refutation_unbound`), the finding stays unresolved, and the run is `needs_review`. A waiver on a
 finding that would not be a reproduced fail even without the discipline (the reviewer declared it
-unreproduced, or it is advisory and no refutation cites it) is still rejected, as before.
-`tests/test_policy_matrix.py` enumerates the input combinations and checks both properties: no
-rejection the legacy evaluation would not also make, and no move toward `pass` other than the two
-designed `fail` to `needs_review` moves (unbound refutation; uncovered absence finding). What still rejects the run (exit `1`, no attestation)
+unreproduced, or it is advisory and no refutation cites it) is still rejected, as before, also
+when an unbound refutation cites it.
+
+`tests/test_policy_matrix.py` enumerates 3616 input combinations (single-claim and two-claim,
+two-finding; finding error class, reproduction state, absence marker, coverage, severity, citation
+and waiver included) and checks: no rejection the legacy evaluation would not also make; no input
+the legacy evaluation rejects is accepted; no move toward `pass` other than the two designed `fail`
+to `needs_review` moves (an unbound refutation no longer forces an *advisory* finding to fail; an
+uncovered absence finding cannot decide fail); and per finding, a reproduced fail-class finding
+that is not an uncovered absence finding still fails, a finding cited by a bound refutation still
+fails, and an advisory finding cited only by unbound refutations does not. `protocol/matrix_mutants.py`
+(a CI step) plants five known policy bugs into temporary copies and exits 0 only if the matrix
+catches every one.
+
+What still rejects the run (exit `1`, no attestation)
 is malformed reviewer evidence, not insufficient evidence: an unknown claim id in
 `covers_claim_ids`, one evidence id reused with different content, or a 0.3.0 reviewer output for a
 0.7.0 contract.
