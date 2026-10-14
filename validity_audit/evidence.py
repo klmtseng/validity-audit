@@ -15,11 +15,15 @@ Three primitives, adapted from REA (morluto/rea) evidence handling:
   marked ``assertion: "absence"``) needs evidence carrying a ``coverage`` proof
   with ``status == "complete"``, ``truncated is False`` and ``omitted_count == 0``.
 
-All three are fail-closed toward review, never toward pass: an unmet
-requirement downgrades a ``supported`` claim to ``inconclusive`` (which the
-policy turns into ``needs_review``), and an absence finding without coverage is
-gated as unreproduced. Refuted outcomes are not downgraded here, because doing
-so could only weaken a fail verdict.
+All three are fail-closed toward review: an unmet requirement downgrades a
+``supported`` claim to ``inconclusive`` (which the policy turns into
+``needs_review``), and an absence finding without coverage is gated as
+unreproduced. A ``refuted`` claim is held to claim binding only: an unbound
+refutation is downgraded to ``inconclusive`` and no longer forces its findings
+to fail, while a bound refutation needs neither a particular kind nor a
+complete search (one counterexample refutes), so its findings are not softened
+by the absence rule. Downgrades never rewrite the reviewer's fields; the
+policy's reasons are recorded only in ``evidence_gate``.
 """
 
 from __future__ import annotations
@@ -58,7 +62,8 @@ EVIDENCE_DISCIPLINE_INSTRUCTIONS: dict[str, str] = {
     "claim_binding": (
         "Every evidence item inside a claim result must name that claim in "
         "covers_claim_ids. Evidence that does not name the claim does not count toward it, "
-        "and a supported outcome with no claim-bound evidence is downgraded to inconclusive. "
+        "and a supported or refuted outcome with no claim-bound evidence is downgraded to "
+        "inconclusive (a downgraded refutation does not turn its findings into fail). "
         "An evidence_id denotes one item: reuse it only with identical content, and only "
         "name claim ids that exist in the contract."
     ),
@@ -75,11 +80,11 @@ EVIDENCE_DISCIPLINE_INSTRUCTIONS: dict[str, str] = {
         "absence. For an absence claim that also has required_evidence_kind, one and the "
         "same evidence item must both satisfy the kind and carry the complete coverage. "
         "Without proof an absence claim is not supported and an absence finding is gated "
-        "as unreproduced."
+        "as unreproduced, unless the finding backs a claim-bound refutation (one "
+        "counterexample suffices to refute)."
     ),
 }
 
-MAX_RATIONALE = 4000
 MAX_DETAIL = 2000
 
 
@@ -146,14 +151,23 @@ def check_evidence_consistency(
                 f"evidence {evidence['evidence_id']!r} in {where} covers unknown claim ids: "
                 f"{', '.join(unknown)}"
             )
+        normalized = _normalize_evidence(evidence)
         previous = seen.get(evidence["evidence_id"])
         if previous is None:
-            seen[evidence["evidence_id"]] = evidence
-        elif previous != evidence:
+            seen[evidence["evidence_id"]] = normalized
+        elif previous != normalized:
             raise EvidenceDisciplineError(
                 f"evidence id {evidence['evidence_id']!r} is reused in {where} with different "
                 "content; one evidence id must denote one evidence item"
             )
+
+
+def _normalize_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
+    """covers_claim_ids is a set (uniqueItems); compare it order-insensitively."""
+    normalized = dict(evidence)
+    if "covers_claim_ids" in normalized:
+        normalized["covers_claim_ids"] = sorted(normalized["covers_claim_ids"])
+    return normalized
 
 
 def _clip(text: str, limit: int) -> str:
@@ -166,8 +180,19 @@ def gate_claim_result(
     *,
     enforce_binding: bool,
 ) -> dict[str, Any]:
-    """Return the claim result, downgraded to inconclusive if evidence is insufficient."""
-    if result["outcome"] != "supported":
+    """Return the claim result, downgraded to inconclusive if evidence is insufficient.
+
+    ``supported`` outcomes are checked against claim binding, the required evidence
+    kind and absence coverage. ``refuted`` outcomes are checked against claim
+    binding only: a refutation needs one counterexample, not a complete search
+    or a particular evidence kind, but it must still name the claim it refutes.
+    A downgrade never rewrites the reviewer's own fields (``rationale`` included);
+    the policy's reasons live only in ``evidence_gate``.
+    """
+    outcome = result["outcome"]
+    if outcome not in {"supported", "refuted"}:
+        return result
+    if outcome == "refuted" and not enforce_binding:
         return result
     claim_id = result["claim_id"]
     evidence = result["evidence"]
@@ -189,6 +214,8 @@ def gate_claim_result(
                 ),
             }
         )
+    if outcome == "refuted":
+        return _downgrade(result, outcome, reasons) if reasons else result
     required = claim.get("required_evidence_kind")
     if required is not None and not any(
         kind_satisfies(item["kind"], required) for item in counted
@@ -230,16 +257,18 @@ def gate_claim_result(
             reasons.append({"code": "absence_coverage_unproven", "detail": detail})
     if not reasons:
         return result
+    return _downgrade(result, outcome, reasons)
 
+
+def _downgrade(
+    result: dict[str, Any],
+    reviewer_outcome: str,
+    reasons: list[dict[str, str]],
+) -> dict[str, Any]:
     gated = copy.deepcopy(result)
-    gated["reviewer_outcome"] = "supported"
+    gated["reviewer_outcome"] = reviewer_outcome
     gated["outcome"] = "inconclusive"
     gated["evidence_gate"] = {"status": "insufficient", "reasons": reasons}
-    codes = ", ".join(reason["code"] for reason in reasons)
-    rationale = f"Policy downgraded the reviewer's supported outcome: {codes}."
-    if "rationale" in result:
-        rationale += f" Reviewer rationale: {result['rationale']}"
-    gated["rationale"] = _clip(rationale, MAX_RATIONALE)
     return gated
 
 
