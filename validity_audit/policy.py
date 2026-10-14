@@ -233,8 +233,12 @@ def evaluate_policy(
         elif (
             waiver_request is not None
             and finding["finding_id"] in unbound_refutation_finding_ids
+            and finding["reproduction"] not in NON_REPRODUCED
             and not (configured_effect == "fail" and reproduction not in NON_REPRODUCED)
         ):
+            # Only a finding the reviewer declared reproduced: a waiver on one the
+            # reviewer declared unreproduced is rejected by the general rule
+            # below, exactly as without the discipline.
             withheld_because = "refutation_unbound"
         if withheld_because is not None:
             finding["unapplied_waiver"] = {
