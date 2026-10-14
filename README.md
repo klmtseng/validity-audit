@@ -274,8 +274,15 @@ downgraded claim the attestation keeps the reviewer's evidence and `rationale` v
 `evidence_gate` with reason codes (`no_claim_bound_evidence`, `evidence_kind_insufficient`,
 `absence_coverage_unproven`), and sets `outcome` to `inconclusive`. Downgrades are named in the
 summary and the Markdown report under every disposition, including `fail`. A waiver aimed at a fail
-that the absence rule withheld does not reject the run: it is kept as `unapplied_waiver`, the finding
-stays unresolved, and the run is `needs_review`. What still rejects the run (exit `1`, no attestation)
+that the discipline withheld (an unproven absence finding, or a finding cited only by a refutation
+downgraded for lacking claim-bound evidence) does not reject the run: it is kept as
+`unapplied_waiver` with `not_applied_because` (`absence_coverage_unproven` or
+`refutation_unbound`), the finding stays unresolved, and the run is `needs_review`. A waiver on a
+finding that would not be a reproduced fail even without the discipline (the reviewer declared it
+unreproduced, or it is advisory and no refutation cites it) is still rejected, as before.
+`tests/test_policy_matrix.py` enumerates the input combinations and checks both properties: no
+rejection the legacy evaluation would not also make, and no move toward `pass` other than the two
+designed `fail` to `needs_review` moves (unbound refutation; uncovered absence finding). What still rejects the run (exit `1`, no attestation)
 is malformed reviewer evidence, not insufficient evidence: an unknown claim id in
 `covers_claim_ids`, one evidence id reused with different content, or a 0.3.0 reviewer output for a
 0.7.0 contract.
@@ -309,6 +316,13 @@ Limits:
   impossible.
 - A reviewer can avoid the absence check on a finding by not marking it; the discipline does not
   detect free-text absence reasoning.
+- A finding's absence proof has no evidence-kind requirement and needs no claim binding: one `note`
+  in the finding's own evidence carrying a complete `coverage` block makes it
+  `absence_coverage: "proven"`, and it can then decide `fail` or take a waiver.
+- Any one claim-bound refutation that cites an absence finding exempts that finding from the absence
+  rule (`absence_coverage: "not_required"`), so it can decide `fail` or be waived, even if the
+  refuted claim has nothing to do with what the finding says is absent. The policy does not check
+  that the citation is relevant.
 
 ## Assurance layers
 
