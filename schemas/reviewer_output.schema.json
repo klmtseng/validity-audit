@@ -20,7 +20,7 @@
       "format": "uri-reference"
     },
     "schema_version": {
-      "const": "0.3.0"
+      "enum": ["0.3.0", "0.7.0"]
     },
     "review_context": {
       "enum": [
@@ -98,9 +98,55 @@
           ]
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "0.3.0"
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "claim_results": {
+            "items": {
+              "properties": {
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/legacyEvidence"
+                  }
+                }
+              }
+            }
+          },
+          "findings": {
+            "items": {
+              "properties": {
+                "assertion": false,
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/legacyEvidence"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {
+    "legacyEvidence": {
+      "description": "Schema 0.3.0 evidence may not carry the 0.7.0 claim-binding or coverage fields.",
+      "properties": {
+        "covers_claim_ids": false,
+        "coverage": false
+      }
+    },
     "identifier": {
       "type": "string",
       "minLength": 1,
@@ -171,6 +217,52 @@
         },
         "sha256": {
           "$ref": "#/$defs/sha256"
+        },
+        "covers_claim_ids": {
+          "description": "Schema 0.7.0+. The contract claim ids this evidence item covers. Under a 0.7.0 reviewer output, evidence inside a claim result counts toward that claim only when it names the claim here.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        }
+      }
+    },
+    "coverage": {
+      "description": "Schema 0.7.0+. Search-coverage proof for an absence (universal-negative) conclusion. It supports absence only when status is complete, truncated is false, and omitted_count is 0.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "status",
+        "truncated",
+        "omitted_count"
+      ],
+      "properties": {
+        "scope": {
+          "description": "The searched universe, stated concretely (paths, patterns, query, corpus).",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000,
+          "pattern": "\\S"
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "omitted_count": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     },
@@ -302,6 +394,12 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 4000
+        },
+        "assertion": {
+          "description": "Schema 0.7.0+. 'absence' marks a finding whose conclusion is that something does not exist (no source, no test, nothing found). Without a complete coverage proof in its evidence, the policy treats the finding as unreproduced.",
+          "enum": [
+            "absence"
+          ]
         },
         "evidence": {
           "type": "array",

@@ -79,12 +79,12 @@
   ],
   "issued_at": "2026-07-29T00:06:00Z",
   "overall_result": {
-    "policy_id": "validity-audit-default-v0.6.0",
+    "policy_id": "validity-audit-default-v0.7.0",
     "status": "fail",
     "summary": "One or more reproduced findings triggered a fail-class policy gate."
   },
   "review": {
-    "bundle_sha256": "851cd6774027055e04053b0e75e45a9fa25b50c7ef27acf8b3e142c956e5aa73",
+    "bundle_sha256": "25ee6f5c0e4ee35b6ae888c72b36c68268854b1aeb3b23362f66de184dbd4e7b",
     "context": "primed",
     "method": "operator_in_the_loop",
     "operator_id": "golden-case-runner",
