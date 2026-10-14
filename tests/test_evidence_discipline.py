@@ -369,29 +369,23 @@ def test_p6_positive_complete_coverage_supports_absence_claim(tmp_path: Path) ->
 def test_p6_negative_absence_finding_without_coverage_cannot_decide_fail(
     tmp_path: Path,
 ) -> None:
-    claim = [{"claim_id": "c1", "statement": "Every reported figure has a source."}]
-    # Old behaviour: a "no source found" finding refutes the claim and fails the run.
-    legacy = run(
-        tmp_path / "legacy",
-        contract("0.3.0", claim),
-        reviewer("0.3.0",
-                 [claim_result("c1", [evidence("search", "note")], "refuted", ["f1"])],
-                 [finding("f1", [evidence("search", "note")])]),
-    )
+    # A fail-class "no source found" finding that no refutation relies on:
+    # without coverage it cannot decide fail on its own.
+    claim = [{"claim_id": "c1", "statement": "The report is complete."}]
+    ok = [claim_result("c1", [evidence("e", "note", ["c1"])])]
+    plain = finding("f1", [evidence("search", "note")])
+    legacy = run(tmp_path / "legacy", contract("0.3.0", claim),
+                 reviewer("0.3.0", [claim_result("c1", [evidence("e", "note")])], [plain]))
     assert legacy["overall_result"]["status"] == "fail"
 
-    search = evidence("search", "note", ["c1"])
-    gated = run(
-        tmp_path / "new",
-        contract("0.7.0", claim),
-        reviewer("0.7.0", [claim_result("c1", [search], "refuted", ["f1"])],
-                 [finding("f1", [search], absence=True)]),
-    )
+    gated = run(tmp_path / "new", contract("0.7.0", claim),
+                reviewer("0.7.0", ok, [finding("f1", [evidence("search", "note")], absence=True)]))
     assert gated["overall_result"]["status"] == "needs_review"
     recorded = gated["findings"][0]
     assert recorded["absence_coverage"] == "unproven"
     assert recorded["gate_effect"] == "none"
     assert recorded["reproduction"] == "reproduced"  # reviewer's field is preserved
+    assert recorded["effective_reproduction"] == "unreproduced"  # F3: what policy used
     assert "search-coverage proof" in gated["overall_result"]["summary"]
 
 
@@ -526,3 +520,135 @@ def test_bundle_carries_evidence_discipline_instructions_only_for_0_7_0(
     for version in ("0.3.0", "0.6.0"):
         legacy = bundle_instructions(tmp_path / version, version)
         assert set(legacy) == {"task", "policy_boundary", "transcript"}
+
+
+# ------------------------------------- round-three fixes (D1-D4, F2-F4)
+# Each test names the pre-fix behaviour (at 740a66e) it guards against.
+
+WAIVER = {"finding_id": "f1", "issuer": "lead", "reason": "Accepted for this release.",
+          "issued_at": "2026-07-29T00:00:00Z", "expires_at": "2026-08-29T00:00:00Z"}
+
+
+def test_d2_bound_refutation_is_not_softened_by_absence_rule(tmp_path: Path) -> None:
+    # PR4a/PR4b. Before: tagging the refutation's finding as an absence without
+    # coverage softened fail to needs_review. After: fail either way.
+    claim = [{"claim_id": "c1", "statement": "s"}]
+    refuted = [claim_result("c1", [evidence("e", "file_line", ["c1"])], "refuted", ["f1"])]
+    advisory = finding("f1", [evidence("g", "file_line")], error_class="fitness")
+    plain = run(tmp_path / "a", contract("0.7.0", claim), reviewer("0.7.0", refuted, [advisory]))
+    assert plain["overall_result"]["status"] == "fail"
+    tagged = run(tmp_path / "b", contract("0.7.0", claim),
+                 reviewer("0.7.0", refuted, [{**advisory, "assertion": "absence"}]))
+    assert tagged["overall_result"]["status"] == "fail"
+    recorded = tagged["findings"][0]
+    assert recorded["gate_effect"] == "fail"
+    assert recorded["absence_coverage"] == "not_required"
+    assert "effective_reproduction" not in recorded
+
+
+def test_d1_unbound_refutation_is_downgraded_and_does_not_force_fail(tmp_path: Path) -> None:
+    # Before: a refuted claim whose evidence names no claim still forced its
+    # finding to fail. After: inconclusive, finding keeps its own effect.
+    claim = [{"claim_id": "c1", "statement": "s"}]
+    advisory = finding("f1", [evidence("g", "file_line")], error_class="fitness")
+    unbound = [claim_result("c1", [evidence("e", "file_line")], "refuted", ["f1"])]
+    legacy = run(tmp_path / "legacy", contract("0.3.0", claim),
+                 reviewer("0.3.0", unbound, [advisory]))
+    assert legacy["overall_result"]["status"] == "fail"  # 0.3.0 output: binding not enforced
+
+    gated = run(tmp_path / "new", contract("0.7.0", claim),
+                reviewer("0.7.0", unbound, [advisory]))
+    assert gated["overall_result"]["status"] == "needs_review"
+    result = gated["claim_results"][0]
+    assert result["outcome"] == "inconclusive"
+    assert result["reviewer_outcome"] == "refuted"
+    assert gate_codes(gated, "c1") == ["no_claim_bound_evidence"]
+    assert gated["findings"][0]["gate_effect"] == "advisory"
+
+
+def test_d1_refutation_needs_no_particular_kind(tmp_path: Path) -> None:
+    claim = [{"claim_id": "c1", "statement": "s", "required_evidence_kind": "command"}]
+    out = reviewer("0.7.0",
+                   [claim_result("c1", [evidence("e", "note", ["c1"])], "refuted", ["f1"])],
+                   [finding("f1", [evidence("g", "note")], error_class="fitness")])
+    assert run(tmp_path, contract("0.7.0", claim), out)["overall_result"]["status"] == "fail"
+
+
+def test_d3_downgrade_keeps_reviewer_rationale_verbatim(tmp_path: Path) -> None:
+    # Before: the rationale was rewritten as "Policy downgraded ... Reviewer
+    # rationale: ..." and clipped to 4000 characters.
+    long_rationale = "x" * 3990 + " LIMIT-END"
+    result = claim_result("c1", [evidence("e", "note")])
+    result["rationale"] = long_rationale
+    gated = run(tmp_path, two_claims("0.7.0"),
+                reviewer("0.7.0", [result, claim_result("c2", [evidence("f", "note", ["c2"])])]))
+    recorded = gated["claim_results"][0]
+    assert recorded["outcome"] == "inconclusive"
+    assert recorded["rationale"] == long_rationale
+    assert recorded["evidence"] == [evidence("e", "note")]
+
+
+def test_d3_downgrade_without_reviewer_rationale_adds_none(tmp_path: Path) -> None:
+    gated = run(tmp_path, two_claims("0.7.0"),
+                reviewer("0.7.0", [claim_result("c1", [evidence("e", "note")]),
+                                   claim_result("c2", [evidence("f", "note", ["c2"])])]))
+    assert "rationale" not in gated["claim_results"][0]
+    assert gated["claim_results"][0]["evidence_gate"]["reasons"]
+
+
+def test_d4_waiver_on_unproven_absence_finding_does_not_reject_run(tmp_path: Path) -> None:
+    # PR9/PR9b. Before: finalize raised "cannot be waived" and no attestation
+    # landed. After: needs_review, waiver kept on record but not applied.
+    claim = [{"claim_id": "c1", "statement": "s"}]
+    ok = [claim_result("c1", [evidence("e", "note", ["c1"])])]
+    fail_f = finding("f1", [evidence("g", "file_line")], error_class="correctness")
+    task = {**contract("0.7.0", claim), "waiver_issuers": ["lead"]}
+    control = reviewer("0.7.0", ok, [fail_f])
+    control["waivers"] = [WAIVER]
+    assert run(tmp_path / "a", task, control)["overall_result"]["status"] == "pass_with_waiver"
+
+    tagged = reviewer("0.7.0", ok, [{**fail_f, "assertion": "absence"}])
+    tagged["waivers"] = [WAIVER]
+    attestation = run(tmp_path / "b", task, tagged)
+    assert attestation["overall_result"]["status"] == "needs_review"
+    recorded = attestation["findings"][0]
+    assert recorded["gate_effect"] == "none"
+    assert "waiver" not in recorded
+    assert recorded["unapplied_waiver"]["issuer"] == "lead"
+    assert recorded["unapplied_waiver"]["not_applied_because"] == "absence_coverage_unproven"
+    assert "not applied" in attestation["overall_result"]["summary"]
+
+
+def test_f2_downgrade_is_visible_when_run_fails(tmp_path: Path) -> None:
+    # PR5. Before: status fail and neither summary nor report named the downgrade.
+    claim = [{"claim_id": "c1", "statement": "s", "required_evidence_kind": "command"}]
+    out = reviewer("0.7.0", [claim_result("c1", [evidence("e", "note", ["c1"])])],
+                   [finding("f1", [evidence("g", "file_line")], error_class="correctness")])
+    attestation = run(tmp_path, contract("0.7.0", claim), out)
+    assert attestation["overall_result"]["status"] == "fail"
+    summary = attestation["overall_result"]["summary"]
+    assert "downgraded the reviewer outcome of claim(s) c1" in summary
+    report = (tmp_path / "workspace/.validity-audit/runs/test-run/attestation.md").read_text()
+    assert "claim(s) c1" in report
+
+
+def test_f4_reused_evidence_compares_covered_claims_as_a_set(tmp_path: Path) -> None:
+    # PR6. Before: [c1, c2] vs [c2, c1] raised "reused ... with different content".
+    attestation = run(
+        tmp_path,
+        two_claims("0.7.0"),
+        reviewer("0.7.0", [claim_result("c1", [evidence("e", "command", ["c1", "c2"])]),
+                           claim_result("c2", [evidence("e", "command", ["c2", "c1"])])]),
+    )
+    assert attestation["overall_result"]["status"] == "pass"
+
+
+def test_policy_outputs_cannot_be_finder_inputs() -> None:
+    for key, value in (("effective_reproduction", "unreproduced"),
+                       ("unapplied_waiver", {"issuer": "x"})):
+        raw = {**finding("f1", [evidence("e1")], absence=True), key: value,
+               "source": "cold_review"}
+        with pytest.raises(PolicyError, match="policy outputs"):
+            evaluate_policy(contract=contract("0.7.0", [{"claim_id": "c1", "statement": "s"}]),
+                            findings=[raw], claim_results=[], waiver_requests=[],
+                            issued_at=ISSUED)
