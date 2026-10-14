@@ -22,8 +22,18 @@ All notable changes to this project will be documented in this file.
     and carries the complete coverage. An unproven absence finding is named in the summary and the
     Markdown report under every disposition, including `pass`. A reproduced fail-class finding
     marked as an absence without coverage moves from `fail` to `needs_review` (intended).
+  - *Refutations:* under a 0.7.0 reviewer output, a `refuted` claim with no claim-bound evidence is
+    downgraded to `inconclusive` (`reviewer_outcome: "refuted"`) and does not force its findings to
+    `fail`. A bound refutation needs no particular kind or complete search; an absence finding
+    backing it is recorded `absence_coverage: "not_required"` and still fails.
+  - Downgrades keep the reviewer's `rationale` verbatim; the reasons live only in `evidence_gate`.
+    Downgrades are named in the summary and report under every disposition. Unproven absence
+    findings record `effective_reproduction: "unreproduced"` next to the reviewer's `reproduction`.
+    A waiver on a fail withheld by the absence rule is kept as `unapplied_waiver` (run
+    `needs_review`) instead of rejecting the run. Evidence-id reuse compares `covers_claim_ids` as a
+    set.
   - 0.7.0 review bundles carry `instructions.evidence_discipline`, explaining these requirements
-    to the reviewer; bundles for 0.3.0/0.6.0 contracts are unchanged.
+    to the reviewer; the instructions in bundles for 0.3.0/0.6.0 contracts are unchanged.
 - Attestation schema records the new policy outputs: `reviewer_outcome` + `evidence_gate` on a
   downgraded claim result, `absence_coverage` on an absence finding, and the new evidence fields.
 - `tests/test_evidence_discipline.py`: per primitive, a negative control that the previous behavior
@@ -33,12 +43,15 @@ All notable changes to this project will be documented in this file.
 
 - **Policy identifier bumped to `validity-audit-default-v0.7.0`:** a 0.7.0 contract or reviewer
   output can now turn a reviewer-`supported` claim into `inconclusive` (run `needs_review`) and keep an
-  uncovered absence finding from deciding `fail`. `ERROR_CLASS_EFFECTS` is unchanged, and 0.3.0/0.6.0
-  contracts reviewed by 0.3.0 reviewer outputs produce the same dispositions as before.
+  uncovered absence finding from deciding `fail`. `ERROR_CLASS_EFFECTS` is unchanged. 0.3.0/0.6.0
+  contracts produce the same dispositions as before only when the reviewer output is also 0.3.0; a
+  0.7.0 reviewer output on such a contract turns on claim binding and absence gating.
 - Contract `schema_version` accepts `0.7.0`; reviewer-output `schema_version` accepts `0.7.0`. A 0.7.0
   contract requires a 0.7.0 reviewer output. The attestation `schema_version` stays `0.3.0`, with the
   new fields optional (same approach as FBPA's `finding_type`).
-- The review bundle embeds the reviewer-output schema, so its digest changed; the golden
+- The review bundle embeds the reviewer-output schema, so every bundle's bytes and digest changed
+  (for all contract versions), and runs prepared by an earlier release cannot be finalized by this
+  one. The golden
   `expected_attestation.json` and `docs/attestation-example.json` were updated for the new
   `bundle_sha256` and `policy_id` only.
 
