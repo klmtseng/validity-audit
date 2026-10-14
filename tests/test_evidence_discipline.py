@@ -652,3 +652,73 @@ def test_policy_outputs_cannot_be_finder_inputs() -> None:
             evaluate_policy(contract=contract("0.7.0", [{"claim_id": "c1", "statement": "s"}]),
                             findings=[raw], claim_results=[], waiver_requests=[],
                             issued_at=ISSUED)
+
+
+# ------------------------------------------ documented compatibility claims
+
+
+def test_run_prepared_with_older_embedded_schema_cannot_be_finalized(tmp_path: Path) -> None:
+    # README/CHANGELOG: bundles embed the reviewer-output schema, so a run prepared by an
+    # earlier release (whose bundle embeds the 0.3.0-only schema) does not finalize here.
+    from validity_audit.digests import sha256_file
+    from validity_audit.runtime import EvidenceMismatchError
+
+    workspace = tmp_path / "workspace"
+    (workspace / "docs").mkdir(parents=True)
+    (workspace / "docs" / "README.md").write_text("# Demo\n", encoding="utf-8")
+    write_json(workspace / "task.json", contract("0.3.0", [{"claim_id": "c1", "statement": "s"}]))
+    run_dir = ".validity-audit/runs/old"
+    prepare_run(workspace=workspace, contract_path="task.json", run_dir=run_dir,
+                review_context="cold", reviewer_kind="model", reviewer_label="r",
+                operator_id="o", priming_sources=[], run_id="run-old", started_at=STARTED)
+    bundle_path = workspace / run_dir / "review_bundle.json"
+    bundle = json.loads(bundle_path.read_text())
+    bundle["reviewer_output_schema"]["properties"]["schema_version"] = {"const": "0.3.0"}
+    write_json(bundle_path, bundle)
+    state_path = workspace / run_dir / "run_state.json"
+    state = json.loads(state_path.read_text())
+    state["review_bundle"]["sha256"] = sha256_file(bundle_path)
+    write_json(state_path, state)
+
+    output = reviewer("0.3.0", [claim_result("c1", [evidence("e")])])
+    output["reviewer"] = {"kind": "model", "label": "r"}
+    output["operator_id"] = "o"
+    write_json(workspace / "out.json", output)
+    (workspace / "t.txt").write_bytes(b"transcript\n")
+    with pytest.raises(EvidenceMismatchError, match="reviewer_output_schema"):
+        finalize_run(workspace=workspace, run_dir=run_dir, reviewer_output_path="out.json",
+                     transcript_path="t.txt", completed_at=COMPLETED, issued_at=ISSUED,
+                     append_ledger=False)
+
+
+def test_prepare_and_finalize_inputs_must_be_inside_workspace(tmp_path: Path) -> None:
+    # README: contract, run directory, reviewer output and transcript must resolve
+    # inside --workspace.
+    workspace = tmp_path / "workspace"
+    (workspace / "docs").mkdir(parents=True)
+    (workspace / "docs" / "README.md").write_text("# Demo\n", encoding="utf-8")
+    task = contract("0.7.0", [{"claim_id": "c1", "statement": "s"}])
+    write_json(workspace / "task.json", task)
+    write_json(tmp_path / "outside-task.json", task)
+    common = dict(review_context="cold", reviewer_kind="model",
+                  reviewer_label="independent-reviewer", operator_id="operator-1",
+                  priming_sources=[], run_id="run-x", started_at=STARTED)
+    with pytest.raises(AuditRuntimeError, match="inside the workspace"):
+        prepare_run(workspace=workspace, contract_path=str(tmp_path / "outside-task.json"),
+                    run_dir=".validity-audit/runs/a", **common)
+    with pytest.raises(AuditRuntimeError, match="inside the workspace"):
+        prepare_run(workspace=workspace, contract_path="task.json",
+                    run_dir=str(tmp_path / "outside-run"), **common)
+    prepare_run(workspace=workspace, contract_path="task.json",
+                run_dir=".validity-audit/runs/a", **common)
+    output = reviewer("0.7.0", [claim_result("c1", [evidence("e", "note", ["c1"])])])
+    write_json(workspace / "out.json", output)
+    write_json(tmp_path / "outside-out.json", output)
+    (workspace / "t.txt").write_bytes(b"transcript\n")
+    (tmp_path / "outside-t.txt").write_bytes(b"transcript\n")
+    for out_path, transcript in ((str(tmp_path / "outside-out.json"), "t.txt"),
+                                 ("out.json", str(tmp_path / "outside-t.txt"))):
+        with pytest.raises(AuditRuntimeError, match="inside the workspace"):
+            finalize_run(workspace=workspace, run_dir=".validity-audit/runs/a",
+                         reviewer_output_path=out_path, transcript_path=transcript,
+                         completed_at=COMPLETED, issued_at=ISSUED, append_ledger=False)
