@@ -805,7 +805,7 @@
           ]
         },
         "unapplied_waiver": {
-          "description": "Recorded policy output: a waiver request that targeted a fail withheld by the absence rule. It is kept on record but not applied; the finding stays unresolved.",
+          "description": "Recorded policy output: a waiver request that targeted a fail the evidence discipline withheld (an unproven absence finding, or a finding cited only by a refutation downgraded for lacking claim-bound evidence). It is kept on record but not applied; the finding stays unresolved.",
           "type": "object",
           "additionalProperties": false,
           "required": [
@@ -835,7 +835,10 @@
               "format": "date-time"
             },
             "not_applied_because": {
-              "const": "absence_coverage_unproven"
+              "enum": [
+                "absence_coverage_unproven",
+                "refutation_unbound"
+              ]
             }
           }
         },
@@ -869,9 +872,6 @@
         ],
         "effective_reproduction": [
           "absence_coverage"
-        ],
-        "unapplied_waiver": [
-          "effective_reproduction"
         ]
       },
       "allOf": [

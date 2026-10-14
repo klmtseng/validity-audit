@@ -722,3 +722,27 @@ def test_prepare_and_finalize_inputs_must_be_inside_workspace(tmp_path: Path) ->
             finalize_run(workspace=workspace, run_dir=".validity-audit/runs/a",
                          reviewer_output_path=out_path, transcript_path=transcript,
                          completed_at=COMPLETED, issued_at=ISSUED, append_ledger=False)
+
+
+def test_h1_waiver_on_finding_of_unbound_refutation_does_not_reject_run(tmp_path: Path) -> None:
+    # H1 (hot review N1). Before (0562c38): the downgraded refutation no longer
+    # forced its advisory finding to fail, and the waiver aimed at that fail made
+    # finalize raise "cannot be waived". After: needs_review, waiver recorded.
+    claim = [{"claim_id": "c1", "statement": "s"}]
+    advisory = finding("f1", [evidence("g", "file_line")], error_class="fitness")
+    task = {**contract("0.7.0", claim), "waiver_issuers": ["lead"]}
+    bound = reviewer("0.7.0", [claim_result("c1", [evidence("e", "file_line", ["c1"])],
+                                            "refuted", ["f1"])], [advisory])
+    bound["waivers"] = [WAIVER]
+    assert run(tmp_path / "a", task, bound)["overall_result"]["status"] == "pass_with_waiver"
+
+    unbound = reviewer("0.7.0", [claim_result("c1", [evidence("e", "file_line")],
+                                              "refuted", ["f1"])], [advisory])
+    unbound["waivers"] = [WAIVER]
+    attestation = run(tmp_path / "b", task, unbound)
+    assert attestation["overall_result"]["status"] == "needs_review"
+    recorded = attestation["findings"][0]
+    assert recorded["gate_effect"] == "advisory"
+    assert "waiver" not in recorded
+    assert recorded["unapplied_waiver"]["not_applied_because"] == "refutation_unbound"
+    assert "effective_reproduction" not in recorded

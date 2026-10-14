@@ -167,6 +167,15 @@ def evaluate_policy(
         if result["outcome"] == "refuted"
         for finding_id in result["finding_ids"]
     }
+    # Findings cited by a refutation the evidence gate downgraded (no claim-bound
+    # evidence): the reviewer's refutation would have forced them to fail, so a
+    # waiver aimed at that fail is recorded, not applied, and not an error.
+    unbound_refutation_finding_ids = {
+        finding_id
+        for result in claim_results
+        if result.get("reviewer_outcome") == "refuted"
+        for finding_id in result["finding_ids"]
+    } - refuted_finding_ids
     waiver_by_finding: dict[str, dict[str, Any]] = {}
     for waiver in waiver_requests:
         finding_id = waiver["finding_id"]
@@ -218,13 +227,22 @@ def evaluate_policy(
         # A waiver aimed at a fail the absence rule has just withheld is kept
         # on record but not applied: the finding stays unresolved instead of
         # the waiver rejecting the whole run.
+        withheld_because = None
         if waiver_request is not None and absence_softened and configured_effect == "fail":
+            withheld_because = "absence_coverage_unproven"
+        elif (
+            waiver_request is not None
+            and finding["finding_id"] in unbound_refutation_finding_ids
+            and not (configured_effect == "fail" and reproduction not in NON_REPRODUCED)
+        ):
+            withheld_because = "refutation_unbound"
+        if withheld_because is not None:
             finding["unapplied_waiver"] = {
                 "issuer": waiver_request["issuer"],
                 "reason": waiver_request["reason"],
                 "issued_at": waiver_request["issued_at"],
                 "expires_at": waiver_request["expires_at"],
-                "not_applied_because": "absence_coverage_unproven",
+                "not_applied_because": withheld_because,
             }
             waiver_request = None
 
@@ -312,8 +330,8 @@ def evaluate_policy(
         )
     if any("unapplied_waiver" in finding for finding in evaluated):
         summary += (
-            " A waiver request was recorded but not applied because its finding's "
-            "absence coverage is unproven."
+            " A waiver request was recorded but not applied because the fail it targeted "
+            "was withheld by the evidence discipline (see unapplied_waiver)."
         )
     # Surface an uncovered absence conclusion under every disposition, including
     # pass: an advisory-class absence finding never blocks, but a reader must
