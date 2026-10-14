@@ -38,10 +38,15 @@ All notable changes to this project will be documented in this file.
     to the reviewer; the instructions in bundles for 0.3.0/0.6.0 contracts are unchanged.
 - Attestation schema records the new policy outputs: `reviewer_outcome` + `evidence_gate` on a
   downgraded claim result, `absence_coverage` on an absence finding, and the new evidence fields.
-- `tests/test_policy_matrix.py`: enumerates 1576 schema-valid combinations (contract version x
+- `tests/test_policy_matrix.py`: enumerates 3616 schema-valid combinations (contract version x
   reviewer-output version x claim outcome x binding x claim requirement x evidence kind x finding
-  shape x cited x waiver) and asserts no new rejections versus the legacy evaluation and no move
-  toward `pass` except the named `fail` -> `needs_review` moves.
+  shape x severity x cited x waiver, plus two-claim two-finding combinations) and asserts no new
+  rejections versus the legacy evaluation, no legacy rejection accepted, no move toward `pass`
+  except the named `fail` -> `needs_review` moves, and per-finding gate invariants.
+- `protocol/matrix_mutants.py` (new CI step "Matrix mutation regression"): plants five known policy
+  bugs (M1-M5) into temporary copies and exits 0 only if the matrix test catches every one.
+- A waiver on a finding the reviewer declared unreproduced is rejected by the general waiver rule
+  even when an unbound refutation cites it (it was briefly accepted as `refutation_unbound`).
 - `tests/test_evidence_discipline.py`: per primitive, a negative control that the previous behavior
   accepts (or fails on an unproven absence) and the new behavior blocks, plus positive controls.
 
