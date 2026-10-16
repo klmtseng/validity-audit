@@ -238,33 +238,74 @@ mutation testing, and this repository does not run mutation testing as a standin
 A reviewer note used to be enough to mark any claim `supported`, one "the whole suite is green" item
 could be pasted into every claim result, and "nothing like X exists" needed no proof that the search
 was complete. Schema 0.7.0 adds three fail-closed checks (logic in `validity_audit/evidence.py`).
-The evidence-kind requirement and the absence assertion are opt-in per claim (or finding); claim
-binding is not opt-in: whenever the reviewer output is schema 0.7.0, it applies to every claim.
+The evidence-kind requirement and the absence assertion are opt-in per claim (or finding). Claim
+binding is chosen by the reviewer output's version, not by the contract: whenever the reviewer output
+is schema 0.7.0 it applies to every `supported` and `refuted` claim; a 0.3.0 reviewer output (allowed
+only for 0.3.0/0.6.0 contracts) gets no binding at all.
 
 - **Required evidence kind (contract claim `required_evidence_kind`).** A `supported` outcome counts
   only claim-bound evidence whose `kind` satisfies the requirement under a fixed table: `command`
   satisfies `command`, `file_line`, `note`; `file_line` satisfies `file_line`, `note`; `digest`
   satisfies `digest`, `note`; `note` satisfies only `note`. A contract cannot widen the table.
 - **Claim binding (reviewer evidence `covers_claim_ids`).** Under a 0.7.0 reviewer output, evidence
-  inside a claim result counts toward that claim only if it names the claim. One evidence id must
-  denote one item: reusing an id with different content, or naming an unknown claim id, is rejected.
+  inside a claim result counts toward that claim only if it names the claim. This applies to
+  `refuted` as well as `supported`: a refutation with no claim-bound evidence is downgraded to
+  `inconclusive` (`reviewer_outcome: "refuted"`), and its findings are then not forced to `fail`
+  (each keeps its own error-class effect), so the run is at least `needs_review`. A bound refutation
+  needs neither a particular evidence kind nor a complete search: one counterexample refutes. One
+  evidence id must denote one item: reusing an id with different content (`covers_claim_ids`
+  compared as a set), or naming an unknown claim id, is rejected.
 - **Absence coverage (claim or finding `assertion: "absence"`, evidence `coverage`).** A
   universal-negative conclusion needs evidence with `coverage.status == "complete"`,
   `truncated == false`, and `omitted_count == 0`. An absence claim without it is not `supported`; an
   absence finding without it is gated as unreproduced (recorded as `absence_coverage: "unproven"`),
-  so it can yield `needs_review` but cannot decide a `fail`. When an absence claim also declares
+  so it can yield `needs_review` but cannot decide a `fail`; the finding keeps the reviewer's
+  `reproduction` and adds `effective_reproduction: "unreproduced"`, the value the policy used.
+  Exception: a finding that backs a claim-bound refutation is recorded
+  `absence_coverage: "not_required"` and still fails. When an absence claim also declares
   `required_evidence_kind`, one and the same evidence item must both satisfy the kind and carry the
   complete coverage; a coverage block on a `note` plus a separate uncovered `command` is not proof.
   An unproven absence finding is named in the summary and the Markdown report under every
   disposition, including `pass` (an advisory-class one does not block, but it stays visible).
 
-An unmet requirement never rejects the run and never edits the reviewer's own fields: the attestation
-keeps the reviewer's evidence, records `reviewer_outcome: "supported"` plus an `evidence_gate` with
-reason codes (`no_claim_bound_evidence`, `evidence_kind_insufficient`, `absence_coverage_unproven`),
-and sets `outcome` to `inconclusive`. Only `supported` outcomes are downgraded; downgrading a `refuted`
-outcome could only weaken a `fail`. A 0.7.0 contract must be reviewed by a 0.7.0 reviewer output; a
-0.7.0 reviewer output may also review a 0.3.0/0.6.0 contract, in which case claim binding and absence
-coverage for findings apply.
+An unmet evidence requirement never rejects the run and never edits the reviewer's own fields. For a
+downgraded claim the attestation keeps the reviewer's evidence and `rationale` verbatim (or no
+`rationale`, if the reviewer gave none), records `reviewer_outcome` (`supported` or `refuted`) plus an
+`evidence_gate` with reason codes (`no_claim_bound_evidence`, `evidence_kind_insufficient`,
+`absence_coverage_unproven`), and sets `outcome` to `inconclusive`. Downgrades are named in the
+summary and the Markdown report under every disposition, including `fail`. A waiver aimed at a fail
+that the discipline withheld (an unproven absence finding, or a finding cited only by a refutation
+downgraded for lacking claim-bound evidence) does not reject the run: it is kept as
+`unapplied_waiver` with `not_applied_because` (`absence_coverage_unproven` or
+`refutation_unbound`), the finding stays unresolved, and the run is `needs_review`. A waiver on a
+finding that would not be a reproduced fail even without the discipline (the reviewer declared it
+unreproduced, or it is advisory and no refutation cites it) is still rejected, as before, also
+when an unbound refutation cites it.
+
+`tests/test_policy_matrix.py` enumerates 3616 input combinations (single-claim and two-claim,
+two-finding; finding error class, reproduction state, absence marker, coverage, severity, citation
+and waiver included) and checks: no rejection the legacy evaluation would not also make; no input
+the legacy evaluation rejects is accepted; no move toward `pass` other than the two designed `fail`
+to `needs_review` moves (an unbound refutation no longer forces an *advisory* finding to fail; an
+uncovered absence finding cannot decide fail); and per finding, a reproduced fail-class finding
+that is not an uncovered absence finding still fails, a finding cited by a bound refutation still
+fails, and an advisory finding cited only by unbound refutations does not. `protocol/matrix_mutants.py`
+(a CI step) plants five known policy bugs into temporary copies and exits 0 only if the matrix
+catches every one.
+
+What still rejects the run (exit `1`, no attestation)
+is malformed reviewer evidence, not insufficient evidence: an unknown claim id in
+`covers_claim_ids`, one evidence id reused with different content, or a 0.3.0 reviewer output for a
+0.7.0 contract.
+
+A 0.7.0 contract must be reviewed by a 0.7.0 reviewer output; a 0.7.0 reviewer output may also review
+a 0.3.0/0.6.0 contract, in which case claim binding and absence coverage for findings apply and
+verdicts can change. Compatibility: dispositions for 0.3.0/0.6.0 contracts are unchanged only when the
+reviewer output is also 0.3.0. Review bundles for every contract version embed the reviewer-output
+schema, which changed, so their bytes and `bundle_sha256` differ from earlier releases, and a run
+prepared by an earlier release cannot be finalized by this one (the embedded schema no longer
+matches). `prepare` and `finalize` require every input path (contract, artifacts, run directory,
+reviewer output, transcript) to resolve inside `--workspace`.
 
 Intentional consequence: a reproduced fail-class finding that the reviewer marks
 `assertion: "absence"` without a complete `coverage` moves from `fail` to `needs_review` (its
@@ -279,11 +320,20 @@ Limits:
   evidence; it does not prove a command was run.
 - Contract authors may leave the claim-level requirements off; a 0.7.0 claim without
   `required_evidence_kind` or `assertion` gets only claim binding.
+- A 0.3.0/0.6.0 contract reviewed by a 0.3.0 reviewer output gets no claim binding at all, and the
+  contract author cannot require a 0.7.0 reviewer output short of moving the contract to 0.7.0.
 - Claim binding forces evidence to name the claims it covers; it cannot stop one evidence item
   from naming every claim at once. It makes that blanket coverage explicit and auditable, not
   impossible.
 - A reviewer can avoid the absence check on a finding by not marking it; the discipline does not
   detect free-text absence reasoning.
+- A finding's absence proof has no evidence-kind requirement and needs no claim binding: one `note`
+  in the finding's own evidence carrying a complete `coverage` block makes it
+  `absence_coverage: "proven"`, and it can then decide `fail` or take a waiver.
+- Any one claim-bound refutation that cites an absence finding exempts that finding from the absence
+  rule (`absence_coverage: "not_required"`), so it can decide `fail` or be waived, even if the
+  refuted claim has nothing to do with what the finding says is absent. The policy does not check
+  that the citation is relevant.
 
 ## Assurance layers
 

@@ -603,8 +603,11 @@
           "maxLength": 4000
         },
         "reviewer_outcome": {
-          "description": "The reviewer's original outcome, present only when the policy downgraded it (see evidence_gate).",
-          "const": "supported"
+          "description": "The reviewer's original outcome, present only when the policy downgraded it (see evidence_gate). The reviewer's rationale, if any, is kept verbatim.",
+          "enum": [
+            "supported",
+            "refuted"
+          ]
         },
         "evidence_gate": {
           "$ref": "#/$defs/evidenceGate"
@@ -641,8 +644,17 @@
             }
           },
           "else": {
-            "required": [
-              "rationale"
+            "anyOf": [
+              {
+                "required": [
+                  "rationale"
+                ]
+              },
+              {
+                "required": [
+                  "evidence_gate"
+                ]
+              }
             ]
           }
         },
@@ -779,11 +791,56 @@
           ]
         },
         "absence_coverage": {
-          "description": "Recorded policy output for an absence finding: proven when its evidence carries a complete coverage proof; unproven findings are gated as unreproduced.",
+          "description": "Recorded policy output for an absence finding: proven when its evidence carries a complete coverage proof; unproven findings are gated as unreproduced (see effective_reproduction); not_required when the finding backs a claim-bound refutation, which needs one counterexample rather than a complete search.",
           "enum": [
             "proven",
-            "unproven"
+            "unproven",
+            "not_required"
           ]
+        },
+        "effective_reproduction": {
+          "description": "Recorded policy output: the reproduction state the policy actually used when it differs by rule from the finder's reproduction field (an unproven absence finding is used as unreproduced). The finder's own reproduction field is kept unchanged.",
+          "enum": [
+            "unreproduced"
+          ]
+        },
+        "unapplied_waiver": {
+          "description": "Recorded policy output: a waiver request that targeted a fail the evidence discipline withheld (an unproven absence finding, or a finding cited only by a refutation downgraded for lacking claim-bound evidence). It is kept on record but not applied; the finding stays unresolved.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "issuer",
+            "reason",
+            "issued_at",
+            "expires_at",
+            "not_applied_because"
+          ],
+          "properties": {
+            "issuer": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "issued_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "expires_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "not_applied_because": {
+              "enum": [
+                "absence_coverage_unproven",
+                "refutation_unbound"
+              ]
+            }
+          }
         },
         "gate_effect": {
           "description": "Recorded policy output. PR 3 makes the policy engine its sole writer.",
@@ -812,9 +869,36 @@
         ],
         "absence_coverage": [
           "assertion"
+        ],
+        "effective_reproduction": [
+          "absence_coverage"
         ]
       },
       "allOf": [
+        {
+          "if": {
+            "properties": {
+              "absence_coverage": {
+                "const": "unproven"
+              }
+            },
+            "required": [
+              "absence_coverage"
+            ]
+          },
+          "then": {
+            "required": [
+              "effective_reproduction"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "effective_reproduction"
+              ]
+            }
+          }
+        },
         {
           "if": {
             "properties": {

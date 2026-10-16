@@ -167,6 +167,15 @@ def evaluate_policy(
         if result["outcome"] == "refuted"
         for finding_id in result["finding_ids"]
     }
+    # Findings cited by a refutation the evidence gate downgraded (no claim-bound
+    # evidence): the reviewer's refutation would have forced them to fail, so a
+    # waiver aimed at that fail is recorded, not applied, and not an error.
+    unbound_refutation_finding_ids = {
+        finding_id
+        for result in claim_results
+        if result.get("reviewer_outcome") == "refuted"
+        for finding_id in result["finding_ids"]
+    } - refuted_finding_ids
     waiver_by_finding: dict[str, dict[str, Any]] = {}
     for waiver in waiver_requests:
         finding_id = waiver["finding_id"]
@@ -179,9 +188,17 @@ def evaluate_policy(
     pending_high_severity_unreproduced = False
     for raw_finding in findings:
         finding = copy.deepcopy(raw_finding)
-        if "gate_effect" in finding or "waiver" in finding or "absence_coverage" in finding:
+        policy_outputs = {
+            "gate_effect",
+            "waiver",
+            "absence_coverage",
+            "effective_reproduction",
+            "unapplied_waiver",
+        }
+        if policy_outputs & set(finding):
             raise PolicyError(
-                "gate_effect, waiver, and absence_coverage are policy outputs, not finder inputs"
+                "gate_effect, waiver, absence_coverage, effective_reproduction, and "
+                "unapplied_waiver are policy outputs, not finder inputs"
             )
 
         configured_effect = effects[finding["error_class"]]
@@ -190,13 +207,48 @@ def evaluate_policy(
         reproduction = finding["reproduction"]
         # An absence conclusion ("no source exists", "nothing else calls X")
         # is only as good as the search behind it. Without a complete coverage
-        # proof, the finding is gated as unreproduced whatever the finder said.
+        # proof, the finding is gated as unreproduced whatever the finder said,
+        # and the attestation records both the finder's reproduction and the
+        # effective_reproduction the policy used. Exception: a finding that
+        # backs a claim-bound refutation is not softened, because refuting a
+        # claim needs one counterexample, not a complete search.
+        absence_softened = False
         if finding.get("assertion") == "absence":
-            proven = absence_finding_proven(finding)
-            finding["absence_coverage"] = "proven" if proven else "unproven"
-            if not proven:
+            if absence_finding_proven(finding):
+                finding["absence_coverage"] = "proven"
+            elif finding["finding_id"] in refuted_finding_ids:
+                finding["absence_coverage"] = "not_required"
+            else:
+                finding["absence_coverage"] = "unproven"
+                absence_softened = reproduction not in NON_REPRODUCED
                 reproduction = "unreproduced"
+                finding["effective_reproduction"] = reproduction
         waiver_request = waiver_by_finding.pop(finding["finding_id"], None)
+        # A waiver aimed at a fail the absence rule has just withheld is kept
+        # on record but not applied: the finding stays unresolved instead of
+        # the waiver rejecting the whole run.
+        withheld_because = None
+        if waiver_request is not None and absence_softened and configured_effect == "fail":
+            withheld_because = "absence_coverage_unproven"
+        elif (
+            waiver_request is not None
+            and finding["finding_id"] in unbound_refutation_finding_ids
+            and finding["reproduction"] not in NON_REPRODUCED
+            and not (configured_effect == "fail" and reproduction not in NON_REPRODUCED)
+        ):
+            # Only a finding the reviewer declared reproduced: a waiver on one the
+            # reviewer declared unreproduced is rejected by the general rule
+            # below, exactly as without the discipline.
+            withheld_because = "refutation_unbound"
+        if withheld_because is not None:
+            finding["unapplied_waiver"] = {
+                "issuer": waiver_request["issuer"],
+                "reason": waiver_request["reason"],
+                "issued_at": waiver_request["issued_at"],
+                "expires_at": waiver_request["expires_at"],
+                "not_applied_because": withheld_because,
+            }
+            waiver_request = None
 
         original_effect = (
             "none"
@@ -265,11 +317,6 @@ def evaluate_policy(
             )
         if unresolved_claim:
             sentences.append("A claim remains unresolved.")
-        if any("evidence_gate" in result for result in claim_results):
-            sentences.append(
-                "A supported outcome was downgraded because its claim-bound evidence did "
-                "not meet the contract's evidence requirements."
-            )
         summary = " ".join(sentences)
     elif "waiver" in gate_effects:
         status = "pass_with_waiver"
@@ -278,6 +325,18 @@ def evaluate_policy(
         status = "pass"
         summary = "No finding triggered a fail gate and every claim received a final outcome."
 
+    # Surface evidence-gate downgrades under every disposition, including fail.
+    downgraded = [result["claim_id"] for result in claim_results if "evidence_gate" in result]
+    if downgraded:
+        summary += (
+            " The evidence gate downgraded the reviewer outcome of claim(s) "
+            f"{', '.join(downgraded)} to inconclusive."
+        )
+    if any("unapplied_waiver" in finding for finding in evaluated):
+        summary += (
+            " A waiver request was recorded but not applied because the fail it targeted "
+            "was withheld by the evidence discipline (see unapplied_waiver)."
+        )
     # Surface an uncovered absence conclusion under every disposition, including
     # pass: an advisory-class absence finding never blocks, but a reader must
     # still see that its "nothing exists" conclusion rests on an unproven search.
