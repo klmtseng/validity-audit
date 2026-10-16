@@ -257,6 +257,12 @@ LEGACY_WAIVER_REJECTIONS = {
 LEGACY_REJECTS_HEAD_ACCEPTS: frozenset[tuple] = frozenset()
 
 
+X2_REASON = (
+    "X2: an uncovered absence finding cannot decide fail "
+    "(README 'Evidence discipline', absence coverage bullet)"
+)
+
+
 def allowed_relaxation(spec: tuple) -> str | None:
     """Designed fail -> needs_review moves (never further toward pass).
 
@@ -274,7 +280,7 @@ def allowed_relaxation(spec: tuple) -> str | None:
             return "X1 (D1): an unbound refutation no longer forces an advisory finding to fail"
         if (shape["absence"] and not shape["cov"] and shape["reproduction"] == "reproduced"
                 and not bound_citers and (shape["error_class"] == FAIL_CLASS or citers)):
-            return "X2: an uncovered absence finding cannot decide fail (README B12 paragraph)"
+            return X2_REASON
     return None
 
 
@@ -304,7 +310,7 @@ def finding_invariant_violations(spec: tuple, gates: tuple) -> list[str]:
 
 
 def test_matrix_is_large_and_covers_every_dimension() -> None:
-    assert len(SPECS) > 3000
+    assert len(SPECS) == 3616  # the count README.md and CHANGELOG.md state
     single = single_claim_specs()
     assert {s[0] for s in single} == {"0.3.0", "0.6.0", "0.7.0"}
     assert {s[1] for s in single} == {"0.3.0", "0.7.0"}
@@ -387,7 +393,7 @@ def test_matrix_discipline_never_moves_toward_pass(baseline_mode: str) -> None:
     if baseline_mode == "legacy":
         assert relaxations_used == {
             "X1 (D1): an unbound refutation no longer forces an advisory finding to fail",
-            "X2: an uncovered absence finding cannot decide fail (README B12 paragraph)",
+            X2_REASON,
         }
 
 
@@ -398,6 +404,60 @@ def test_matrix_per_finding_invariants() -> None:
         if verdict[0] == "ok":
             failures += [f"{spec}: {p}" for p in finding_invariant_violations(spec, verdict[2])]
     assert not failures, f"{len(failures)} invariant violations, e.g.\n" + "\n".join(failures[:10])
+
+
+def expected_waiver_outcome(spec: tuple, finding: tuple, claim_results: list) -> tuple:
+    """(gate_effect, not_applied_because) a waived finding must get on an accepted input.
+
+    Derived from the README rules, not from policy.py, and using the claim results
+    finalize recorded (so an evidence-gate downgrade counts as unbound whatever
+    caused it). A waiver is withheld only from a fail the discipline itself
+    withheld: absence_coverage_unproven for an uncovered absence finding that
+    would otherwise fail; refutation_unbound for a finding whose only fail came
+    from a downgraded refutation. A finding that keeps its own fail-class fail
+    takes the waiver, unbound refutation or not.
+    """
+    finding_id, shape_name, _ = finding
+    shape = FINDING_SHAPES[shape_name]
+    refuted = any(r["outcome"] == "refuted" and finding_id in r["finding_ids"]
+                  for r in claim_results)
+    unbound = not refuted and any(r.get("reviewer_outcome") == "refuted"
+                                  and finding_id in r["finding_ids"] for r in claim_results)
+    softened = spec[1] == "0.7.0" and shape["absence"] and not shape["cov"] and not refuted
+    configured_fail = shape["error_class"] == FAIL_CLASS or refuted
+    if softened and configured_fail:
+        return "none", "absence_coverage_unproven"
+    if unbound and not (configured_fail and not softened):
+        # The advisory class keeps its own effect; a high-severity one the absence
+        # rule made unreproduced is a blocking unknown (gate none, needs_review).
+        high_unknown = softened and finding[2] == "high"
+        return ("none" if high_unknown else "advisory"), "refutation_unbound"
+    return "waiver", None
+
+
+def test_matrix_waived_findings_get_exact_gate_and_reason() -> None:
+    # Checks (b) and (c) skip waived findings and only rank dispositions, so a
+    # waiver wrongly withheld (moving the run toward fail) or a swapped
+    # not_applied_because code passed them (review of 4e13671, P1-1).
+    failures, reasons_seen = [], set()
+    for spec in SPECS:
+        if not spec[4] or verdict_of(spec)[0] != "ok":
+            continue
+        contract, output = build(spec)
+        _, _, claim_results, findings = _evaluate(contract, output)
+        by_id = {f["finding_id"]: f for f in findings}
+        for finding in spec[3]:
+            if finding[0] not in spec[4]:
+                continue
+            got = by_id[finding[0]]
+            actual = (got["gate_effect"],
+                      got.get("unapplied_waiver", {}).get("not_applied_because"))
+            expected = expected_waiver_outcome(spec, finding, claim_results)
+            reasons_seen.add(expected[1])
+            if actual != expected:
+                failures.append(f"{spec}: {finding[0]} got {actual}, expected {expected}")
+    assert not failures, f"{len(failures)} waived findings, e.g.\n" + "\n".join(failures[:10])
+    assert reasons_seen == {None, "absence_coverage_unproven", "refutation_unbound"}
 
 
 def test_waiver_on_unreproduced_finding_of_unbound_refutation_is_rejected_as_before() -> None:

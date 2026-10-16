@@ -11,7 +11,8 @@ mutant survived, or the clean copy failed, or a copy imported the wrong module;
 with the policy). Variants run in parallel, one temporary copy each.
 
 M1-M4 come from the round-four review of PR #27, which found M2 surviving a
-too-wide exemption in the matrix; M5 is the R1 bug from the same review.
+too-wide exemption in the matrix; M5 is the R1 bug from the same review. M6-M7
+come from the heterogeneous review of 4e13671 (P1-1), which showed both survived.
 """
 
 from __future__ import annotations
@@ -60,6 +61,24 @@ MUTANTS: dict[str, list[tuple[str, str]]] = {
         "            and finding[\"reproduction\"] not in NON_REPRODUCED\n",
         "",
     )],
+    # Drop the fail-class exclusion: a waiver on a finding that keeps its own
+    # fail-class fail is withheld as refutation_unbound (run fail, not waived).
+    "M6_withhold_failclass_waiver": [(
+        "            and not (configured_effect == \"fail\" "
+        "and reproduction not in NON_REPRODUCED)\n",
+        "",
+    )],
+    # Swap the two not_applied_because reason codes.
+    "M7_swap_unapplied_reasons": [
+        ("and configured_effect == \"fail\":\n"
+         "            withheld_because = \"absence_coverage_unproven\"\n",
+         "and configured_effect == \"fail\":\n"
+         "            withheld_because = \"refutation_unbound\"\n"),
+        ("# below, exactly as without the discipline.\n"
+         "            withheld_because = \"refutation_unbound\"\n",
+         "# below, exactly as without the discipline.\n"
+         "            withheld_because = \"absence_coverage_unproven\"\n"),
+    ],
 }
 
 

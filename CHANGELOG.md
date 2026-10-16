@@ -42,9 +42,10 @@ All notable changes to this project will be documented in this file.
   reviewer-output version x claim outcome x binding x claim requirement x evidence kind x finding
   shape x severity x cited x waiver, plus two-claim two-finding combinations) and asserts no new
   rejections versus the legacy evaluation, no legacy rejection accepted, no move toward `pass`
-  except the named `fail` -> `needs_review` moves, and per-finding gate invariants.
-- `protocol/matrix_mutants.py` (new CI step "Matrix mutation regression"): plants five known policy
-  bugs (M1-M5) into temporary copies and exits 0 only if the matrix test catches every one.
+  except the named `fail` -> `needs_review` moves, per-finding gate invariants, and the exact
+  `gate_effect` / `not_applied_because` of every waived finding.
+- `protocol/matrix_mutants.py` (new CI step "Matrix mutation regression"): plants seven known policy
+  bugs (M1-M7) into temporary copies and exits 0 only if the matrix test catches every one.
 - A waiver on a finding the reviewer declared unreproduced is rejected by the general waiver rule
   even when an unbound refutation cites it (it was briefly accepted as `refutation_unbound`).
 - `tests/test_evidence_discipline.py`: per primitive, a negative control that the previous behavior

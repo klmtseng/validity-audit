@@ -231,7 +231,10 @@ Markdown-title check, and PR #1's duplicate-key check. PR #23 turned up a gap no
 mutation that removed the `pending_high_severity_unreproduced` condition from the policy's status
 logic left the full suite at 174 passed. **That mutation check is not FBPA.** FBPA only compares one
 commit to another along a claimed test; finding "which line, if deleted, leaves the suite green" is
-mutation testing, and this repository does not run mutation testing as a standing check (spec §8, §9).
+mutation testing. This repository does not run general mutation testing as a standing check (spec §8,
+§9); its one standing mutation check is narrower: `protocol/matrix_mutants.py` (a CI step) plants a
+fixed list of known policy bugs and requires `tests/test_policy_matrix.py` to catch each (see
+"Evidence discipline" below).
 
 ## Evidence discipline (schema 0.7.0, unreleased)
 
@@ -289,9 +292,10 @@ the legacy evaluation rejects is accepted; no move toward `pass` other than the 
 to `needs_review` moves (an unbound refutation no longer forces an *advisory* finding to fail; an
 uncovered absence finding cannot decide fail); and per finding, a reproduced fail-class finding
 that is not an uncovered absence finding still fails, a finding cited by a bound refutation still
-fails, and an advisory finding cited only by unbound refutations does not. `protocol/matrix_mutants.py`
-(a CI step) plants five known policy bugs into temporary copies and exits 0 only if the matrix
-catches every one.
+fails, and an advisory finding cited only by unbound refutations does not. Every waived finding on an
+accepted input must get the exact `gate_effect` and `not_applied_because` the rules above imply.
+`protocol/matrix_mutants.py` (a CI step) plants seven known policy bugs into temporary copies and
+exits 0 only if the matrix catches every one.
 
 What still rejects the run (exit `1`, no attestation)
 is malformed reviewer evidence, not insufficient evidence: an unknown claim id in
@@ -364,7 +368,7 @@ fail-before / pass-after probe (FBPA)" above) can turn a previously accepted con
 see the `[0.6.0]` "Changed (breaking)" entry in [`CHANGELOG.md`](CHANGELOG.md).
 
 Starting with `validity-audit-default-v0.7.0` (unreleased), schema 0.7.0 contracts and reviewer
-outputs carry an evidence discipline (see "Evidence discipline" below) that can downgrade a reviewer's
+outputs carry an evidence discipline (see "Evidence discipline" above) that can downgrade a reviewer's
 `supported` outcome to `inconclusive` (so the run becomes `needs_review`) and can stop an uncovered
 absence finding from deciding a `fail`. The current policy identifier in code is
 `validity-audit-default-v0.7.0`; `ERROR_CLASS_EFFECTS` itself (the table below) is unchanged by this
