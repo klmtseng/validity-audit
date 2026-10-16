@@ -26,4 +26,6 @@ def test_every_matrix_mutant_applies_to_current_policy() -> None:
         "M3_ignore_downgraded_claims",
         "M4_absence_softens_bound_refutation",
         "M5_revert_r1",
+        "M6_withhold_failclass_waiver",
+        "M7_swap_unapplied_reasons",
     }

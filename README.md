@@ -231,7 +231,10 @@ Markdown-title check, and PR #1's duplicate-key check. PR #23 turned up a gap no
 mutation that removed the `pending_high_severity_unreproduced` condition from the policy's status
 logic left the full suite at 174 passed. **That mutation check is not FBPA.** FBPA only compares one
 commit to another along a claimed test; finding "which line, if deleted, leaves the suite green" is
-mutation testing, and this repository does not run mutation testing as a standing check (spec §8, §9).
+mutation testing. This repository does not run general mutation testing as a standing check (spec §8,
+§9); its one standing mutation check is narrower: `protocol/matrix_mutants.py` (a CI step) plants a
+fixed list of known policy bugs and requires `tests/test_policy_matrix.py` to catch each (see
+"Evidence discipline" below).
 
 ## Evidence discipline (schema 0.7.0, unreleased)
 
@@ -274,8 +277,9 @@ downgraded claim the attestation keeps the reviewer's evidence and `rationale` v
 `evidence_gate` with reason codes (`no_claim_bound_evidence`, `evidence_kind_insufficient`,
 `absence_coverage_unproven`), and sets `outcome` to `inconclusive`. Downgrades are named in the
 summary and the Markdown report under every disposition, including `fail`. A waiver aimed at a fail
-that the discipline withheld (an unproven absence finding, or a finding cited only by a refutation
-downgraded for lacking claim-bound evidence) does not reject the run: it is kept as
+that the discipline withheld (an unproven absence finding that would otherwise fail, or an
+advisory-class finding whose only fail came from a refutation downgraded for lacking claim-bound
+evidence; a finding that keeps its own fail-class fail takes the waiver) does not reject the run: it is kept as
 `unapplied_waiver` with `not_applied_because` (`absence_coverage_unproven` or
 `refutation_unbound`), the finding stays unresolved, and the run is `needs_review`. A waiver on a
 finding that would not be a reproduced fail even without the discipline (the reviewer declared it
@@ -289,9 +293,10 @@ the legacy evaluation rejects is accepted; no move toward `pass` other than the 
 to `needs_review` moves (an unbound refutation no longer forces an *advisory* finding to fail; an
 uncovered absence finding cannot decide fail); and per finding, a reproduced fail-class finding
 that is not an uncovered absence finding still fails, a finding cited by a bound refutation still
-fails, and an advisory finding cited only by unbound refutations does not. `protocol/matrix_mutants.py`
-(a CI step) plants five known policy bugs into temporary copies and exits 0 only if the matrix
-catches every one.
+fails, and an advisory finding cited only by unbound refutations does not. Every waived finding on an
+accepted input must get the exact `gate_effect` and `not_applied_because` the rules above imply.
+`protocol/matrix_mutants.py` (a CI step) plants seven known policy bugs into temporary copies and
+exits 0 only if the matrix catches every one.
 
 What still rejects the run (exit `1`, no attestation)
 is malformed reviewer evidence, not insufficient evidence: an unknown claim id in
@@ -364,7 +369,7 @@ fail-before / pass-after probe (FBPA)" above) can turn a previously accepted con
 see the `[0.6.0]` "Changed (breaking)" entry in [`CHANGELOG.md`](CHANGELOG.md).
 
 Starting with `validity-audit-default-v0.7.0` (unreleased), schema 0.7.0 contracts and reviewer
-outputs carry an evidence discipline (see "Evidence discipline" below) that can downgrade a reviewer's
+outputs carry an evidence discipline (see "Evidence discipline" above) that can downgrade a reviewer's
 `supported` outcome to `inconclusive` (so the run becomes `needs_review`) and can stop an uncovered
 absence finding from deciding a `fail`. The current policy identifier in code is
 `validity-audit-default-v0.7.0`; `ERROR_CLASS_EFFECTS` itself (the table below) is unchanged by this
