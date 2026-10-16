@@ -27,6 +27,8 @@ and checks on every schema-valid input:
     under the two named designs X1 and X2 (``allowed_relaxation``).
 (c) Per-finding invariants, so an exemption in (b) cannot hide a finding that
     lost its own fail: see ``finding_invariant_violations``.
+(d) Exact ``gate_effect`` and ``not_applied_because`` for every waived finding on
+    an accepted input: see ``expected_waiver_outcome``.
 
 The matrix calls the functions finalize uses for its verdict
 (``_review_findings``, ``_claim_results``, ``evaluate_policy``), schema-validates
@@ -409,13 +411,15 @@ def test_matrix_per_finding_invariants() -> None:
 def expected_waiver_outcome(spec: tuple, finding: tuple, claim_results: list) -> tuple:
     """(gate_effect, not_applied_because) a waived finding must get on an accepted input.
 
-    Derived from the README rules, not from policy.py, and using the claim results
-    finalize recorded (so an evidence-gate downgrade counts as unbound whatever
-    caused it). A waiver is withheld only from a fail the discipline itself
-    withheld: absence_coverage_unproven for an uncovered absence finding that
-    would otherwise fail; refutation_unbound for a finding whose only fail came
-    from a downgraded refutation. A finding that keeps its own fail-class fail
-    takes the waiver, unbound refutation or not.
+    Derived from the README rules, not from policy.py. It reads bound/unbound from
+    the claim results finalize recorded, so it is not independent of the evidence
+    gate: a binding bug there would pass this check. Check (c) covers that, since
+    I2 derives binding from the spec (``_effectively_bound``). A waiver is
+    withheld only from a fail the discipline itself withheld:
+    absence_coverage_unproven for an uncovered absence finding that would
+    otherwise fail; refutation_unbound for a finding whose only fail came from a
+    downgraded refutation. A finding that keeps its own fail-class fail takes the
+    waiver, unbound refutation or not.
     """
     finding_id, shape_name, _ = finding
     shape = FINDING_SHAPES[shape_name]

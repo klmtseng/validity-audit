@@ -29,8 +29,8 @@ All notable changes to this project will be documented in this file.
   - Downgrades keep the reviewer's `rationale` verbatim; the reasons live only in `evidence_gate`.
     Downgrades are named in the summary and report under every disposition. Unproven absence
     findings record `effective_reproduction: "unreproduced"` next to the reviewer's `reproduction`.
-    A waiver on a fail the discipline withheld (unproven absence finding, or a finding cited only by
-    an unbound, downgraded refutation) is kept as `unapplied_waiver` with `not_applied_because`
+    A waiver on a fail the discipline withheld (unproven absence finding that would otherwise fail,
+    or an advisory-class finding whose only fail came from an unbound, downgraded refutation) is kept as `unapplied_waiver` with `not_applied_because`
     (`absence_coverage_unproven` / `refutation_unbound`), run `needs_review`, instead of rejecting
     the run. Evidence-id reuse compares `covers_claim_ids` as a
     set.

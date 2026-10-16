@@ -277,8 +277,9 @@ downgraded claim the attestation keeps the reviewer's evidence and `rationale` v
 `evidence_gate` with reason codes (`no_claim_bound_evidence`, `evidence_kind_insufficient`,
 `absence_coverage_unproven`), and sets `outcome` to `inconclusive`. Downgrades are named in the
 summary and the Markdown report under every disposition, including `fail`. A waiver aimed at a fail
-that the discipline withheld (an unproven absence finding, or a finding cited only by a refutation
-downgraded for lacking claim-bound evidence) does not reject the run: it is kept as
+that the discipline withheld (an unproven absence finding that would otherwise fail, or an
+advisory-class finding whose only fail came from a refutation downgraded for lacking claim-bound
+evidence; a finding that keeps its own fail-class fail takes the waiver) does not reject the run: it is kept as
 `unapplied_waiver` with `not_applied_because` (`absence_coverage_unproven` or
 `refutation_unbound`), the finding stays unresolved, and the run is `needs_review`. A waiver on a
 finding that would not be a reproduced fail even without the discipline (the reviewer declared it
